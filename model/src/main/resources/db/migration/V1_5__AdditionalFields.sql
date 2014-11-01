@@ -7,5 +7,5 @@ alter table bookmark
     alter table bookmark 
         add column selected TINYINT(1) not null;
 
-    alter table user -
+    alter table user
         add column role integer;
