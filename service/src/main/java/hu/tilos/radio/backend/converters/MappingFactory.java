@@ -154,12 +154,16 @@ public class MappingFactory {
                     @Override
                     public String convert(MappingContext<Episode, String> context) {
                         Episode episode = context.getSource();
-                        return "http://tilos.hu/mp3/tilos-" +
-                                YYYYMMDD.format(episode.getRealFrom()) +
-                                "-" +
-                                HHMMSS.format(episode.getRealFrom()) +
-                                "-" +
-                                HHMMSS.format(episode.getRealTo()) + ".m3u";
+                        if (episode.getRealTo().compareTo(new Date()) < 0) {
+                            return "http://tilos.hu/mp3/tilos-" +
+                                    YYYYMMDD.format(episode.getRealFrom()) +
+                                    "-" +
+                                    HHMMSS.format(episode.getRealFrom()) +
+                                    "-" +
+                                    HHMMSS.format(episode.getRealTo()) + ".m3u";
+                        } else {
+                            return null;
+                        }
                     }
                 }).map(source).setM3uUrl(null);
             }
