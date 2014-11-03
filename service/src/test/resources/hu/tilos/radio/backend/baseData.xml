@@ -2,6 +2,7 @@
 <dataset>
     <author id="1" name="AUTHOR1" photo="asd" avatar="avatar/asd.jpg" introduction="nothing"></author>
     <author id="2" name="AUTHOR2" photo="asd" avatar="asd" introduction="nothing"></author>
+    <author id="3" name="AUTHOR3" photo="asd" avatar="asd" introduction="nothing" user_id="1"></author>
     <url id="1" url="http://szabi.hu"></url>
     <url id="2" url="http://show1.com"></url>
     <author_url author_id="1" url_id="1"></author_url>
