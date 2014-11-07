@@ -211,6 +211,16 @@
             <version>0.9.8</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-validator-provider-11</artifactId>
+            <version>3.0.10.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>net.tanesha.recaptcha4j</groupId>
+            <artifactId>recaptcha4j</artifactId>
+            <version>0.0.7</version>
+        </dependency>
     </dependencies>
 
 

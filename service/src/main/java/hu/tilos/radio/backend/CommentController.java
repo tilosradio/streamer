@@ -74,12 +74,57 @@ public class CommentController {
         return topLevelComments;
     }
 
+    @GET
+    @Path("/")
+    @Security(role = Role.GUEST)
+    @Produces("application/json")
+    public List<CommentData> listAll(@QueryParam("status") String status) {
+        Query selectComments;
+        if (status == null) {
+            selectComments = entityManager.createQuery("SELECT c FROM Comment c ORDER BY c.created desc");
+        } else {
+            selectComments = entityManager.createQuery("SELECT c FROM Comment c WHERE c.status = :status ORDER BY c.created desc").setParameter("status", CommentStatus.valueOf(status));
+        }
+
+        List<Comment> comments = selectComments.getResultList();
+
+        List<CommentData> commentDtos = new ArrayList();
+        for (Comment comment : comments) {
+            commentDtos.add(modelMapper.map(comment, CommentData.class));
+        }
+
+        return commentDtos;
+    }
+
+    @POST
+    @Path("/approve/{id}")
+    @Security(role = Role.ADMIN)
+    @Produces("application/json")
+    @Transactional
+    public CommentData approve(@PathParam("id") int id) {
+        Comment comment = entityManager.find(Comment.class, id);
+        comment.setStatus(CommentStatus.ACCEPTED);
+        entityManager.persist(comment);
+        return modelMapper.map(comment, CommentData.class);
+    }
+
+    @DELETE
+    @Path("/approve/{id}")
+    @Security(role = Role.ADMIN)
+    @Produces("application/json")
+    @Transactional
+    public void delete(@PathParam("id") int id) {
+        Comment comment = entityManager.find(Comment.class, id);
+
+        entityManager.remove(comment);
+    }
+
 
     /**
      * @exclude
      */
     @Produces("application/json")
-    @Security(role = Role.AUTHOR)
+    @Security(role = Role.USER)
     @Path("/{type}/{identifier}")
     @POST
     @Transactional

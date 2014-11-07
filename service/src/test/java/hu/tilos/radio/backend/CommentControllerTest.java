@@ -2,6 +2,7 @@ package hu.tilos.radio.backend;
 
 import hu.radio.tilos.model.Comment;
 import hu.radio.tilos.model.User;
+import hu.radio.tilos.model.type.CommentStatus;
 import hu.radio.tilos.model.type.CommentType;
 import hu.tilos.radio.backend.converters.MappingFactory;
 import hu.tilos.radio.backend.data.CommentData;
@@ -54,6 +55,36 @@ public class CommentControllerTest {
         assertThat(list.size(), equalTo(2));
         assertThat(list.get(0).getAuthor(), Matchers.notNullValue());
         assertThat(list.get(0).getComment(), equalTo("mi ez a fos zene"));
+    }
+
+    @Test
+    @InRequestScope
+    public void listAll() {
+        //given
+
+
+        //when
+        List<CommentData> list = controller.listAll();
+
+        //then
+        assertThat(list.size(), equalTo(3));
+
+    }
+
+    @Test
+    @InRequestScope
+    public void approve() {
+        //given
+
+
+        //when
+        controller.getEntityManager().getTransaction().begin();
+        controller.approve(3);
+        controller.getEntityManager().getTransaction().commit();
+
+        //then
+        Comment comment = controller.getEntityManager().find(Comment.class, 3);
+        assertThat(comment.getStatus(), equalTo(CommentStatus.ACCEPTED));
     }
 
     @Test
