@@ -1,12 +1,8 @@
 package hu.tilos.radio.backend;
 
 
-import com.google.gson.Gson;
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.MACSigner;
 import hu.tilos.radio.backend.converters.MappingFactory;
 import hu.tilos.radio.backend.data.LoginData;
-import hu.tilos.radio.backend.data.Token;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
@@ -18,7 +14,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MappingFactory.class, TestUtil.class, TestConfigProvider.class})
+@AdditionalClasses({MappingFactory.class, TestUtil.class, TestConfigProvider.class, ValidatorProducer.class})
 public class AuthControllerTest {
 
     @Inject
