@@ -64,10 +64,10 @@ public class CommentControllerTest {
 
 
         //when
-        List<CommentData> list = controller.listAll();
+        List<CommentData> list = controller.listAll(CommentStatus.NEW.toString());
 
         //then
-        assertThat(list.size(), equalTo(3));
+        assertThat(list.size(), equalTo(1));
 
     }
 
