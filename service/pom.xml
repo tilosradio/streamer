@@ -9,7 +9,7 @@
 
     <parent>
         <groupId>hu.tilos.radio</groupId>
-        <artifactId>util</artifactId>
+        <artifactId>tilos-backend</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
