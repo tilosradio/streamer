@@ -85,6 +85,7 @@ public class MixController {
         if (category != null) {
             query += " WHERE m.category = :category";
         }
+        query += " ORDER BY id DESC";
         Query q = entityManager.createQuery(query, Mix.class);
         if (show != null) {
             q.setParameter("alias", show);
