@@ -80,11 +80,11 @@ public class AuthController {
     /**
      * @exclude
      */
-//    @Path("/register")
-//    @Produces("application/json")
-//    @Security(role = Role.GUEST)
-//    @Transactional
-//    @POST
+    @Path("/register")
+    @Produces("application/json")
+    @Security(role = Role.GUEST)
+    @Transactional
+    @POST
     public Response register(RegisterData registerData) {
         if (!checkCaptcha(registerData.getCaptchaChallenge(), registerData.getCaptchaResponse())) {
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorResponse("A captcha megadása hibás")).build();
