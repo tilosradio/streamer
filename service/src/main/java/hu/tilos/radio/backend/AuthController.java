@@ -22,6 +22,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Random;
 import java.util.Set;
 
 
@@ -56,7 +58,7 @@ public class AuthController {
         query.setParameter("username", loginData.getUsername());
         try {
             User user = (User) query.getSingleResult();
-            if (toSHA1(loginData.getPassword() + user.getSalt()).equals(user.getPassword())) {
+            if (encode(loginData.getPassword(), user.getSalt()).equals(user.getPassword())) {
                 try {
                     return Response.ok(createToken(loginData.getUsername(), user.getRole())).build();
                 } catch (Exception e) {
@@ -68,6 +70,10 @@ public class AuthController {
         } catch (NoResultException ex) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
+    }
+
+    private String encode(String password, String salt) {
+        return toSHA1(password + salt);
     }
 
     private String createToken(String username, Role role) {
@@ -111,10 +117,10 @@ public class AuthController {
         //everything is ok
         User newUser = new User();
         newUser.setEmail(registerData.getEmail());
-        newUser.setPassword(registerData.getPassword());
         newUser.setUsername(registerData.getUsername());
         newUser.setRole(Role.USER);
         newUser.setSalt(generateSalt());
+        newUser.setPassword(encode(registerData.getPassword(), newUser.getSalt()));
 
         entityManager.persist(newUser);
 
@@ -126,7 +132,10 @@ public class AuthController {
     }
 
     public String generateSalt() {
-        return null;
+        Random r = new SecureRandom();
+        byte[] salt = new byte[32];
+        r.nextBytes(salt);
+        return toSHA1(new String(salt));
     }
 
     public static String toSHA1(String data) {

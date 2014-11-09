@@ -1,11 +1,13 @@
 package hu.tilos.radio.backend.data;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class RegisterData {
     @NotNull
-    @Size(min = 3, max = 16)
+    @Pattern(regexp = "[A-Za-z0-9\\-]+")
+    @Size(min = 5, max = 16)
     private String username;
 
     @NotNull
