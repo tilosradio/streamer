@@ -3,26 +3,25 @@ package hu.tilos.radio.backend;
 import hu.tilos.radio.backend.converters.MappingFactory;
 import hu.tilos.radio.backend.data.types.EpisodeData;
 import hu.tilos.radio.backend.data.types.ShowDetailed;
-
+import hu.tilos.radio.backend.data.types.ShowSimple;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MappingFactory.class,TestUtil.class})
+@AdditionalClasses({MappingFactory.class, TestUtil.class})
 public class ShowControllerTest {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMddHHmm");
@@ -32,7 +31,7 @@ public class ShowControllerTest {
 
 
     @Before
-    public void resetDatabase(){
+    public void resetDatabase() {
         TestUtil.initTestData();
     }
 
@@ -58,7 +57,7 @@ public class ShowControllerTest {
         Assert.assertEquals(1, show.getSchedulings().size());
         Assert.assertEquals(2, show.getStats().mixCount);
 
- //       Assert.assertEquals("minden szombat 8:00-10:00",show.getSchedulings().get(0).getText());
+        //       Assert.assertEquals("minden szombat 8:00-10:00",show.getSchedulings().get(0).getText());
     }
 
     @Test
@@ -97,5 +96,31 @@ public class ShowControllerTest {
 
         //then
         Assert.assertEquals(9, episodeDatas.size());
+    }
+
+    @Test
+    public void list() throws Exception {
+        //given
+
+
+        //when
+        List<ShowSimple> showSimples = controller.list(null);
+
+        //then
+        assertThat(showSimples.size(), equalTo(3));
+
+    }
+
+    @Test
+    public void listAll() throws Exception {
+        //given
+
+
+        //when
+        List<ShowSimple> showSimples = controller.list("all");
+
+        //then
+        assertThat(showSimples.size(), equalTo(4));
+
     }
 }

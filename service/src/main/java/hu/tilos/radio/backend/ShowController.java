@@ -1,44 +1,76 @@
 package hu.tilos.radio.backend;
 
-import hu.radio.tilos.model.*;
+import hu.radio.tilos.model.Role;
+import hu.radio.tilos.model.Show;
+import hu.radio.tilos.model.type.ShowStatus;
 import hu.tilos.radio.backend.converters.SchedulingTextUtil;
-import hu.tilos.radio.backend.data.MixResponse;
 import hu.tilos.radio.backend.data.types.*;
 import hu.tilos.radio.backend.episode.EpisodeUtil;
-import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.persistence.*;
-import javax.sql.DataSource;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.ws.rs.*;
-
 import java.util.*;
-
-import static org.dozer.loader.api.FieldsMappingOptions.customConverter;
 
 @Path("/api/v1/show")
 public class ShowController {
 
     private static Logger LOG = LoggerFactory.getLogger(ShowController.class);
-    private final SchedulingTextUtil schedulingTextUtil = new SchedulingTextUtil();
 
-    @Inject
-    private EntityManager entityManager;
+    private final SchedulingTextUtil schedulingTextUtil = new SchedulingTextUtil();
 
     @Inject
     EpisodeUtil episodeUtil;
 
     @Inject
+    private EntityManager entityManager;
+
+    @Inject
     private ModelMapper modelMapper;
+
+
+    @Produces("application/json")
+    @Path("/")
+    @Security(role = Role.GUEST)
+    @GET
+    public List<ShowSimple> list(@QueryParam("status") String status) {
+        ShowStatus showStatus = processStatus(status);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Show> query = criteriaBuilder.createQuery(Show.class);
+        Root<Show> showRoot = query.from(Show.class);
+        CriteriaQuery<Show> select = query.select(showRoot);
+        if (showStatus != null) {
+            select.where(criteriaBuilder.equal(showRoot.get("status"), showStatus));
+        }
+        List<Show> selectedShows = entityManager.createQuery(query).getResultList();
+
+        List<ShowSimple> mappedShows = new ArrayList<>();
+        for (Show show : selectedShows) {
+            mappedShows.add(modelMapper.map(show, ShowSimple.class));
+        }
+        return mappedShows;
+
+    }
+
+    private ShowStatus processStatus(String status) {
+        if (status == null) {
+            return ShowStatus.ACTIVE;
+        } else if (status.equals("all")) {
+            return null;
+        } else {
+            return ShowStatus.valueOf(status.toUpperCase());
+        }
+    }
 
     /**
      * Detailed information about one radioshow.
-     *
+     * <p/>
      * Integer based if also could be used as an alias.
      *
      * @param alias Alias of the radioshow (eg. 3-utas)

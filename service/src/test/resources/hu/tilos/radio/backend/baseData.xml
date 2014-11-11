@@ -15,8 +15,8 @@
 
     <radioshow id="1" name="3. utas" alias="3utas" description="a potyoutasok műsora" type="0" status="1"></radioshow>
     <radioshow id="2" name="Haza és Haladás" alias="hazaeshaladas" description="h%h" type="0" status="1"></radioshow>
-    <radioshow id="3" name="Vendéglő a világ végén" alias="vendeglo" description="mindenkiboldog" type="0"
-               status="1"></radioshow>
+    <radioshow id="3" name="Vendéglő a világ végén" alias="vendeglo" description="mindenkiboldog" type="0" status="1"></radioshow>
+    <radioshow id="4" name="xxx" alias="xxx" description="valami" type="0" status="0"></radioshow>
     <show_url radioshow_id="1" url_id="2"></show_url>
 
     <contribution id="1" nick="bela" author_id="1" radioshow_id="1"></contribution>
