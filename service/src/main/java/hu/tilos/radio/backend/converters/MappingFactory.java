@@ -180,6 +180,25 @@ public class MappingFactory {
                 }).map(source.getComment()).setComment(null);
             }
         });
+
+        modelMapper.addMappings(new PropertyMap<Author, AuthorDetailed>() {
+            @Override
+            protected void configure() {
+                using(new Converter<String, String>() {
+                    @Override
+                    public String convert(MappingContext<String, String> context) {
+                        return sanitizer.clean(context.getSource());
+                    }
+                }).map(source.getIntroduction()).setIntroduction(null);
+                using(new PrefixingConverter("https://tilos.hu/upload/")).map(source.getAvatar()).setAvatar(null);
+            }
+        });
+        modelMapper.addMappings(new PropertyMap<Url, UrlData>() {
+            @Override
+            protected void configure() {
+                map(source.getUrl(), destination.getAddress());
+            }
+        });
         return modelMapper;
 
     }

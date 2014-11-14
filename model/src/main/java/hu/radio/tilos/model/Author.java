@@ -40,6 +40,13 @@ public class Author {
     @OneToOne
     private User user;
 
+    @OneToMany
+    @JoinTable(
+            name = "author_url",
+            joinColumns = {@JoinColumn(name = "author_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "url_id", referencedColumnName = "id")})
+    private List<Url> urls = new ArrayList<Url>();
+
     @OneToMany(mappedBy = "author")
     private List<Contribution> contributions = new ArrayList<Contribution>();
 
@@ -113,5 +120,13 @@ public class Author {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public List<Url> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(List<Url> urls) {
+        this.urls = urls;
     }
 }

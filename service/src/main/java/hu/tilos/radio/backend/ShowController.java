@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import java.util.*;
 
@@ -80,6 +81,7 @@ public class ShowController {
     @Path("/{alias}")
     @Security(role = Role.GUEST)
     @GET
+    @Transactional
     public ShowDetailed get(@PathParam("alias") String alias) {
         Show show = null;
         if (!alias.matches("\\d+")) {
@@ -134,6 +136,7 @@ public class ShowController {
     @Path("/{show}/episodes")
     @Security(role = Role.GUEST)
     @Produces("application/json")
+    @Transactional
     public List<EpisodeData> listEpisodes(@PathParam("show") String showAlias, @QueryParam("start") long from, @QueryParam("end") long to) {
         Date fromDate = new Date();
         fromDate.setTime(from);

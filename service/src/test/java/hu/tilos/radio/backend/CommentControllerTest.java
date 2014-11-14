@@ -6,7 +6,7 @@ import hu.radio.tilos.model.type.CommentStatus;
 import hu.radio.tilos.model.type.CommentType;
 import hu.tilos.radio.backend.converters.MappingFactory;
 import hu.tilos.radio.backend.data.CommentData;
-import hu.tilos.radio.backend.data.CommentToSave;
+import hu.tilos.radio.backend.data.input.CommentToSave;
 import hu.tilos.radio.backend.data.CreateResponse;
 import org.hamcrest.Matchers;
 import org.jglue.cdiunit.AdditionalClasses;

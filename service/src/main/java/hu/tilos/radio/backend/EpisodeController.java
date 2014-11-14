@@ -54,6 +54,7 @@ public class EpisodeController {
     @Path("/{show}/{year}/{month}/{day}")
     @Security(role = Role.GUEST)
     @Produces("application/json")
+    @Transactional
     public EpisodeData getByDate(@PathParam("show") String showAlias, @PathParam("year") int year, @PathParam("month") int month, @PathParam("day") int day) {
         Show show = (Show) entityManager.createQuery("SELECT s FROM Show s WHERE s.alias = :alias").setParameter("alias", showAlias).getSingleResult();
         List<EpisodeData> episodeData = episodeUtil.getEpisodeData(show.getId(), new Date(year - 1900, month - 1, day), new Date(year - 1900, month - 1, day, 23, 59, 59));

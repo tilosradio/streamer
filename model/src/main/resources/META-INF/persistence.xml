@@ -17,8 +17,11 @@
         <class>hu.radio.tilos.model.User</class>
         <class>hu.radio.tilos.model.Tag</class>
         <class>hu.radio.tilos.model.Comment</class>
-
-
+        <class>hu.radio.tilos.model.Url</class>
+        <properties>
+            <property name="hibernate.show_sql" value="true"></property>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"></property>
+        </properties>
     </persistence-unit>
 
 
