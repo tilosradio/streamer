@@ -6,18 +6,21 @@ import javax.validation.constraints.NotNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthorToSave {
+
     @NotNull
-    private String title;
+    private String name;
+
     @NotNull
     private String alias;
+
     private String introduction;
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getAlias() {

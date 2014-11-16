@@ -1,9 +1,14 @@
 package hu.tilos.radio.backend;
 
+import hu.radio.tilos.model.Contribution;
 import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.Show;
+import hu.radio.tilos.model.User;
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.tilos.radio.backend.converters.SchedulingTextUtil;
+import hu.tilos.radio.backend.data.CreateResponse;
+import hu.tilos.radio.backend.data.UpdateResponse;
+import hu.tilos.radio.backend.data.input.ShowToSave;
 import hu.tilos.radio.backend.data.types.*;
 import hu.tilos.radio.backend.episode.EpisodeUtil;
 import org.modelmapper.ModelMapper;
@@ -28,13 +33,12 @@ public class ShowController {
 
     @Inject
     EpisodeUtil episodeUtil;
-
+    @Inject
+    Session session;
     @Inject
     private EntityManager entityManager;
-
     @Inject
     private ModelMapper modelMapper;
-
 
     @Produces("application/json")
     @Path("/")
@@ -150,11 +154,70 @@ public class ShowController {
 
     }
 
+
+    @Produces("application/json")
+    @Path("/{alias}")
+    @Security(role = Role.AUTHOR)
+    @PUT
+    @Transactional
+    public UpdateResponse update(@PathParam("alias") String alias, ShowToSave showToSave) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Show> query = criteriaBuilder.createQuery(Show.class);
+        Root<Show> fromShow = query.from(Show.class);
+        CriteriaQuery<Show> select = query.select(fromShow);
+        if (alias.matches("\\d+")) {
+            select.where(criteriaBuilder.equal(fromShow.get("id"), Integer.parseInt(alias)));
+        } else {
+            select.where(criteriaBuilder.equal(fromShow.get("alias"), alias));
+        }
+
+        Show show = entityManager.createQuery(query).getSingleResult();
+        checkPermission(show, session.getCurrentUser());
+        modelMapper.map(showToSave, show);
+        entityManager.persist(show);
+        return new UpdateResponse(true);
+
+    }
+
+    protected void checkPermission(Show show, User currentUser) {
+        if (currentUser.getRole() == Role.ADMIN) {
+            return;
+        }
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Contribution> query = criteriaBuilder.createQuery(Contribution.class);
+        Root<Contribution> fromContribution = query.from(Contribution.class);
+        query.where(criteriaBuilder.equal(fromContribution.get("author").get("user").get("id"), currentUser.getId()));
+        List<Contribution> contributions = entityManager.createQuery(query).getResultList();
+
+        for (hu.radio.tilos.model.Contribution contribution : contributions) {
+            if (contribution.getShow().getId() == show.getId()) {
+                return;
+            }
+        }
+        throw new IllegalArgumentException("No permission to modify");
+    }
+
+    @Produces("application/json")
+    @Path("/{alias}")
+    @Security(role = Role.ADMIN)
+    @POST
+    @Transactional
+    public CreateResponse create(@PathParam("alias") String alias, ShowToSave showToSave) {
+        Show show = modelMapper.map(showToSave, Show.class);
+        entityManager.persist(show);
+        entityManager.flush();
+        return new CreateResponse(show.getId());
+    }
+
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
     public void setModelMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
+    }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 }

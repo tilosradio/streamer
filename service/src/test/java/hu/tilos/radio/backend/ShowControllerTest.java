@@ -1,5 +1,7 @@
 package hu.tilos.radio.backend;
 
+import hu.radio.tilos.model.Show;
+import hu.radio.tilos.model.User;
 import hu.tilos.radio.backend.converters.MappingFactory;
 import hu.tilos.radio.backend.data.types.EpisodeData;
 import hu.tilos.radio.backend.data.types.ShowDetailed;
@@ -12,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +22,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.fail;
 
 @RunWith(CdiRunner.class)
 @AdditionalClasses({MappingFactory.class, TestUtil.class})
@@ -110,6 +114,46 @@ public class ShowControllerTest {
         assertThat(showSimples.size(), equalTo(3));
 
     }
+
+    @Test
+    public void checkPermission() throws Exception {
+        //given
+        EntityManager em = controller.getEntityManager();
+        Show show = em.find(Show.class, 1);
+        User user = em.find(User.class, 2);
+
+        //when
+        try {
+            controller.checkPermission(show, user);
+        } catch (IllegalArgumentException ex) {
+            fail();
+        }
+
+        //then
+
+
+    }
+
+    @Test
+    public void checkPermissionFailed() throws Exception {
+        //given
+        EntityManager em = controller.getEntityManager();
+        Show show = em.find(Show.class, 1);
+        User user = em.find(User.class, 1);
+
+        //when
+        try {
+            controller.checkPermission(show, user);
+            fail();
+        } catch (IllegalArgumentException ex) {
+
+        }
+
+        //then
+
+
+    }
+
 
     @Test
     public void listAll() throws Exception {

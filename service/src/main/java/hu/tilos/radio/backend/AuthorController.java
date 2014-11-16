@@ -1,7 +1,6 @@
 package hu.tilos.radio.backend;
 
-import hu.radio.tilos.model.Author;
-import hu.radio.tilos.model.Role;
+import hu.radio.tilos.model.*;
 import hu.tilos.radio.backend.data.CreateResponse;
 import hu.tilos.radio.backend.data.UpdateResponse;
 import hu.tilos.radio.backend.data.input.AuthorToSave;
@@ -31,6 +30,9 @@ public class AuthorController {
 
     @Inject
     private ModelMapper modelMapper;
+
+    @Inject
+    Session session;
 
 
     @Produces("application/json")
@@ -77,7 +79,7 @@ public class AuthorController {
 
     @Produces("application/json")
     @Path("/{alias}")
-    @Security(role = Role.ADMIN)
+    @Security(role = Role.AUTHOR)
     @PUT
     @Transactional
     public UpdateResponse update(@PathParam("alias") String alias, AuthorToSave authorToSave) {
@@ -93,11 +95,23 @@ public class AuthorController {
         }
 
         Author author = entityManager.createQuery(query).getSingleResult();
+        checkPermission(author, session.getCurrentUser());
         modelMapper.map(authorToSave, author);
         entityManager.persist(author);
         return new UpdateResponse(true);
 
     }
+
+    protected void checkPermission(Author author, User currentUser) {
+        if (author.getUser().getId() == currentUser.getId()) {
+            return;
+        }
+        if (currentUser.getRole() == Role.ADMIN) {
+            return;
+        }
+        throw new IllegalArgumentException("No permission to modify");
+    }
+
 
     @Produces("application/json")
     @Path("/{alias}")

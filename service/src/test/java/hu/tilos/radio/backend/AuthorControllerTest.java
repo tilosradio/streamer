@@ -2,6 +2,7 @@ package hu.tilos.radio.backend;
 
 import hu.tilos.radio.backend.converters.MappingFactory;
 import hu.tilos.radio.backend.data.types.AuthorDetailed;
+import hu.tilos.radio.backend.data.types.AuthorListElement;
 import hu.tilos.radio.backend.data.types.AuthorSimple;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
@@ -37,7 +38,7 @@ public class AuthorControllerTest {
         //given
 
         //when
-        List<AuthorSimple> authors = controller.list();
+        List<AuthorListElement> authors = controller.list();
 
         //then
         assertThat(authors.size(), equalTo(3));

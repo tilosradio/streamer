@@ -1,6 +1,6 @@
 <!DOCTYPE dataset SYSTEM "src/test/resources/schema.dtd">
 <dataset>
-    <author id="1" name="AUTHOR1" photo="asd" avatar="avatar/asd.jpg" introduction="nothing" alias="author1"></author>
+    <author id="1" name="AUTHOR1" photo="asd" avatar="avatar/asd.jpg" introduction="nothing" alias="author1" user_id="2"></author>
     <author id="2" name="AUTHOR2" photo="asd" avatar="asd" introduction="nothing"></author>
     <author id="3" name="AUTHOR3" photo="asd" avatar="asd" introduction="nothing" user_id="1"></author>
     <url id="10" url="http://szabi.hu"></url>
@@ -71,6 +71,8 @@
     <role id="3" name="author"></role>
     <user id="1" role_id="3" username="bela" email="bela@bela.hu" password="22679322a29a62da3c2558eac2ec5fe3d055db61"
           salt="d25541250d47c49f20b5243f95dbbd91e4db3d0d"></user>
+
+    <user id="2" role_id="3" username="masik" email="masik@masik.hu" password="xxx" salt="xxx"></user>
 
     <change_password id="1" token="sadasd" created="2009-12-12 12:23:00" user_id="1"></change_password>
 
