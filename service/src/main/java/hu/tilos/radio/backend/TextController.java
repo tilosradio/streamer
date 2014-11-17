@@ -28,6 +28,7 @@ public class TextController {
     @Inject
     private ModelMapper mapper;
 
+
     @GET
     @Path("/{type}")
     @Security(role = Role.GUEST)

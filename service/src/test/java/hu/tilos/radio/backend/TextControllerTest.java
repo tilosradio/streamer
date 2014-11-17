@@ -8,6 +8,7 @@ import hu.tilos.radio.backend.data.input.TextToSave;
 import hu.tilos.radio.backend.data.types.TextData;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,6 +25,11 @@ public class TextControllerTest {
 
     @Inject
     TextController controller;
+
+    @Before
+    public void resetDatabase() {
+        TestUtil.initTestData();
+    }
 
     @Test
     public void get() throws Exception {
