@@ -1,29 +1,35 @@
-package hu.tilos.radio.backend.data.types;
+package hu.tilos.radio.backend.data.input;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.Date;
 
-public class SchedulingSimple {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class SchedulingToSave {
 
-    int id;
+    private int weekType;
 
-    int weekDay;
+    private int weekDay;
 
-    int hourFrom;
+    private int hourFrom;
 
-    int minFrom;
+    private int minFrom;
 
-    int duration;
+    private int duration;
 
     private Date validFrom;
 
     private Date validTo;
 
-    private long base;
+    private Date base;
 
-    private int weekType;
+    public int getWeekType() {
+        return weekType;
+    }
 
-    private String text;
+    public void setWeekType(int weekType) {
+        this.weekType = weekType;
+    }
 
     public int getWeekDay() {
         return weekDay;
@@ -73,36 +79,11 @@ public class SchedulingSimple {
         this.validTo = validTo;
     }
 
-    public long getBase() {
+    public Date getBase() {
         return base;
     }
 
-    public void setBase(long base) {
+    public void setBase(Date base) {
         this.base = base;
     }
-
-    public int getWeekType() {
-        return weekType;
-    }
-
-    public void setWeekType(int weekType) {
-        this.weekType = weekType;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 }
-

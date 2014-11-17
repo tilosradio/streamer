@@ -13,6 +13,8 @@ public class TextData {
 
     private String title;
 
+    private String alias;
+
     private String type;
 
     private String format;
@@ -29,7 +31,6 @@ public class TextData {
         this.formatted = formatted;
     }
 
-    private String alias;
 
     public int getId() {
         return id;
@@ -78,4 +79,5 @@ public class TextData {
     public void setAlias(String alias) {
         this.alias = alias;
     }
+
 }

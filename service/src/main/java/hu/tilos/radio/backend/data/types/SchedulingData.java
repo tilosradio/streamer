@@ -1,29 +1,42 @@
 package hu.tilos.radio.backend.data.types;
 
-import javax.persistence.*;
 import java.util.Date;
 
-public class SchedulingSimple {
+public class SchedulingData {
 
-    int id;
+    private int id;
 
-    int weekDay;
+    private int weekType;
 
-    int hourFrom;
+    private int weekDay;
 
-    int minFrom;
+    private int hourFrom;
 
-    int duration;
+    private int minFrom;
+
+    private int duration;
 
     private Date validFrom;
 
     private Date validTo;
 
-    private long base;
+    private Date base;
 
-    private int weekType;
+    public int getId() {
+        return id;
+    }
 
-    private String text;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getWeekType() {
+        return weekType;
+    }
+
+    public void setWeekType(int weekType) {
+        this.weekType = weekType;
+    }
 
     public int getWeekDay() {
         return weekDay;
@@ -73,36 +86,11 @@ public class SchedulingSimple {
         this.validTo = validTo;
     }
 
-    public long getBase() {
+    public Date getBase() {
         return base;
     }
 
-    public void setBase(long base) {
+    public void setBase(Date base) {
         this.base = base;
     }
-
-    public int getWeekType() {
-        return weekType;
-    }
-
-    public void setWeekType(int weekType) {
-        this.weekType = weekType;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 }
-
