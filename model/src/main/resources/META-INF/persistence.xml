@@ -18,6 +18,7 @@
         <class>hu.radio.tilos.model.Tag</class>
         <class>hu.radio.tilos.model.Comment</class>
         <class>hu.radio.tilos.model.Url</class>
+        <class>hu.radio.tilos.model.ChangePassword</class>
         <properties>
             <property name="hibernate.show_sql" value="true"></property>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"></property>
