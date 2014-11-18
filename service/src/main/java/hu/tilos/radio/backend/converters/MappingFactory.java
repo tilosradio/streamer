@@ -1,8 +1,8 @@
 package hu.tilos.radio.backend.converters;
 
 import hu.radio.tilos.model.*;
-import hu.tilos.radio.backend.data.CommentData;
-import hu.tilos.radio.backend.data.UserLink;
+import hu.tilos.radio.backend.data.types.CommentData;
+import hu.tilos.radio.backend.data.types.UserLink;
 import hu.tilos.radio.backend.data.types.*;
 import org.dozer.CustomConverter;
 import org.dozer.DozerBeanMapper;

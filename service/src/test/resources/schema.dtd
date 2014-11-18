@@ -220,5 +220,7 @@
     email CDATA #REQUIRED
     salt CDATA #IMPLIED
     role CDATA #IMPLIED
+    type CDATA #IMPLIED
+    url CDATA #IMPLIED
 >
 

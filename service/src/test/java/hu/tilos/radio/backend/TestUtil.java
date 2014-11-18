@@ -1,6 +1,7 @@
 package hu.tilos.radio.backend;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import hu.tilos.radio.backend.controller.SearchControllerTest;
 import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
