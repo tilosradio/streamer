@@ -40,8 +40,7 @@ public class FeedController {
 
     @Inject
     private FeedRenderer feedRenderer;
-
-    @Inject
+    
     @ConfigProperty(name = "server.url")
     private String serverUrl;
 
