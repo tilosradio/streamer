@@ -3,13 +3,11 @@ package hu.tilos.radio.backend.controller;
 import hu.radio.tilos.model.ChangePassword;
 import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.User;
-import hu.tilos.radio.backend.Security;
-import hu.tilos.radio.backend.Session;
-
-import hu.tilos.radio.backend.data.output.LoginData;
-import hu.tilos.radio.backend.data.input.RegisterData;
+import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.Token;
 import hu.tilos.radio.backend.data.input.PasswordReset;
+import hu.tilos.radio.backend.data.input.RegisterData;
+import hu.tilos.radio.backend.data.output.LoginData;
 import hu.tilos.radio.backend.data.response.ErrorResponse;
 import hu.tilos.radio.backend.data.response.OkResponse;
 import hu.tilos.radio.backend.util.JWTEncoder;
@@ -29,11 +27,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Date;
-import java.util.Random;
 import java.util.Set;
 
 
@@ -43,82 +37,38 @@ import java.util.Set;
 @Path("/api/v1/auth")
 public class AuthController {
 
-
     @Inject
     Session session;
+
+    @Inject
+    AuthUtil authUtil;
+
+    @Inject
+    EmailSender sender;
+
     @Inject
     private EntityManager entityManager;
+
     @Inject
     private JWTEncoder jwtEncoder;
+
     @Inject
     private Validator validator;
+
     @Inject
     private RecaptchaValidator catpchaValidator;
 
-    public static String toSHA1(String data) {
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        return byteArrayToHexString(md.digest(data.getBytes()));
-    }
-
-    public static String byteArrayToHexString(byte[] b) {
-        String result = "";
-        for (int i = 0; i < b.length; i++) {
-            result +=
-                    Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
-        }
-        return result;
-    }
+    @Inject
+    private EmailSender emailSender;
 
     /**
      * @exclude
      */
-    @Path("/login")
-    @Produces("application/json")
-    @Security(role = Role.GUEST)
-    @POST
-    public Response login(LoginData loginData) {
-        Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username");
-        query.setParameter("username", loginData.getUsername());
-        try {
-            User user = (User) query.getSingleResult();
-            if (encode(loginData.getPassword(), user.getSalt()).equals(user.getPassword())) {
-                try {
-                    return Response.ok(createToken(loginData.getUsername(), user.getRole())).build();
-                } catch (Exception e) {
-                    throw new RuntimeException("Can't encode the token", e);
-                }
-            } else {
-                return Response.status(Response.Status.FORBIDDEN).build();
-            }
-        } catch (NoResultException ex) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
-    }
-
-    private String encode(String password, String salt) {
-        return toSHA1(password + salt);
-    }
-
-    private String createToken(String username, Role role) {
-        Token jwtToken = new Token();
-        jwtToken.setUsername(username);
-        jwtToken.setRole(role);
-        return jwtEncoder.encode(jwtToken);
-    }
-
-    /**
-     * @exclude
-     */
-    @Path("/password_reset")
     @Produces("application/json")
     @Security(role = Role.GUEST)
     @Transactional
     @POST
+    @Path("/password_reset")
     public Response passwordReset(PasswordReset passwordReset) {
         if (null == passwordReset.getToken() || "".equals(passwordReset.getToken())) {
             return generateToken(passwordReset);
@@ -134,8 +84,8 @@ public class AuthController {
                 setParameter("user", user).
                 setParameter("token", passwordReset.getToken()).getSingleResult();
 
-        user.setSalt(generateSalt());
-        user.setPassword(encode(passwordReset.getPassword(), user.getSalt()));
+        user.setSalt(authUtil.generateSalt());
+        user.setPassword(authUtil.encode(passwordReset.getPassword(), user.getSalt()));
         entityManager.persist(user);
 
         return Response.ok().entity(new OkResponse("Password has been changed")).build();
@@ -156,12 +106,58 @@ public class AuthController {
         ChangePassword password = new ChangePassword();
         password.setUser(user);
         password.setCreated(new Date());
-        password.setToken(generateSalt());
+        password.setToken(authUtil.generateSalt());
         entityManager.persist(password);
 
         //send mail
+        sendMail(user, password);
+
         return Response.ok().entity(new OkResponse("Password reminder has been sent")).build();
     }
+
+    protected void sendMail(User user, ChangePassword password) {
+        Email email = new Email();
+        email.setFrom("test@tilos.hu");
+        email.setTo(user.getEmail());
+        email.setSubject("[tilos.hu] Jelszó emlékeztető");
+        email.setBody("Valaki jelszóemlékeztetőt kért erre a címre. \n\n A jelszó megváltoztatásához kattints a " +
+                "http://tilosadmin/password_reminder?token=" + password.getToken() + "&email=" + user.getEmail() + " címre");
+        emailSender.send(email);
+    }
+
+    /**
+     * @exclude
+     */
+    @Path("/login")
+    @Produces("application/json")
+    @Security(role = Role.GUEST)
+    @POST
+    public Response login(LoginData loginData) {
+        Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username");
+        query.setParameter("username", loginData.getUsername());
+        try {
+            User user = (User) query.getSingleResult();
+            if (authUtil.encode(loginData.getPassword(), user.getSalt()).equals(user.getPassword())) {
+                try {
+                    return Response.ok(createToken(loginData.getUsername(), user.getRole())).build();
+                } catch (Exception e) {
+                    throw new RuntimeException("Can't encode the token", e);
+                }
+            } else {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+        } catch (NoResultException ex) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+    }
+
+    private String createToken(String username, Role role) {
+        Token jwtToken = new Token();
+        jwtToken.setUsername(username);
+        jwtToken.setRole(role);
+        return jwtEncoder.encode(jwtToken);
+    }
+
 
     /**
      * @exclude
@@ -199,8 +195,8 @@ public class AuthController {
         newUser.setEmail(registerData.getEmail());
         newUser.setUsername(registerData.getUsername());
         newUser.setRole(Role.USER);
-        newUser.setSalt(generateSalt());
-        newUser.setPassword(encode(registerData.getPassword(), newUser.getSalt()));
+        newUser.setSalt(authUtil.generateSalt());
+        newUser.setPassword(authUtil.encode(registerData.getPassword(), newUser.getSalt()));
 
         entityManager.persist(newUser);
 
@@ -211,10 +207,5 @@ public class AuthController {
         return catpchaValidator.validate("http://tilos.hu", challenge, solution);
     }
 
-    public String generateSalt() {
-        Random r = new SecureRandom();
-        byte[] salt = new byte[32];
-        r.nextBytes(salt);
-        return toSHA1(new String(salt));
-    }
+
 }
