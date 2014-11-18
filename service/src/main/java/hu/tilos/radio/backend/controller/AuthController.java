@@ -12,6 +12,7 @@ import hu.tilos.radio.backend.data.response.ErrorResponse;
 import hu.tilos.radio.backend.data.response.OkResponse;
 import hu.tilos.radio.backend.util.JWTEncoder;
 import hu.tilos.radio.backend.util.RecaptchaValidator;
+import org.apache.deltaspike.core.api.config.ConfigProperty;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -20,12 +21,14 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.Set;
@@ -46,6 +49,9 @@ public class AuthController {
     @Inject
     EmailSender sender;
 
+    @ConfigProperty(name = "server.url")
+    private String serverUrl;
+
     @Inject
     private EntityManager entityManager;
 
@@ -60,6 +66,9 @@ public class AuthController {
 
     @Inject
     private EmailSender emailSender;
+
+    @Context
+    private HttpServletRequest servletRequest;
 
     /**
      * @exclude
@@ -117,11 +126,12 @@ public class AuthController {
 
     protected void sendMail(User user, ChangePassword password) {
         Email email = new Email();
-        email.setFrom("test@tilos.hu");
+        email.setFrom("webmester@tilos.hu");
         email.setTo(user.getEmail());
-        email.setSubject("[tilos.hu] Jelszó emlékeztető");
-        email.setBody("Valaki jelszóemlékeztetőt kért erre a címre. \n\n A jelszó megváltoztatásához kattints a " +
-                "http://tilosadmin/password_reminder?token=" + password.getToken() + "&email=" + user.getEmail() + " címre");
+        email.setSubject("[tilos.hu] Jelszo emlékezteto");
+        email.setBody("Valaki jelszoemlekeztetot kert erre a cimre. \n\n A jelszo megvaltoztatasahoz kattints a  " +
+                serverUrl + "/password_reset?token=" + password.getToken() +
+                "&email=" + user.getEmail().replaceAll("@", "%40") + " cimre");
         emailSender.send(email);
     }
 
