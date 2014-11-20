@@ -86,10 +86,14 @@ public class AuthController {
     private Response changePassword(PasswordReset passwordReset) {
         validator.validate(passwordReset);
         User user = (User) entityManager.createNamedQuery("user.byEmail").setParameter("email", passwordReset.getEmail()).getSingleResult();
-        
-        entityManager.createQuery("SELECT cp FROM ChangePassword cp WHERE cp.user = :user AND token = :token").
+
+        ChangePassword changePassword = (ChangePassword) entityManager.createQuery("SELECT cp FROM ChangePassword cp WHERE cp.user = :user AND token = :token").
                 setParameter("user", user).
                 setParameter("token", passwordReset.getToken()).getSingleResult();
+
+        if (new Date().getTime() - changePassword.getCreated().getTime() > 1000 * 60 * 60) {
+            throw new IllegalArgumentException("A jelszóemlékeztetőt egy órán belül fel kell használni. Kérj új jelszóemlékeztetőt");
+        }
 
         //change the password
         user.setSalt(authUtil.generateSalt());
