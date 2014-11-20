@@ -74,7 +74,7 @@
 <!ELEMENT comment EMPTY>
 <!ATTLIST comment
     id CDATA #REQUIRED
-    comment CDATA #REQUIRED
+    comment CDATA #IMPLIED
     created CDATA #IMPLIED
     moment CDATA #IMPLIED
     type CDATA #REQUIRED
@@ -220,7 +220,6 @@
     email CDATA #REQUIRED
     salt CDATA #IMPLIED
     role CDATA #IMPLIED
-    type CDATA #IMPLIED
     url CDATA #IMPLIED
 >
 
