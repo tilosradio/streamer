@@ -23,15 +23,12 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.util.Date;
-import java.util.Set;
 
 
 /**
@@ -59,7 +56,7 @@ public class AuthController {
     private JWTEncoder jwtEncoder;
 
     @Inject
-    private Validator validator;
+    private ObjectValidator validator;
 
     @Inject
     private RecaptchaValidator catpchaValidator;
@@ -87,21 +84,29 @@ public class AuthController {
     }
 
     private Response changePassword(PasswordReset passwordReset) {
+        validator.validate(passwordReset);
         User user = (User) entityManager.createNamedQuery("user.byEmail").setParameter("email", passwordReset.getEmail()).getSingleResult();
-
-        ChangePassword changePassword = (ChangePassword) entityManager.createQuery("SELECT cp FROM ChangePassword cp WHERE cp.user = :user AND token = :token").
+        
+        entityManager.createQuery("SELECT cp FROM ChangePassword cp WHERE cp.user = :user AND token = :token").
                 setParameter("user", user).
                 setParameter("token", passwordReset.getToken()).getSingleResult();
 
+        //change the password
         user.setSalt(authUtil.generateSalt());
         user.setPassword(authUtil.encode(passwordReset.getPassword(), user.getSalt()));
         entityManager.persist(user);
+
+        //delete existing password change tokens
+        entityManager.createQuery("DELETE FROM ChangePassword p WHERE p.user = :user").setParameter("user", user).executeUpdate();
 
         return Response.ok().entity(new OkResponse("Password has been changed")).build();
 
     }
 
     private Response generateToken(PasswordReset passwordReset) {
+
+        validator.validate(passwordReset);
+
         User user = (User) entityManager.createNamedQuery("user.byEmail").setParameter("email", passwordReset.getEmail()).getSingleResult();
 
         //delete old tokens
@@ -182,14 +187,8 @@ public class AuthController {
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorResponse("A captcha megadása hibás")).build();
         }
 
-        Set<ConstraintViolation<RegisterData>> validationErrors = validator.validate(registerData);
-        if (validationErrors.size() > 0) {
-            StringBuilder builder = new StringBuilder();
-            for (ConstraintViolation<RegisterData> validationError : validationErrors) {
-                builder.append(validationError.getPropertyPath() + " " + validationError.getMessage() + "\n");
-            }
-            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorResponse("Hibás felhasználói adatok: " + builder.toString())).build();
-        }
+        validator.validate(registerData);
+
         Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username");
         query.setParameter("username", registerData.getUsername());
 

@@ -1,11 +1,17 @@
 package hu.tilos.radio.backend.data.input;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class PasswordReset {
 
+    @NotNull
     private String token;
 
     private String email;
 
+    @NotNull
+    @Size(min = 8, max = 16)
     private String password;
 
     public String getToken() {
