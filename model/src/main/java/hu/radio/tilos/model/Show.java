@@ -49,6 +49,14 @@ public class Show {
     @Column
     private ShowStatus status;
 
+    @OneToMany
+    @JoinTable(
+            name = "show_url",
+            joinColumns = {@JoinColumn(name = "radioshow_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "url_id", referencedColumnName = "id", unique = true)}
+    )
+    private List<Url> urls = new ArrayList<Url>();
+
     public int getId() {
         return id;
     }
@@ -128,5 +136,13 @@ public class Show {
 
     public void setSchedulings(Set<Scheduling> schedulings) {
         this.schedulings = schedulings;
+    }
+
+    public List<Url> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(List<Url> urls) {
+        this.urls = urls;
     }
 }

@@ -2,12 +2,10 @@ package hu.tilos.radio.backend;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import hu.tilos.radio.backend.controller.SearchControllerTest;
+import org.dbunit.Assertion;
 import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.dataset.xml.XmlDataSet;
-import org.dbunit.dataset.xml.XmlDataSetWriter;
-import org.dbunit.ext.mysql.MySqlConnection;
 import org.dbunit.ext.mysql.MySqlDataTypeFactory;
 import org.dbunit.ext.mysql.MySqlMetadataHandler;
 import org.flywaydb.core.Flyway;
@@ -18,8 +16,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
-import javax.ws.rs.ext.Provider;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -102,13 +98,17 @@ public class TestUtil {
     }
 
     public static void initTestData() {
+        initTestData("baseData.xml");
+    }
+
+    public static void initTestData(String file) {
         try {
             Properties properties = loadProperties();
 
             initSchema();
             JdbcDatabaseTester tester = new JdbcDatabaseTester(
                     properties.getProperty("jdbc.driver"),
-                    properties.getProperty("jdbc.url")+"?sessionVariables=FOREIGN_KEY_CHECKS=0",
+                    properties.getProperty("jdbc.url") + "?sessionVariables=FOREIGN_KEY_CHECKS=0",
                     properties.getProperty("jdbc.user"),
                     properties.getProperty("jdbc.password"));
 
@@ -117,9 +117,34 @@ public class TestUtil {
 
             tester.getConnection().getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
             tester.getConnection().getConfig().setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new MySqlMetadataHandler());
-            tester.setDataSet(new FlatXmlDataSet(SearchControllerTest.class.getResourceAsStream("baseData.xml")));
+            tester.setDataSet(new FlatXmlDataSet(SearchControllerTest.class.getResourceAsStream(file)));
             //new XmlDataSetWriter(new FileWriter("/tmp/test.xml")).write(new FlatXmlDataSet(SearchControllerTest.class.getResourceAsStream("baseData.xml")));
             tester.onSetup();
+            tester.getConnection().close();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+
+    }
+
+    public static void assertTestData(String file, String tableName) {
+        try {
+            Properties properties = loadProperties();
+            JdbcDatabaseTester tester = new JdbcDatabaseTester(
+                    properties.getProperty("jdbc.driver"),
+                    properties.getProperty("jdbc.url") + "?sessionVariables=FOREIGN_KEY_CHECKS=0",
+                    properties.getProperty("jdbc.user"),
+                    properties.getProperty("jdbc.password"));
+
+            tester.getConnection().getConnection();
+
+            tester.getConnection().getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
+
+            tester.getConnection().getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
+            tester.getConnection().getConfig().setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new MySqlMetadataHandler());
+            FlatXmlDataSet flatXmlDataSet = new FlatXmlDataSet(SearchControllerTest.class.getResourceAsStream(file));
+            Assertion.assertEquals(flatXmlDataSet.getTable("url"), tester.getConnection().createDataSet().getTable("url"));
+            tester.getConnection().close();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

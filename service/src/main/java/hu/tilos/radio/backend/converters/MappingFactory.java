@@ -1,6 +1,7 @@
 package hu.tilos.radio.backend.converters;
 
 import hu.radio.tilos.model.*;
+import hu.tilos.radio.backend.data.input.UrlToSave;
 import hu.tilos.radio.backend.data.types.CommentData;
 import hu.tilos.radio.backend.data.types.UserLink;
 import hu.tilos.radio.backend.data.types.*;
@@ -197,6 +198,12 @@ public class MappingFactory {
             @Override
             protected void configure() {
                 map(source.getUrl(), destination.getAddress());
+            }
+        });
+        modelMapper.addMappings(new PropertyMap<UrlToSave, Url>() {
+            @Override
+            protected void configure() {
+                map(source.getAddress(), destination.getUrl());
             }
         });
         return modelMapper;

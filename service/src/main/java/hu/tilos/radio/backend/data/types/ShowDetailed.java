@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend.data.types;
 
+import hu.radio.tilos.model.Url;
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.radio.tilos.model.type.ShowType;
 
@@ -43,12 +44,22 @@ public class ShowDetailed {
 
     private List<SchedulingSimple> schedulings = new ArrayList<>();
 
+    public List<UrlData> urls = new ArrayList<>();
+
     public List<ShowContribution> getContributors() {
         return contributors;
     }
 
     public List<SchedulingSimple> getSchedulings() {
         return schedulings;
+    }
+
+    public List<UrlData> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(List<UrlData> urls) {
+        this.urls = urls;
     }
 
     public void setSchedulings(List<SchedulingSimple> schedulings) {
