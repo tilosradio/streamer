@@ -1,9 +1,9 @@
 package hu.tilos.radio.backend;
 
-import org.apache.deltaspike.core.spi.config.ConfigSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,7 +14,8 @@ import java.util.Properties;
 /**
  * Provide configuration.
  */
-public class TilosConfigSource implements ConfigSource {
+@Singleton
+public class TilosConfigSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(TilosConfigSource.class);
 
@@ -37,28 +38,7 @@ public class TilosConfigSource implements ConfigSource {
         }
     }
 
-    @Override
-    public int getOrdinal() {
-        return 500;
-    }
-
-    @Override
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    @Override
-    public String getPropertyValue(String s) {
-        return getProperties().get(s);
-    }
-
-    @Override
-    public String getConfigName() {
-        return "tilos config";
-    }
-
-    @Override
-    public boolean isScannable() {
-        return true;
+    public String getConfiguration(String key) {
+        return properties.get(key);
     }
 }

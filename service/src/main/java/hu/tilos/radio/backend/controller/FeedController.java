@@ -3,13 +3,13 @@ package hu.tilos.radio.backend.controller;
 import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.Show;
 import hu.radio.tilos.model.type.ShowType;
+import hu.tilos.radio.backend.Configuration;
 import hu.tilos.radio.backend.FeedRenderer;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.data.types.EpisodeData;
 import hu.tilos.radio.backend.episode.EpisodeUtil;
 import net.anzix.jaxrs.atom.Feed;
 import net.anzix.jaxrs.atom.Link;
-import org.apache.deltaspike.core.api.config.ConfigProperty;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -41,7 +41,8 @@ public class FeedController {
     @Inject
     private FeedRenderer feedRenderer;
 
-    @ConfigProperty(name = "server.url")
+    @Inject
+    @Configuration(name = "server.url")
     private String serverUrl;
 
     @GET

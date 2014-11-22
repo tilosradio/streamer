@@ -4,7 +4,6 @@ import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.User;
 import hu.tilos.radio.backend.data.Token;
 import hu.tilos.radio.backend.util.JWTEncoder;
-import org.apache.deltaspike.core.api.config.ConfigProperty;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,20 +33,20 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     HttpServletRequest servletRequest;
 
     @Inject
-    @ConfigProperty(name = "auth.url")
-    private String serverUrl;
+    Session session;
 
     @Inject
-    Session session;
+    ModelMapper modelMapper;
+
+    @Inject
+    @Configuration(name = "auth.url")
+    private String serverUrl;
 
     @Inject
     private EntityManager entityManager;
 
     @Inject
     private JWTEncoder jwtEncoder;
-
-    @Inject
-    ModelMapper modelMapper;
 
 
     public AuthenticationFilter() {
@@ -79,7 +78,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         Method m = resource.getResourceMethod();
         if (m.isAnnotationPresent(Security.class)) {
             Security s = m.getAnnotation(Security.class);
-            if (s.role() != Role.GUEST && s.role() != Role.UNKNOWN ) {
+            if (s.role() != Role.GUEST && s.role() != Role.UNKNOWN) {
                 User user = session.getCurrentUser();
                 if (user == null || (s.role().ordinal() > user.getRole().ordinal())) {
                     requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).build());

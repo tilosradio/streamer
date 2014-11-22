@@ -4,15 +4,15 @@ import com.google.gson.Gson;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
+import hu.tilos.radio.backend.Configuration;
 import hu.tilos.radio.backend.data.Token;
-import org.apache.deltaspike.core.api.config.ConfigProperty;
 
 import javax.inject.Inject;
 
 public class JWTEncoder {
 
     @Inject
-    @ConfigProperty(name = "jwt.secret")
+    @Configuration(name = "jwt.secret")
     private String jwtToken;
 
     private Gson gson = new Gson();

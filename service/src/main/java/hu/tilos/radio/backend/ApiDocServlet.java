@@ -1,6 +1,6 @@
 package hu.tilos.radio.backend;
 
-import org.apache.deltaspike.core.api.config.ConfigProperty;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public class ApiDocServlet extends HttpServlet {
     private static Logger LOG = LoggerFactory.getLogger(ApiDocServlet.class);
 
     @Inject
-    @ConfigProperty(name = "server.url")
+    @Configuration(name = "server.url")
     private String serverUrl;
 
     @Override

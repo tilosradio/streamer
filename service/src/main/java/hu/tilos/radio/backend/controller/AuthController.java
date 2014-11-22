@@ -12,7 +12,8 @@ import hu.tilos.radio.backend.data.response.ErrorResponse;
 import hu.tilos.radio.backend.data.response.OkResponse;
 import hu.tilos.radio.backend.util.JWTEncoder;
 import hu.tilos.radio.backend.util.RecaptchaValidator;
-import org.apache.deltaspike.core.api.config.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -37,6 +38,8 @@ import java.util.Date;
 @Path("/api/v1/auth")
 public class AuthController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
+
     @Inject
     Session session;
 
@@ -46,7 +49,8 @@ public class AuthController {
     @Inject
     EmailSender sender;
 
-    @ConfigProperty(name = "server.url")
+    @Inject
+    @Configuration(name = "server.url")
     private String serverUrl;
 
     @Inject
@@ -135,11 +139,17 @@ public class AuthController {
         Email email = new Email();
         email.setFrom("webmester@tilos.hu");
         email.setTo(user.getEmail());
-        email.setSubject("[tilos.hu] Jelszo emlékezteto");
-        email.setBody("Valaki jelszoemlekeztetot kert erre a cimre. \n\n A jelszo megvaltoztatasahoz kattints a  " +
-                serverUrl + "/password_reset?token=" + password.getToken() +
-                "&email=" + user.getEmail().replaceAll("@", "%40") + " cimre");
+        email.setSubject("[tilos.hu] Jelszo emlekezteto");
+        email.setBody(createBody(user, password));
         emailSender.send(email);
+    }
+
+    private String createBody(User user, ChangePassword password) {
+        String body = "Valaki jelszoemlekeztetot kert erre a cimre. \n\n A jelszo megvaltoztatasahoz kattints a  " +
+                serverUrl + "/password_reset?token=" + password.getToken() +
+                "&email=" + user.getEmail().replaceAll("@", "%40") + " cimre";
+        LOG.debug("Creating mail: " + body);
+        return body;
     }
 
     /**
@@ -218,5 +228,11 @@ public class AuthController {
         return catpchaValidator.validate("http://tilos.hu", challenge, solution);
     }
 
+    public String getServerUrl() {
+        return serverUrl;
+    }
 
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
 }

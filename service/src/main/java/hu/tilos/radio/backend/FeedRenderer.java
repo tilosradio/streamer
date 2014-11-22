@@ -2,7 +2,6 @@ package hu.tilos.radio.backend;
 
 import hu.tilos.radio.backend.data.types.EpisodeData;
 import net.anzix.jaxrs.atom.*;
-import org.apache.deltaspike.core.api.config.ConfigProperty;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
@@ -29,7 +28,7 @@ public class FeedRenderer {
     private static final SimpleDateFormat HHMMSS = new SimpleDateFormat("HHmmss");
 
     @Inject
-    @ConfigProperty(name = "server.url")
+    @Configuration(name = "server.url")
     private String serverUrl;
 
     public static String createDownloadURI(EpisodeData episode) {
