@@ -1,12 +1,14 @@
 package hu.tilos.radio.backend.controller;
 
 
+import hu.tilos.radio.backend.ConfigurationProducer;
 import hu.tilos.radio.backend.TestConfigProvider;
 import hu.tilos.radio.backend.TestUtil;
 import hu.tilos.radio.backend.ValidatorProducer;
 import hu.tilos.radio.backend.controller.AuthController;
 import hu.tilos.radio.backend.converters.MappingFactory;
 import hu.tilos.radio.backend.data.output.LoginData;
+import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
@@ -18,7 +20,8 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MappingFactory.class, TestUtil.class, TestConfigProvider.class, ValidatorProducer.class})
+@AdditionalClasses({MappingFactory.class, TestUtil.class, TestConfigProvider.class, ValidatorProducer.class, ConfigurationProducer.class})
+@ActivatedAlternatives(TestConfigProvider.class)
 public class AuthControllerTest {
 
     @Inject

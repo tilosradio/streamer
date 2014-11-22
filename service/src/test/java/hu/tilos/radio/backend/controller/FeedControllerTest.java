@@ -1,10 +1,12 @@
 package hu.tilos.radio.backend.controller;
 
+import hu.tilos.radio.backend.ConfigurationProducer;
 import hu.tilos.radio.backend.TestConfigProvider;
 import hu.tilos.radio.backend.TestUtil;
 import hu.tilos.radio.backend.controller.FeedController;
 import hu.tilos.radio.backend.converters.MappingFactory;
 import net.anzix.jaxrs.atom.Feed;
+import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Before;
@@ -16,7 +18,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MappingFactory.class, TestUtil.class, TestConfigProvider.class})
+@AdditionalClasses({MappingFactory.class, TestUtil.class, TestConfigProvider.class, ConfigurationProducer.class})
+@ActivatedAlternatives(TestConfigProvider.class)
 public class FeedControllerTest {
 
     @Inject

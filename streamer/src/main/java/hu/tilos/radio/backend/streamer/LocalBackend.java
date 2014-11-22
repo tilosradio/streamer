@@ -1,8 +1,8 @@
 package hu.tilos.radio.backend.streamer;
 
+import hu.tilos.radio.backend.Configuration;
 import hu.tilos.radio.backend.Mp3File;
 import hu.tilos.radio.backend.ResourceCollection;
-import org.apache.deltaspike.core.api.config.ConfigProperty;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -15,14 +15,14 @@ import java.io.OutputStream;
 public class LocalBackend implements Backend {
 
     @Inject
-    @ConfigProperty(name = "archive.root")
+    @Configuration(name = "archive.root")
     private String root;
 
     /**
      * Limit in Kbyte/sec.
      */
     @Inject
-    @ConfigProperty(name = "throttle.limit")
+    @Configuration(name = "throttle.limit")
     private int throttleLimit = 0;
 
     public LocalBackend(String root) {

@@ -1,13 +1,11 @@
 package hu.tilos.radio.backend;
 
-import org.apache.deltaspike.core.api.config.ConfigProperty;
-
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.Alternative;
 import java.util.Properties;
 
-public class TestConfigProvider {
+@Alternative
+public class TestConfigProvider extends TilosConfigSource {
+
     private Properties properties;
 
     public TestConfigProvider() {
@@ -16,13 +14,11 @@ public class TestConfigProvider {
         properties.put("jwt.secret", "veryeasy");
     }
 
-    @ConfigProperty(name = "*")
-    @Produces
-    public String getConfigValue(InjectionPoint injectionPoint) {
-        Annotated annotated = injectionPoint.getAnnotated();
-        String name = annotated.getAnnotation(ConfigProperty.class).name();
-        return properties.getProperty(name);
+    @Override
+    public String getConfiguration(String key) {
+        return (String) properties.get(key);
     }
-
-
 }
+
+
+

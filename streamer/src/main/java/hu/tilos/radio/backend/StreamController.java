@@ -2,7 +2,6 @@ package hu.tilos.radio.backend;
 
 import hu.tilos.radio.backend.streamer.Backend;
 import hu.tilos.radio.backend.streamer.util.Mp3Joiner;
-import org.apache.deltaspike.core.api.config.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +38,7 @@ public class StreamController extends HttpServlet {
 
 
     @Inject
-    StreamerMonitor monitor;
-
-    @Inject
-    @ConfigProperty(name = "server.url")
+    @Configuration(name = "server.url")
     private String serverUrl;
 
     @Override
