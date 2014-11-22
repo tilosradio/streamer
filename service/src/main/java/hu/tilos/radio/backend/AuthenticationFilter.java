@@ -22,9 +22,6 @@ import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-/**
- * Workaround to syncrhoize PHP and java based authorization.
- */
 @Provider
 public class AuthenticationFilter implements ContainerRequestFilter {
 
