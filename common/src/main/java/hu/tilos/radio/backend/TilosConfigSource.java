@@ -18,6 +18,25 @@ public class TilosConfigSource implements ConfigSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(TilosConfigSource.class);
 
+    private Map<String, String> properties = new HashMap<>();
+
+    public TilosConfigSource() {
+        File configFile = new File("tilos.properties");
+        LOG.info("Reading configuration from " + configFile.getAbsolutePath());
+        if (configFile.exists()) {
+            Properties p = new Properties();
+            try {
+
+                p.load(new FileInputStream(configFile));
+                for (String key : p.stringPropertyNames()) {
+                    properties.put(key, p.getProperty(key));
+                }
+            } catch (IOException e) {
+                LOG.error("Can't load file " + configFile.getAbsolutePath(), e);
+            }
+        }
+    }
+
     @Override
     public int getOrdinal() {
         return 500;
@@ -25,23 +44,7 @@ public class TilosConfigSource implements ConfigSource {
 
     @Override
     public Map<String, String> getProperties() {
-        File configFile = new File("tilos.properties");
-        LOG.info("Reading configuration from " + configFile.getAbsolutePath());
-        if (configFile.exists()) {
-            Properties p = new Properties();
-            try {
-                Map<String, String> result = new HashMap<>();
-                p.load(new FileInputStream(configFile));
-                for (String key : p.stringPropertyNames()) {
-                    result.put(key, p.getProperty(key));
-                }
-                return result;
-            } catch (IOException e) {
-                LOG.error("Can't load file " + configFile.getAbsolutePath(), e);
-            }
-        }
-        return new HashMap<>();
-
+        return properties;
     }
 
     @Override
