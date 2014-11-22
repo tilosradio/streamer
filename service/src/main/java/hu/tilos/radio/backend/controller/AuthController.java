@@ -109,8 +109,6 @@ public class AuthController {
 
     private Response generateToken(PasswordReset passwordReset) {
 
-        validator.validate(passwordReset);
-
         User user = (User) entityManager.createNamedQuery("user.byEmail").setParameter("email", passwordReset.getEmail()).getSingleResult();
 
         //delete old tokens
