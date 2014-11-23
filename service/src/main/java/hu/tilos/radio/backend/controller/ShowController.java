@@ -158,6 +158,9 @@ public class ShowController {
     }
 
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/{alias}")
     @Security(role = Role.AUTHOR)
@@ -200,6 +203,9 @@ public class ShowController {
         throw new IllegalArgumentException("No permission to modify");
     }
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/{alias}")
     @Security(role = Role.ADMIN)

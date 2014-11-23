@@ -60,6 +60,9 @@ public class TextController {
     }
 
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/{type}/{id}")
     @Security(role = Role.ADMIN)
@@ -73,6 +76,9 @@ public class TextController {
         return new UpdateResponse(true);
     }
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/{type}")
     @Security(role = Role.ADMIN)
