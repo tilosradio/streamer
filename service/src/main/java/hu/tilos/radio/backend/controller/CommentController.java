@@ -98,6 +98,9 @@ public class CommentController {
         return commentDtos;
     }
 
+    /**
+     * @exclude
+     */
     @POST
     @Path("/approve/{id}")
     @Security(role = Role.ADMIN)
@@ -110,6 +113,9 @@ public class CommentController {
         return modelMapper.map(comment, CommentData.class);
     }
 
+    /**
+     * @exclude
+     */
     @DELETE
     @Path("/approve/{id}")
     @Security(role = Role.ADMIN)

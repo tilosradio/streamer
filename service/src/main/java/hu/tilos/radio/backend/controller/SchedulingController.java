@@ -38,6 +38,9 @@ public class SchedulingController {
     }
 
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/{id}")
     @Security(role = Role.ADMIN)
@@ -51,6 +54,9 @@ public class SchedulingController {
         return new UpdateResponse(true);
     }
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/")
     @Security(role = Role.ADMIN)
@@ -67,6 +73,9 @@ public class SchedulingController {
         return new CreateResponse(scheduling.getId());
     }
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/{id}")
     @Security(role = Role.ADMIN)

@@ -35,6 +35,9 @@ public class UrlController {
     }
 
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/{id}")
     @Security(role = Role.ADMIN)
@@ -52,6 +55,9 @@ public class UrlController {
         return (Url) entityManager.createQuery("SELECT u from Url u where u.id = :id").setParameter("id", id).getSingleResult();
     }
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/")
     @Security(role = Role.ADMIN)
@@ -70,6 +76,9 @@ public class UrlController {
         return new CreateResponse(url.getId());
     }
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/{id}")
     @Security(role = Role.ADMIN)

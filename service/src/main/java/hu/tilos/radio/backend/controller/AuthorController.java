@@ -79,6 +79,9 @@ public class AuthorController {
 
     }
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/{alias}")
     @Security(role = Role.AUTHOR)
@@ -115,6 +118,9 @@ public class AuthorController {
     }
 
 
+    /**
+     * @exclude
+     */
     @Produces("application/json")
     @Path("/{alias}")
     @Security(role = Role.ADMIN)
