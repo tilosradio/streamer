@@ -3,23 +3,23 @@ package hu.tilos.radio.backend.data.types;
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.radio.tilos.model.type.ShowType;
 
-public class ShowSimple implements WithId{
+public class ShowSimple {
 
-    private int id;
+    public String id;
 
-    private String name;
+    public String name;
 
-    private String alias;
+    public String alias;
 
-    private ShowType type;
+    public ShowType type;
 
-    private ShowStatus status;
+    public ShowStatus status;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

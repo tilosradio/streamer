@@ -1,0 +1,12 @@
+{
+  "id": 1,
+  "name": "AUTHOR1",
+  "photo": "asd",
+  "avatar": "avatar/asd.jpg",
+  "introduction": "nothing",
+  "alias": "author1",
+  "user_id": "2",
+  "urls": [
+    {"address": "http://szabi.hu"}
+  ]
+}

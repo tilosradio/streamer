@@ -2,6 +2,7 @@ package hu.tilos.radio.backend.converters;
 
 
 import hu.radio.tilos.model.Tag;
+import hu.tilos.radio.backend.data.types.TagData;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,7 +17,7 @@ public class TagUtilTest {
         TagUtil util = new TagUtil();
 
         //when
-        Set<Tag> tags = util.getTags(text);
+        Set<TagData> tags = util.getTags(text);
 
         //then
         Assert.assertEquals(2, tags.size());
@@ -30,7 +31,7 @@ public class TagUtilTest {
         TagUtil util = new TagUtil();
 
         //when
-        Set<Tag> tags = util.getTags(text);
+        Set<TagData> tags = util.getTags(text);
 
         //then
         Assert.assertEquals(0, tags.size());
@@ -44,7 +45,7 @@ public class TagUtilTest {
         TagUtil util = new TagUtil();
 
         //when
-        Set<Tag> tags = util.getTags(text);
+        Set<TagData> tags = util.getTags(text);
 
         //then
         Assert.assertEquals(0, tags.size());
@@ -58,7 +59,7 @@ public class TagUtilTest {
         TagUtil util = new TagUtil();
 
         //when
-        Set<Tag> tags = util.getTags(text);
+        Set<TagData> tags = util.getTags(text);
 
         //then
         Assert.assertEquals(0, tags.size());
@@ -72,7 +73,7 @@ public class TagUtilTest {
         TagUtil util = new TagUtil();
 
         //when
-        Set<Tag> tags = util.getTags(text);
+        Set<TagData> tags = util.getTags(text);
 
         //then
         Assert.assertEquals(0, tags.size());
@@ -87,7 +88,7 @@ public class TagUtilTest {
         TagUtil util = new TagUtil();
 
         //when
-        Set<Tag> tags = util.getTags(text);
+        Set<TagData> tags = util.getTags(text);
 
         //then
         Assert.assertEquals(0, tags.size());
@@ -101,7 +102,7 @@ public class TagUtilTest {
         TagUtil util = new TagUtil();
 
         //when
-        Set<Tag> tags = util.getTags(text);
+        Set<TagData> tags = util.getTags(text);
 
         //then
         Assert.assertEquals(1, tags.size());
@@ -116,11 +117,11 @@ public class TagUtilTest {
         TagUtil util = new TagUtil();
 
         //when
-        Set<Tag> tags = util.getTags(text);
+        Set<TagData> tags = util.getTags(text);
 
         //then
         Assert.assertEquals(1, tags.size());
-        Tag tag = tags.iterator().next();
+        TagData tag = tags.iterator().next();
         Assert.assertEquals("Lajos Bela", tag.getName());
 
     }

@@ -1,11 +1,12 @@
 package hu.tilos.radio.backend.converters;
 
+import org.dozer.CustomConverter;
 import org.modelmapper.AbstractConverter;
 
 /**
  * Converter to prefix string value.
  */
-public class PrefixingConverter extends AbstractConverter<String, String> {
+public class PrefixingConverter implements CustomConverter {
 
     private String prefix;
 
@@ -36,12 +37,16 @@ public class PrefixingConverter extends AbstractConverter<String, String> {
         this.nonStart = nonStart;
     }
 
+
+
     @Override
-    protected String convert(String source) {
+    public Object convert(Object existingDestinationFieldValue, Object sourceFieldValue, Class<?> destinationClass, Class<?> sourceClass) {
+        String source = (String) sourceFieldValue;
         if (source == null || (nonStart != null && source.startsWith(nonStart))) {
             return source;
         } else {
             return prefix + source;
         }
+
     }
 }

@@ -1,10 +1,9 @@
 package hu.tilos.radio.backend.converters;
 
 
-import hu.radio.tilos.model.EntityWithTag;
-import hu.radio.tilos.model.Episode;
 import hu.radio.tilos.model.Tag;
 import hu.radio.tilos.model.type.TagType;
+import hu.tilos.radio.backend.data.types.TagData;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
@@ -13,9 +12,6 @@ import org.jsoup.select.NodeTraversor;
 import org.jsoup.select.NodeVisitor;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.print.Doc;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -100,12 +96,12 @@ public class TagUtil {
         return doc.select("body").html();
     }
 
-    public Set<Tag> getTags(String text) {
+    public Set<TagData> getTags(String text) {
         //remove html tags
-        text = Pattern.compile("<style>.*</style>",Pattern.DOTALL).matcher(text).replaceAll("");
+        text = Pattern.compile("<style>.*</style>", Pattern.DOTALL).matcher(text).replaceAll("");
         text = text.replaceAll("\\<.*?>", "");
         System.out.println(text);
-        Set<Tag> tags = new HashSet<>();
+        Set<TagData> tags = new HashSet<>();
         for (TagType type : patterns.keySet()) {
             for (Pattern p : patterns.get(type)) {
                 Matcher m = p.matcher(text);
@@ -126,7 +122,7 @@ public class TagUtil {
                         }
                     }
                     if (realTag) {
-                        Tag t = new Tag();
+                        TagData t = new TagData();
                         t.setName(match);
                         t.setType(type);
                         tags.add(t);
@@ -138,53 +134,5 @@ public class TagUtil {
         return tags;
     }
 
-    public void updateTags(EntityManager entityManager, EntityWithTag entityWithTags, Set<Tag> newTags) {
-
-        try {
-
-            List<Tag> existingTags = new ArrayList(entityWithTags.getTags());
-            Set<String> existingTagNames = new HashSet<>();
-            Set<String> newTagNames = new HashSet<>();
-            for (Tag tag : existingTags) {
-                existingTagNames.add(tag.getName());
-            }
-            for (Tag tag : newTags) {
-                newTagNames.add(tag.getName());
-            }
-
-            //check new newTagNames
-            for (Tag newTag : newTags) {
-                if (!existingTagNames.contains(newTag.getName())) {
-                    Tag tagEntity = null;
-                    try {
-                        tagEntity = entityManager.createNamedQuery("tag.byName", Tag.class).setParameter("name", newTag.getName()).getSingleResult();
-                    } catch (NoResultException ex) {
-                        tagEntity = new Tag();
-                        tagEntity.setName(newTag.getName());
-                        tagEntity.setType(newTag.getType());
-                        entityManager.persist(tagEntity);
-                        entityManager.flush();
-                    }
-                    //maintain both side
-                    tagEntity.getTaggedTexts().add((hu.radio.tilos.model.TextContent) entityWithTags);
-                    entityWithTags.getTags().add(tagEntity);
-                }
-            }
-
-
-            //check removed newTagNames
-            for (Tag oldTag : existingTags) {
-                if (!newTagNames.contains(oldTag.getName())) {
-                    //registered but the new text doesn't contain it
-                    oldTag.getTaggedTexts().remove(entityWithTags);
-                    entityWithTags.getTags().remove(oldTag);
-                }
-            }
-
-        } catch (Exception ex) {
-            LOG.error("Can't create tag for entityWithTags " + entityWithTags, ex);
-        }
-
-    }
 
 }

@@ -1,8 +1,9 @@
 package hu.tilos.radio.backend.controller;
 
-import hu.radio.tilos.model.ChangePassword;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBObject;
 import hu.radio.tilos.model.Role;
-import hu.radio.tilos.model.User;
 import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.Token;
 import hu.tilos.radio.backend.data.input.PasswordReset;
@@ -10,18 +11,15 @@ import hu.tilos.radio.backend.data.input.RegisterData;
 import hu.tilos.radio.backend.data.output.LoginData;
 import hu.tilos.radio.backend.data.response.ErrorResponse;
 import hu.tilos.radio.backend.data.response.OkResponse;
+import hu.tilos.radio.backend.data.types.UserDetailed;
 import hu.tilos.radio.backend.util.JWTEncoder;
 import hu.tilos.radio.backend.util.RecaptchaValidator;
+import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.ws.rs.POST;
@@ -50,11 +48,14 @@ public class AuthController {
     EmailSender sender;
 
     @Inject
-    @Configuration(name = "server.url")
-    private String serverUrl;
+    DB db;
 
     @Inject
-    private EntityManager entityManager;
+    DozerBeanMapper mapper;
+
+    @Inject
+    @Configuration(name = "server.url")
+    private String serverUrl;
 
     @Inject
     private JWTEncoder jwtEncoder;
@@ -89,23 +90,28 @@ public class AuthController {
 
     private Response changePassword(PasswordReset passwordReset) {
         validator.validate(passwordReset);
-        User user = (User) entityManager.createNamedQuery("user.byEmail").setParameter("email", passwordReset.getEmail()).getSingleResult();
+        BasicDBObject query = new BasicDBObject("email", passwordReset.getEmail());
+        query.put("passwordChangeToken", passwordReset.getToken());
+        DBObject userRaw = db.getCollection("user").findOne(query);
+        UserDetailed user = mapper.map(userRaw, UserDetailed.class);
+        if (user == null) {
+            throw new RuntimeException("Invalid user or token");
+        }
 
-        ChangePassword changePassword = (ChangePassword) entityManager.createQuery("SELECT cp FROM ChangePassword cp WHERE cp.user = :user AND token = :token").
-                setParameter("user", user).
-                setParameter("token", passwordReset.getToken()).getSingleResult();
 
-        if (new Date().getTime() - changePassword.getCreated().getTime() > 1000 * 60 * 60) {
+        if (new Date().getTime() - user.getPasswordChangeTokenCreated().getTime() > 1000 * 60 * 60) {
             throw new IllegalArgumentException("A jelszóemlékeztetőt egy órán belül fel kell használni. Kérj új jelszóemlékeztetőt");
         }
 
         //change the password
-        user.setSalt(authUtil.generateSalt());
-        user.setPassword(authUtil.encode(passwordReset.getPassword(), user.getSalt()));
-        entityManager.persist(user);
-
+        String salt = authUtil.generateSalt();
+        userRaw.put("salt", salt);
+        userRaw.put("password", authUtil.encode(passwordReset.getPassword(), salt));
         //delete existing password change tokens
-        entityManager.createQuery("DELETE FROM ChangePassword p WHERE p.user = :user").setParameter("user", user).executeUpdate();
+        userRaw.removeField("passwordChangeToken");
+        userRaw.removeField("passwordChangeTokenCreated");
+        db.getCollection("user").update(new BasicDBObject("username", user.getUsername()), userRaw);
+
 
         return Response.ok().entity(new OkResponse("Password has been changed")).build();
 
@@ -113,41 +119,36 @@ public class AuthController {
 
     private Response generateToken(PasswordReset passwordReset) {
 
-        User user = (User) entityManager.createNamedQuery("user.byEmail").setParameter("email", passwordReset.getEmail()).getSingleResult();
 
-        //delete old tokens
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaDelete<ChangePassword> deleteQuery = cb.createCriteriaDelete(ChangePassword.class);
-        Root<ChangePassword> r = deleteQuery.from(ChangePassword.class);
-        deleteQuery.where(cb.equal(r.get("user"), user));
-        entityManager.createQuery(deleteQuery).executeUpdate();
+        DBObject user = db.getCollection("user").findOne(new BasicDBObject("email", passwordReset.getEmail()));
+
 
         //create new token
-        ChangePassword password = new ChangePassword();
-        password.setUser(user);
-        password.setCreated(new Date());
-        password.setToken(authUtil.generateSalt());
-        entityManager.persist(password);
+
+        String token = authUtil.generateSalt();
+        user.put("passwordChangeTokenCreated", new Date());
+        user.put("passwordChangeTokenCreated", token);
+        db.getCollection("user").update(new BasicDBObject("username", user.get("username")), user);
 
         //send mail
-        sendMail(user, password);
+        sendMail(user, token);
 
         return Response.ok().entity(new OkResponse("Password reminder has been sent")).build();
     }
 
-    protected void sendMail(User user, ChangePassword password) {
+    protected void sendMail(DBObject user, String token) {
         Email email = new Email();
         email.setFrom("webmester@tilos.hu");
-        email.setTo(user.getEmail());
+        email.setTo((String) user.get("email"));
         email.setSubject("[tilos.hu] Jelszo emlekezteto");
-        email.setBody(createBody(user, password));
+        email.setBody(createBody(user, token));
         emailSender.send(email);
     }
 
-    private String createBody(User user, ChangePassword password) {
+    private String createBody(DBObject user, String token) {
         String body = "Valaki jelszoemlekeztetot kert erre a cimre. \n\n A jelszo megvaltoztatasahoz kattints a  " +
-                serverUrl + "/password_reset?token=" + password.getToken() +
-                "&email=" + user.getEmail().replaceAll("@", "%40") + " cimre";
+                serverUrl + "/password_reset?token=" + token +
+                "&email=" + ((String) user.get("email")).replaceAll("@", "%40") + " cimre";
         LOG.debug("Creating mail: " + body);
         return body;
     }
@@ -160,13 +161,15 @@ public class AuthController {
     @Security(role = Role.GUEST)
     @POST
     public Response login(LoginData loginData) {
-        Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username");
-        query.setParameter("username", loginData.getUsername());
+
         try {
-            User user = (User) query.getSingleResult();
-            if (authUtil.encode(loginData.getPassword(), user.getSalt()).equals(user.getPassword())) {
+            DBObject user = db.getCollection("user").findOne(new BasicDBObject("username", loginData.getUsername()));
+            if (user == null) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            if (authUtil.encode(loginData.getPassword(), (String) user.get("salt")).equals((String) user.get("password"))) {
                 try {
-                    return Response.ok(createToken(loginData.getUsername(), user.getRole())).build();
+                    return Response.ok(createToken(loginData.getUsername(), Role.values()[(int) user.get("role_id")])).build();
                 } catch (Exception e) {
                     throw new RuntimeException("Can't encode the token", e);
                 }
@@ -201,27 +204,22 @@ public class AuthController {
 
         validator.validate(registerData);
 
-        Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username");
-        query.setParameter("username", registerData.getUsername());
+        DBObject existingUser = db.getCollection("user").findOne(new BasicDBObject("username", registerData.getUsername()));
+        if (existingUser != null) {
+            throw new IllegalArgumentException("A felhasznalonev mar foglalat");
 
-        try {
-            query.getSingleResult();
-            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorResponse("A felhasználónév már foglalt")).build();
-        } catch (NoResultException ex) {
-            //NOOP
         }
-
         //everything is ok
-        User newUser = new User();
-        newUser.setEmail(registerData.getEmail());
-        newUser.setUsername(registerData.getUsername());
-        newUser.setRole(Role.USER);
-        newUser.setSalt(authUtil.generateSalt());
-        newUser.setPassword(authUtil.encode(registerData.getPassword(), newUser.getSalt()));
+        DBObject user = new BasicDBObject();
+        user.put("email", registerData.getEmail());
+        user.put("username", registerData.getUsername());
+        user.put("role_id", Role.USER.ordinal());
+        user.put("salt", authUtil.generateSalt());
+        user.put("password", authUtil.encode(registerData.getPassword(), (String) user.get("salt")));
 
-        entityManager.persist(newUser);
+        db.getCollection("user").insert(user);
 
-        return Response.ok(createToken(newUser.getUsername(), newUser.getRole())).build();
+        return Response.ok(createToken(registerData.getUsername(), Role.USER)).build();
     }
 
     private boolean checkCaptcha(String challenge, String solution) {

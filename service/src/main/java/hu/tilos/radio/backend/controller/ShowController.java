@@ -1,31 +1,27 @@
 package hu.tilos.radio.backend.controller;
 
-import hu.radio.tilos.model.Contribution;
+import com.mongodb.*;
 import hu.radio.tilos.model.Role;
-import hu.radio.tilos.model.Show;
-import hu.radio.tilos.model.User;
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.converters.SchedulingTextUtil;
-
 import hu.tilos.radio.backend.data.input.ShowToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.*;
 import hu.tilos.radio.backend.episode.EpisodeUtil;
-import org.modelmapper.ModelMapper;
+import org.bson.types.ObjectId;
+import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import java.util.*;
+
+import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
 @Path("/api/v1/show")
 public class ShowController {
@@ -36,31 +32,33 @@ public class ShowController {
 
     @Inject
     EpisodeUtil episodeUtil;
+
     @Inject
     Session session;
+
     @Inject
-    private EntityManager entityManager;
+    private DozerBeanMapper mapper;
+
     @Inject
-    private ModelMapper modelMapper;
+    private DB db;
+
 
     @Produces("application/json")
     @Path("/")
     @Security(role = Role.GUEST)
     @GET
     public List<ShowSimple> list(@QueryParam("status") String status) {
-        ShowStatus showStatus = processStatus(status);
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Show> query = criteriaBuilder.createQuery(Show.class);
-        Root<Show> showRoot = query.from(Show.class);
-        CriteriaQuery<Show> select = query.select(showRoot);
-        if (showStatus != null) {
-            select.where(criteriaBuilder.equal(showRoot.get("status"), showStatus));
-        }
-        List<Show> selectedShows = entityManager.createQuery(query).getResultList();
+        BasicDBObject criteria = new BasicDBObject();
+
+        //FIXME
+//        if (showStatus != null) {
+//            select.where(criteriaBuilder.equal(showRoot.get("status"), showStatus));
+//        }
+        DBCursor selectedShows = db.getCollection("show").find();
 
         List<ShowSimple> mappedShows = new ArrayList<>();
-        for (Show show : selectedShows) {
-            mappedShows.add(modelMapper.map(show, ShowSimple.class));
+        for (DBObject show : selectedShows) {
+            mappedShows.add(mapper.map(show, ShowSimple.class));
         }
         return mappedShows;
 
@@ -90,24 +88,8 @@ public class ShowController {
     @GET
     @Transactional
     public ShowDetailed get(@PathParam("alias") String alias) {
-        Show show = null;
-        if (!alias.matches("\\d+")) {
-            show = entityManager.createQuery("SELECT s FROM Show s " +
-                    "LEFT JOIN FETCH s.mixes " +
-                    "LEFT JOIN FETCH s.contributors " +
-                    "LEFT JOIN FETCH s.schedulings " +
-                    "WHERE s.alias=:alias", Show.class).setParameter("alias", alias).getSingleResult();
-        } else {
-            show = entityManager.createQuery("SELECT s FROM Show s " +
-                    "LEFT JOIN FETCH s.mixes " +
-                    "LEFT JOIN FETCH s.contributors " +
-                    "LEFT JOIN FETCH s.schedulings " +
-                    "WHERE s.id=:id", Show.class).setParameter("id", Integer.parseInt(alias)).getSingleResult();
-        }
-
-
-        ShowDetailed detailed = modelMapper.map(show, ShowDetailed.class);
-
+        DBObject one = db.getCollection("show").findOne(aliasOrId(alias));
+        ShowDetailed detailed = mapper.map(one, ShowDetailed.class);
 
         Collections.sort(detailed.getMixes(), new Comparator<MixSimple>() {
 
@@ -117,27 +99,18 @@ public class ShowController {
             }
         });
 
-        Collections.sort(detailed.getContributors(), new Comparator<ShowContribution>() {
-
-            @Override
-            public int compare(ShowContribution contribution, ShowContribution contribution2) {
-                return contribution.getAuthor().getName().compareTo(contribution2.getAuthor().getName());
-            }
-        });
-
         Date now = new Date();
         for (SchedulingSimple ss : detailed.getSchedulings()) {
             if (ss.getValidFrom().compareTo(now) < 0 && ss.getValidTo().compareTo(now) > 0)
                 ss.setText(schedulingTextUtil.create(ss));
         }
 
-
-        Long o = (Long) entityManager.createQuery("SELECT count(m) FROM Mix m where m.show = :show").setParameter("show", show).getSingleResult();
-        detailed.getStats().mixCount = o.intValue();
-
+        long mixCount = db.getCollection("mix").count(new BasicDBObject("show.ref", new DBRef(db, "show", one.get("_id").toString())));
+        detailed.getStats().mixCount = (int) mixCount;
         return detailed;
 
     }
+
 
     @GET
     @Path("/{show}/episodes")
@@ -149,11 +122,14 @@ public class ShowController {
         fromDate.setTime(from);
         Date toDate = new Date();
         toDate.setTime(to);
-        int showId;
-        showId = Integer.parseInt(showAlias);
-        //todo on parse error
-        //Show show = (Show) entityManager.createQuery("SELECT s FROM Show s WHERE s.alias = :alias").setParameter("alias",showAlias).getSingleResult();
-        return episodeUtil.getEpisodeData(showId, fromDate, toDate);
+        List<EpisodeData> episodeData = episodeUtil.getEpisodeData(showAlias, fromDate, toDate);
+        Collections.sort(episodeData, new Comparator<EpisodeData>() {
+            @Override
+            public int compare(EpisodeData e1, EpisodeData e2) {
+                return e1.getPlannedFrom().compareTo(e2.getPlannedFrom()) * -1;
+            }
+        });
+        return episodeData;
 
     }
 
@@ -167,39 +143,34 @@ public class ShowController {
     @PUT
     @Transactional
     public UpdateResponse update(@PathParam("alias") String alias, ShowToSave showToSave) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Show> query = criteriaBuilder.createQuery(Show.class);
-        Root<Show> fromShow = query.from(Show.class);
-        CriteriaQuery<Show> select = query.select(fromShow);
-        if (alias.matches("\\d+")) {
-            select.where(criteriaBuilder.equal(fromShow.get("id"), Integer.parseInt(alias)));
-        } else {
-            select.where(criteriaBuilder.equal(fromShow.get("alias"), alias));
-        }
-
-        Show show = entityManager.createQuery(query).getSingleResult();
+        DBObject show = findShow(alias);
         checkPermission(show, session.getCurrentUser());
-        modelMapper.map(showToSave, show);
-        entityManager.persist(show);
+        mapper.map(showToSave, show);
+        db.getCollection("show").update(aliasOrId(alias), show);
         return new UpdateResponse(true);
 
     }
 
-    protected void checkPermission(Show show, User currentUser) {
+    private DBObject findShow(String alias) {
+        return db.getCollection("show").findOne(aliasOrId(alias));
+    }
+
+    protected void checkPermission(DBObject show, UserDetailed currentUser) {
         if (currentUser.getRole() == Role.ADMIN) {
             return;
         }
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Contribution> query = criteriaBuilder.createQuery(Contribution.class);
-        Root<Contribution> fromContribution = query.from(Contribution.class);
-        query.where(criteriaBuilder.equal(fromContribution.get("author").get("user").get("id"), currentUser.getId()));
-        List<Contribution> contributions = entityManager.createQuery(query).getResultList();
-
-        for (hu.radio.tilos.model.Contribution contribution : contributions) {
-            if (contribution.getShow().getId() == show.getId()) {
-                return;
-            }
-        }
+//      FIXME
+//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<Contribution> query = criteriaBuilder.createQuery(Contribution.class);
+//        Root<Contribution> fromContribution = query.from(Contribution.class);
+//        query.where(criteriaBuilder.equal(fromContribution.get("author").get("user").get("id"), currentUser.getId()));
+//        List<Contribution> contributions = entityManager.createQuery(query).getResultList();
+//
+//        for (hu.radio.tilos.model.Contribution contribution : contributions) {
+//            if (contribution.getShow().getId() == ((Integer) show.get("id")).intValue()) {
+//                return;
+//            }
+//        }
         throw new IllegalArgumentException("No permission to modify");
     }
 
@@ -207,26 +178,17 @@ public class ShowController {
      * @exclude
      */
     @Produces("application/json")
-    @Path("/{alias}")
+    @Path("/")
     @Security(role = Role.ADMIN)
     @POST
     @Transactional
-    public CreateResponse create(@PathParam("alias") String alias, ShowToSave showToSave) {
-        Show show = modelMapper.map(showToSave, Show.class);
-        entityManager.persist(show);
-        entityManager.flush();
-        return new CreateResponse(show.getId());
+    public CreateResponse create(ShowToSave objectToSave) {
+        DBObject newObject = mapper.map(objectToSave, BasicDBObject.class);
+        db.getCollection("show").insert(newObject);
+        return new CreateResponse(((ObjectId) newObject.get("_id")).toHexString());
     }
 
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
-    public void setModelMapper(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-    }
-
-    public EntityManager getEntityManager() {
-        return entityManager;
+    public void setDb(DB db) {
+        this.db = db;
     }
 }

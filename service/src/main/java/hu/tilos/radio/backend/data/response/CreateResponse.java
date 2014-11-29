@@ -1,17 +1,17 @@
 package hu.tilos.radio.backend.data.response;
 
-public class CreateResponse{
+public class CreateResponse {
 
     private boolean success;
 
-    private int id;
+    private String ref;
 
     public CreateResponse(boolean success) {
         this.success = success;
     }
 
-    public CreateResponse(int id) {
-        this.id = id;
+    public CreateResponse(String id) {
+        this.ref = id;
         success = true;
     }
 
@@ -23,11 +23,11 @@ public class CreateResponse{
         this.success = success;
     }
 
-    public int getId() {
-        return id;
+    public String getId() {
+        return ref;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(String ref) {
+        this.ref = ref;
     }
 }

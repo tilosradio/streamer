@@ -1,14 +1,15 @@
 package hu.tilos.radio.backend.controller;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBObject;
 import hu.radio.tilos.model.Role;
-import hu.radio.tilos.model.User;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.data.UserInfo;
-import org.modelmapper.ModelMapper;
+import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -23,13 +24,13 @@ public class UserController {
 
 
     @Inject
-    private EntityManager entityManager;
-
-    @Inject
     Session session;
 
     @Inject
-    ModelMapper mapper;
+    DozerBeanMapper mapper;
+
+    @Inject
+    DB db;
 
     @Path("/me")
     @Produces("application/json")
@@ -37,7 +38,8 @@ public class UserController {
     @GET
     @Transactional
     public UserInfo me() {
-        return mapper.map(entityManager.find(User.class, session.getCurrentUser().getId()), UserInfo.class);
+        DBObject user = db.getCollection("user").findOne(new BasicDBObject("username", session.getCurrentUser().getUsername()));
+        return mapper.map(user, UserInfo.class);
     }
 
 

@@ -209,6 +209,17 @@
             <artifactId>jackson-annotations</artifactId>
             <version>2.3.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>2.12.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.fakemongo</groupId>
+            <artifactId>fongo</artifactId>
+            <version>1.5.7</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 
@@ -220,37 +231,48 @@
                 <filtering>true</filtering>
             </testResource>
         </testResources>
-        <plugins>
-            <plugin>
 
-
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <id>generate-service-docs</id>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <doclet>com.carma.swagger.doclet.ServiceDoclet</doclet>
-                            <docletArtifact>
-                                <groupId>com.carma</groupId>
-                                <artifactId>swagger-doclet</artifactId>
-                                <version>1.0.1</version>
-                            </docletArtifact>
-                            <reportOutputDirectory>${project.build.outputDirectory}</reportOutputDirectory>
-                            <useStandardDocletOptions>false</useStandardDocletOptions>
-                            <additionalparam>-apiVersion 1 -docBasePath /apidoc -apiBasePath /</additionalparam>
-                        </configuration>
-                        <goals>
-                            <goal>javadoc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
-            </plugin>
-
-
-        </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>apidoc</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+
+
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>generate-service-docs</id>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <doclet>com.carma.swagger.doclet.ServiceDoclet</doclet>
+                                    <docletArtifact>
+                                        <groupId>com.carma</groupId>
+                                        <artifactId>swagger-doclet</artifactId>
+                                        <version>1.0.1</version>
+                                    </docletArtifact>
+                                    <reportOutputDirectory>${project.build.outputDirectory}</reportOutputDirectory>
+                                    <useStandardDocletOptions>false</useStandardDocletOptions>
+                                    <additionalparam>-apiVersion 1 -docBasePath /apidoc -apiBasePath /</additionalparam>
+                                </configuration>
+                                <goals>
+                                    <goal>javadoc</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                    </plugin>
+
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -1,11 +1,6 @@
 package hu.tilos.radio.backend.converters;
 
-import hu.tilos.radio.backend.data.EntitySelector;
-import org.dozer.ConfigurableCustomConverter;
-import org.dozer.CustomConverter;
 import org.dozer.DozerConverter;
-
-import javax.persistence.EntityManager;
 
 public class EntityTextConverter extends DozerConverter<Enum, String> {
 

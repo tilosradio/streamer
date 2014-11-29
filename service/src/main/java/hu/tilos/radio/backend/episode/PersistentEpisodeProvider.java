@@ -1,34 +1,16 @@
 package hu.tilos.radio.backend.episode;
 
 
+import com.mongodb.*;
 import hu.radio.tilos.model.Bookmark;
-import hu.radio.tilos.model.Episode;
-import hu.radio.tilos.model.Show;
-import hu.radio.tilos.model.TextContent;
-import hu.tilos.radio.backend.converters.MappingFactory;
 import hu.tilos.radio.backend.data.types.EpisodeData;
+import hu.tilos.radio.backend.data.types.TextData;
+import org.dozer.DozerBeanMapper;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.inject.Named;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.sql.DataSource;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import hu.tilos.radio.backend.data.types.ShowSimple;
-import hu.tilos.radio.backend.data.types.TextData;
-
-
-import org.dozer.DozerBeanMapper;
-import org.dozer.loader.api.BeanMappingBuilder;
-import org.modelmapper.ModelMapper;
 
 
 /**
@@ -36,41 +18,41 @@ import org.modelmapper.ModelMapper;
  */
 public class PersistentEpisodeProvider {
 
-    @Inject
-    private EntityManager entityManager;
 
     @Inject
-    private ModelMapper modelMapper;
+    private DozerBeanMapper mapper;
 
-    public List<EpisodeData> listEpisode(int showId, Date from, Date to) {
+    @Inject
+    private DB db;
 
-        String query = "SELECT e from Episode e WHERE e.plannedFrom < :end AND e.plannedTo > :start";
+
+    public List<EpisodeData> listEpisode(String showAlias, Date from, Date to) {
 
 
-        if (showId > 0) {
-            query += " AND e.show.id = :showId";
-        } else {
-            query += " AND e.show.status = 1";
+        BasicDBObject query = new BasicDBObject();
 
+        query.put("plannedFrom", new BasicDBObject("$lt", to));
+        query.put("plannedTo", new BasicDBObject("$gt", from));
+
+
+        if (showAlias != null) {
+            query.put("show.ref", new DBRef(db, "show", showAlias));
         }
-        TypedQuery<Episode> q = entityManager.createQuery(query, Episode.class);
-        q.setParameter("start", from);
-        q.setParameter("end", to);
-        if (showId > 0) {
-            q.setParameter("showId", showId);
-        }
+
+        DBCursor episodes = db.getCollection("episode").find(query);
 
         List<EpisodeData> result = new ArrayList<>();
-        for (Episode e : q.getResultList()) {
-            EpisodeData d = modelMapper.map(e, EpisodeData.class);
+        for (DBObject e : episodes) {
+            EpisodeData d = mapper.map(e, EpisodeData.class);
             d.setPersistent(true);
 
-            if (e.getPlannedTo() == e.getRealTo() || e.getText() == null) {
-                Query bookmarkQuery = entityManager.createQuery("SELECT b FROM Bookmark b WHERE b.episode.id = :id").setParameter("id", d.getId());
-                List<Bookmark> bookmarks = bookmarkQuery.getResultList();
-                Bookmark bookmark = chooseTheBestBookmark(bookmarks);
-                useBookmarkForEpisodeText(d, bookmark);
-            }
+//TODO
+//            if (d.getPlannedTo() == d.getRealTo() || d.getText() == null) {
+//                Query bookmarkQuery = entityManager.createQuery("SELECT b FROM Bookmark b WHERE b.episode.id = :id").setParameter("id", d.getId());
+//                List<Bookmark> bookmarks = bookmarkQuery.getResultList();
+//                Bookmark bookmark = chooseTheBestBookmark(bookmarks);
+//                useBookmarkForEpisodeText(d, bookmark);
+//            }
             if (d.getPlannedTo() == d.getRealTo()) {
                 //todo
                 Date nd = new Date();
@@ -104,11 +86,8 @@ public class PersistentEpisodeProvider {
         return null;
     }
 
-    public EntityManager getEntityManager() {
-        return entityManager;
-    }
 
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    public void setDb(DB db) {
+        this.db = db;
     }
 }

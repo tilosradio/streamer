@@ -1,26 +1,27 @@
 package hu.tilos.radio.backend.controller;
 
-import hu.radio.tilos.model.*;
+import com.mongodb.*;
+import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.Session;
+import hu.tilos.radio.backend.data.input.AuthorToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.data.input.AuthorToSave;
 import hu.tilos.radio.backend.data.types.AuthorDetailed;
 import hu.tilos.radio.backend.data.types.AuthorListElement;
-import org.modelmapper.ModelMapper;
+import hu.tilos.radio.backend.data.types.UserDetailed;
+import org.bson.types.ObjectId;
+import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
 @Path("/api/v1/author")
 public class AuthorController {
@@ -28,13 +29,13 @@ public class AuthorController {
     private static Logger LOG = LoggerFactory.getLogger(AuthorController.class);
 
     @Inject
-    private EntityManager entityManager;
-
-    @Inject
-    private ModelMapper modelMapper;
-
-    @Inject
     Session session;
+
+    @Inject
+    private DozerBeanMapper mapper;
+
+    @Inject
+    private DB db;
 
 
     @Produces("application/json")
@@ -44,14 +45,11 @@ public class AuthorController {
     @Transactional
     public List<AuthorListElement> list() {
 
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Author> query = criteriaBuilder.createQuery(Author.class);
-        query.select(query.from(Author.class));
-        List<Author> selectedAuthors = entityManager.createQuery(query).getResultList();
+        DBCursor selectedAuthors = db.getCollection("author").find();
 
         List<AuthorListElement> mappedAuthors = new ArrayList<>();
-        for (Author author : selectedAuthors) {
-            mappedAuthors.add(modelMapper.map(author, AuthorListElement.class));
+        for (DBObject author : selectedAuthors) {
+            mappedAuthors.add(mapper.map(author, AuthorListElement.class));
         }
         return mappedAuthors;
 
@@ -63,21 +61,16 @@ public class AuthorController {
     @GET
     @Transactional
     public AuthorDetailed get(@PathParam("alias") String alias) {
-
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Author> query = criteriaBuilder.createQuery(Author.class);
-        Root<Author> fromAuthor = query.from(Author.class);
-        CriteriaQuery<Author> select = query.select(fromAuthor);
-        if (alias.matches("\\d+")) {
-            select.where(criteriaBuilder.equal(fromAuthor.get("id"), Integer.parseInt(alias)));
-        } else {
-            select.where(criteriaBuilder.equal(fromAuthor.get("alias"), alias));
-        }
-
-        Author author = entityManager.createQuery(query).getSingleResult();
-        return modelMapper.map(author, AuthorDetailed.class);
+        DBObject one = findAuthor(alias);
+        return mapper.map(one, AuthorDetailed.class);
 
     }
+
+    private DBObject findAuthor(String alias) {
+        BasicDBObject query = aliasOrId(alias);
+        return db.getCollection("author").findOne(query);
+    }
+
 
     /**
      * @exclude
@@ -88,32 +81,26 @@ public class AuthorController {
     @PUT
     @Transactional
     public UpdateResponse update(@PathParam("alias") String alias, AuthorToSave authorToSave) {
-
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Author> query = criteriaBuilder.createQuery(Author.class);
-        Root<Author> fromAuthor = query.from(Author.class);
-        CriteriaQuery<Author> select = query.select(fromAuthor);
-        if (alias.matches("\\d+")) {
-            select.where(criteriaBuilder.equal(fromAuthor.get("id"), Integer.parseInt(alias)));
-        } else {
-            select.where(criteriaBuilder.equal(fromAuthor.get("alias"), alias));
-        }
-
-        Author author = entityManager.createQuery(query).getSingleResult();
+        DBObject author = findAuthor(alias);
         checkPermission(author, session.getCurrentUser());
-        modelMapper.map(authorToSave, author);
-        entityManager.persist(author);
+        mapper.map(authorToSave, author);
+        db.getCollection("author").update(aliasOrId(alias), author);
         return new UpdateResponse(true);
 
     }
 
-    protected void checkPermission(Author author, User currentUser) {
-        if (author.getUser().getId() == currentUser.getId()) {
-            return;
-        }
+    protected void checkPermission(DBObject author, UserDetailed currentUser) {
+
         if (currentUser.getRole() == Role.ADMIN) {
             return;
         }
+
+        DBObject originalUser = db.getCollection("user").findOne(new BasicDBObject("_id", new ObjectId(currentUser.getId())));
+        DBRef authorRef = (DBRef) originalUser.get("author");
+        if (authorRef!=null && authorRef.getId().equals(author.get("_id").toString())){
+            return;
+        }
+
         throw new IllegalArgumentException("No permission to modify");
     }
 
@@ -122,16 +109,18 @@ public class AuthorController {
      * @exclude
      */
     @Produces("application/json")
-    @Path("/{alias}")
+    @Path("/")
     @Security(role = Role.ADMIN)
     @POST
     @Transactional
-    public CreateResponse create(@PathParam("alias") String alias, AuthorToSave authorToSave) {
-        Author author = modelMapper.map(authorToSave, Author.class);
-        entityManager.persist(author);
-        entityManager.flush();
-        return new CreateResponse(author.getId());
+    public CreateResponse create(AuthorToSave authorToSave) {
+        DBObject author = mapper.map(authorToSave, BasicDBObject.class);
+        db.getCollection("author").insert(author);
+        return new CreateResponse(((ObjectId) author.get("_id")).toHexString());
 
     }
 
+    public void setDb(DB db) {
+        this.db = db;
+    }
 }

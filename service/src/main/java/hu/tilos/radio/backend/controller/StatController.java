@@ -1,5 +1,7 @@
 package hu.tilos.radio.backend.controller;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
 import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Configuration;
 import hu.tilos.radio.backend.Security;
@@ -7,15 +9,14 @@ import hu.tilos.radio.backend.data.output.ListenerStat;
 import hu.tilos.radio.backend.data.output.StatData;
 import hu.tilos.radio.backend.data.types.EpisodeData;
 import hu.tilos.radio.backend.episode.EpisodeUtil;
+import org.dozer.DozerBeanMapper;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Serie;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -31,13 +32,13 @@ public class StatController {
     private static final Logger LOG = LoggerFactory.getLogger(StatController.class);
 
     @Inject
-    EntityManager em;
+    DB db;
 
     @Inject
     EpisodeUtil episodeUtil;
 
     @Inject
-    ModelMapper mapper;
+    DozerBeanMapper mapper;
 
     @Inject
     @Configuration(name = "influxdb.url")
@@ -49,10 +50,11 @@ public class StatController {
     @Path("/summary")
     public StatData getSummary() {
         StatData statData = new StatData();
-        statData.showCount = (long) em.createQuery("SELECT COUNT(s) FROM Show s WHERE s.status = 1").getSingleResult();
-        statData.authorCount = (long) em.createQuery("SELECT COUNT(c) FROM Contribution c WHERE c.show.status = 1").getSingleResult();
-        statData.mixCount = (long) em.createQuery("SELECT COUNT(m) FROM Mix m").getSingleResult();
-        statData.episodeCount = (long) em.createQuery("SELECT COUNT(e) FROM Episode e WHERE e.text is not null AND e.text.content is not null AND length(e.text.content) > 5 ").getSingleResult();
+        statData.showCount = db.getCollection("show").count(new BasicDBObject("status", 1));
+        //todo show only the active authors
+        statData.authorCount = db.getCollection("author").count();
+        statData.mixCount = db.getCollection("mix").count();
+        statData.episodeCount = db.getCollection("episode").count();
         return statData;
     }
 
@@ -70,7 +72,7 @@ public class StatController {
         //weekAgo.setTime(now.getTime() - (long) 604800000L);
         weekAgo.setTime(now.getTime() - (long) 30L * 60 * 60 * 24 * 1000);
 
-        List<EpisodeData> episodeList = episodeUtil.getEpisodeData(-1, weekAgo, now);
+        List<EpisodeData> episodeList = episodeUtil.getEpisodeData(null, weekAgo, now);
         for (EpisodeData episode : episodeList) {
             ListenerStat stat = new ListenerStat();
             stat.setEpisode(mapper.map(episode, EpisodeData.class));

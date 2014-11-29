@@ -1,25 +1,27 @@
 package hu.tilos.radio.backend.episode;
 
-import ch.qos.logback.classic.Level;
-import hu.tilos.radio.backend.TestUtil;
-import hu.tilos.radio.backend.converters.MappingFactory;
+import com.github.fakemongo.junit.FongoRule;
+import hu.tilos.radio.backend.DozerFactory;
+import hu.tilos.radio.backend.FongoCreator;
+import hu.tilos.radio.backend.MongoProducer;
 import hu.tilos.radio.backend.data.types.EpisodeData;
+import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.sql.DataSource;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
+
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MappingFactory.class, TestUtil.class})
+@AdditionalClasses({MongoProducer.class, DozerFactory.class})
+@ActivatedAlternatives(FongoCreator.class)
 public class PersistentEpisodeProviderTest {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -27,24 +29,29 @@ public class PersistentEpisodeProviderTest {
     @Inject
     PersistentEpisodeProvider p;
 
-    @BeforeClass
-    public static void setUp() {
-        TestUtil.initTestData();
+    @Inject
+    private FongoRule fongoRule;
+
+    @Rule
+    public FongoRule fongoRule() {
+        return fongoRule;
     }
+
 
     @Test
     public void testListEpisode() throws Exception {
         //given
+        String showId = loadTo(fongoRule, "show", "show-3utas.json");
+        loadTo(fongoRule, "episode", "episode-episode1.json", showId);
+        loadTo(fongoRule, "episode", "episode-episode2.json", showId);
 
 
         //when
-        List<EpisodeData> episodes = p.listEpisode(1, SDF.parse("2014-04-03 12:00:00"), SDF.parse("2014-05-03 12:00:00"));
+        List<EpisodeData> episodes = p.listEpisode(showId, SDF.parse("2014-04-03 12:00:00"), SDF.parse("2014-05-03 12:00:00"));
 
         //then
         Assert.assertEquals(2, episodes.size());
-        Assert.assertNotNull(episodes.get(0).getShow());
-        Assert.assertNotNull(episodes.get(0).getText());
-        Assert.assertEquals("Jo kis beszelgetes 1", episodes.get(0).getText().getTitle());
+        Assert.assertNotNull(episodes.get(1).getShow());
         Assert.assertNotNull(episodes.get(1).getText());
         Assert.assertEquals("Jo musor", episodes.get(1).getText().getTitle());
 

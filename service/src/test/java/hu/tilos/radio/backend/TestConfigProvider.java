@@ -12,6 +12,7 @@ public class TestConfigProvider extends TilosConfigSource {
         properties = new Properties();
         properties.put("server.url", "http://tilos.hu");
         properties.put("jwt.secret", "veryeasy");
+        properties.put("influxdb.url", "localhost");
     }
 
     @Override

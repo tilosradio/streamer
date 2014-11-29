@@ -1,34 +1,48 @@
 package hu.tilos.radio.backend.controller;
 
-import hu.tilos.radio.backend.TestUtil;
-import hu.tilos.radio.backend.controller.SearchController;
-import hu.tilos.radio.backend.converters.MappingFactory;
+import com.github.fakemongo.junit.FongoRule;
+import hu.tilos.radio.backend.DozerFactory;
+import hu.tilos.radio.backend.FongoCreator;
+import hu.tilos.radio.backend.MongoProducer;
 import hu.tilos.radio.backend.data.output.SearchResponse;
 import hu.tilos.radio.backend.data.output.SearchResponseElement;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.io.IOException;
 
+import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
+
+
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MappingFactory.class, TestUtil.class})
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class})
+@ActivatedAlternatives(FongoCreator.class)
 public class SearchControllerTest {
 
     @Inject
     SearchController controller;
 
-    @Before
-    public void resetDatabase(){
-        TestUtil.initTestData();
+    @Inject
+    FongoRule fongoRule;
+
+    @Rule
+    public FongoRule fongoRule() {
+        return fongoRule;
     }
+
 
     @Test
     public void test() throws IOException, ParseException {
         //given
+        loadTo(fongoRule,"show","show-3utas.json");
+        loadTo(fongoRule,"page","page-page1.json");
 
         //when
         SearchResponse respo = controller.search("tamogatas");

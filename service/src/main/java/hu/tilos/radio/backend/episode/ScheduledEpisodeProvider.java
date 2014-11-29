@@ -1,20 +1,15 @@
 package hu.tilos.radio.backend.episode;
 
-import hu.radio.tilos.model.Scheduling;
-import hu.radio.tilos.model.Show;
-import hu.tilos.radio.backend.converters.MappingFactory;
+import com.mongodb.*;
 import hu.tilos.radio.backend.data.types.EpisodeData;
+import hu.tilos.radio.backend.data.types.SchedulingSimple;
 import hu.tilos.radio.backend.data.types.ShowSimple;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.sql.DataSource;
 import java.util.*;
-import java.util.Date;
+
+import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
 
 /**
@@ -23,31 +18,38 @@ import java.util.Date;
 public class ScheduledEpisodeProvider {
 
     @Inject
-    private ModelMapper modelMapper;
+    private DozerBeanMapper modelMapper;
 
     @Inject
-    private EntityManager entityManager;
+    private DB db;
 
-    public List<EpisodeData> listEpisode(int showId, final Date from, final Date to) {
+    public List<EpisodeData> listEpisode(String showIdOrAlias, final Date from, final Date to) {
+        BasicDBObject query = new BasicDBObject();
+        query.put("schedulings.validFrom", new BasicDBObject("$lt", to));
+        query.put("schedulings.validTo", new BasicDBObject("$gt", from));
 
 
-        String query = "SELECT s from Scheduling s WHERE s.validFrom < :end AND s.validTo > :start";
-        if (showId > 0) {
-            query += " AND s.show.id = :showId";
+        if (showIdOrAlias != null) {
+            BasicDBObject q = aliasOrId(showIdOrAlias);
+            String key = q.keySet().iterator().next();
+            query.put(key, q.get(key));
         } else {
-            query += " AND s.show.status = 1";
+            query.put("status", 1);
         }
-        Query q = entityManager.createQuery(query);
-        q.setParameter("start", from);
-        q.setParameter("end", to);
-        if (showId > 0) {
-            q.setParameter("showId", showId);
-        }
-        List<Scheduling> schedulings = q.getResultList();
+
+        DBCursor shows = db.getCollection("show").find(query);
+
 
         List<EpisodeData> result = new ArrayList<>();
-        for (Scheduling s : schedulings) {
-            result.addAll(calculateEpisodes(s, s.getShow(), from, to));
+        for (DBObject show : shows) {
+            ShowSimple simpleShow = modelMapper.map(show, ShowSimple.class);
+            BasicDBList schedulings = (BasicDBList) show.get("schedulings");
+            if (schedulings != null) {
+                for (int i = 0; i < schedulings.size(); i++) {
+                    SchedulingSimple s = modelMapper.map(schedulings.get(i), SchedulingSimple.class);
+                    result.addAll(calculateEpisodes(s, simpleShow, from, to));
+                }
+            }
 
         }
 
@@ -55,7 +57,7 @@ public class ScheduledEpisodeProvider {
 
     }
 
-    private List<EpisodeData> calculateEpisodes(Scheduling s, Show show, Date from, Date to) {
+    private List<EpisodeData> calculateEpisodes(SchedulingSimple s, ShowSimple show, Date from, Date to) {
 
         Calendar toCalendar = Calendar.getInstance(TimeZone.getTimeZone("CET"));
         Calendar scheduledUntil = Calendar.getInstance(TimeZone.getTimeZone("CET"));
@@ -83,7 +85,7 @@ public class ScheduledEpisodeProvider {
                 d.setRealFrom(d.getPlannedFrom());
                 d.setRealTo(d.getPlannedTo());
                 d.setPersistent(false);
-                d.setShow(modelMapper.map(show, ShowSimple.class));
+                d.setShow(show);
                 result.add(d);
             }
             c.add(Calendar.DAY_OF_MONTH, 7);
@@ -93,7 +95,7 @@ public class ScheduledEpisodeProvider {
 
     }
 
-    protected boolean isValidDate(Calendar c, Scheduling s, Date from, Date to) {
+    protected boolean isValidDate(Calendar c, SchedulingSimple s, Date from, Date to) {
         if (s.getWeekType() > 1) {
             int weekNo = (int) Math.floor((c.getTime().getTime() - s.getBase().getTime()) / (7000l * 60 * 60 * 24));
             if (weekNo % s.getWeekType() != 0) {
@@ -116,4 +118,7 @@ public class ScheduledEpisodeProvider {
         return null;
     }
 
+    public void setDb(DB db) {
+        this.db = db;
+    }
 }

@@ -1,19 +1,19 @@
 package hu.tilos.radio.backend.controller;
 
+import com.mongodb.DB;
 import hu.radio.tilos.model.Role;
-import hu.radio.tilos.model.Show;
 import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.Configuration;
 import hu.tilos.radio.backend.FeedRenderer;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.data.types.EpisodeData;
+import hu.tilos.radio.backend.data.types.ShowSimple;
 import hu.tilos.radio.backend.episode.EpisodeUtil;
 import net.anzix.jaxrs.atom.Feed;
 import net.anzix.jaxrs.atom.Link;
+import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,6 +23,8 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+
+import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
 /**
  * Generate atom feed for the shows.
@@ -35,7 +37,7 @@ public class FeedController {
     private EpisodeUtil episodeUtil;
 
     @Inject
-    private EntityManager entityManager;
+    private DB db;
 
 
     @Inject
@@ -44,6 +46,9 @@ public class FeedController {
     @Inject
     @Configuration(name = "server.url")
     private String serverUrl;
+
+    @Inject
+    private DozerBeanMapper mapper;
 
     @GET
     @Path("/weekly")
@@ -63,7 +68,7 @@ public class FeedController {
         Date weekAgo = new Date();
         weekAgo.setTime(now.getTime() - (long) 604800000L);
 
-        List<EpisodeData> episodes = filter(episodeUtil.getEpisodeData(-1, weekAgo, now), type);
+        List<EpisodeData> episodes = filter(episodeUtil.getEpisodeData(null, weekAgo, now), type);
 
         Collections.sort(episodes, new Comparator<EpisodeData>() {
             @Override
@@ -122,9 +127,7 @@ public class FeedController {
             year = year.substring(1);
         }
 
-        Query q = entityManager.createQuery("SELECT s FROM Show s WHERE s.alias = :alias");
-        q.setParameter("alias", alias);
-        Show show = (Show) q.getSingleResult();
+        ShowSimple show = mapper.map(db.getCollection("show").findOne(aliasOrId(alias)), ShowSimple.class);
 
         Date end;
         Date start;
@@ -139,7 +142,7 @@ public class FeedController {
             end = new Date(yearInt - 1900 + 1, 0, 1);
         }
 
-        List<EpisodeData> episodeData = episodeUtil.getEpisodeData(show.getId(), start, end);
+        List<EpisodeData> episodeData = episodeUtil.getEpisodeData("" + show.getId(), start, end);
         Collections.sort(episodeData, new Comparator<EpisodeData>() {
             @Override
             public int compare(EpisodeData episodeData, EpisodeData episodeData2) {
@@ -190,7 +193,4 @@ public class FeedController {
         this.serverUrl = serverUrl;
     }
 
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 }

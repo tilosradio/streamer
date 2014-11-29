@@ -46,7 +46,7 @@ public class M3uController {
         Date now = new Date();
         Date weekAgo = new Date();
         weekAgo.setTime(now.getTime() - (long) 604800000L);
-        List<EpisodeData> episodes = episodeUtil.getEpisodeData(-1, weekAgo, now);
+        List<EpisodeData> episodes = episodeUtil.getEpisodeData(null, weekAgo, now);
 
         Collections.sort(episodes, new Comparator<EpisodeData>() {
             @Override

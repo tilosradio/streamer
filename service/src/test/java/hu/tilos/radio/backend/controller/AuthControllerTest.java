@@ -1,42 +1,44 @@
 package hu.tilos.radio.backend.controller;
 
 
-import hu.tilos.radio.backend.ConfigurationProducer;
-import hu.tilos.radio.backend.TestConfigProvider;
-import hu.tilos.radio.backend.TestUtil;
-import hu.tilos.radio.backend.ValidatorProducer;
-import hu.tilos.radio.backend.controller.AuthController;
-import hu.tilos.radio.backend.converters.MappingFactory;
+import com.github.fakemongo.junit.FongoRule;
+import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.output.LoginData;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
+import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
+
+
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MappingFactory.class, TestUtil.class, TestConfigProvider.class, ValidatorProducer.class, ConfigurationProducer.class})
-@ActivatedAlternatives(TestConfigProvider.class)
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class, ValidatorProducer.class, ConfigurationProducer.class})
+@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
 public class AuthControllerTest {
 
     @Inject
     AuthController controller;
 
-    @Before
-    public void resetDatabase() {
-        TestUtil.initTestData();
+    @Inject
+    FongoRule fongoRule;
+
+    @Rule
+    public FongoRule fongoRule() {
+        return fongoRule;
     }
 
 
     @Test
     public void testLogin() throws Exception {
         //given
-
+        loadTo(fongoRule, "user", "user-1.json");
 
         //when
         Response response = controller.login(new LoginData("bela", "password"));

@@ -1,45 +1,50 @@
 package hu.tilos.radio.backend.controller;
 
-import hu.tilos.radio.backend.ConfigurationProducer;
-import hu.tilos.radio.backend.TestConfigProvider;
-import hu.tilos.radio.backend.TestUtil;
-import hu.tilos.radio.backend.controller.StatController;
-import hu.tilos.radio.backend.converters.MappingFactory;
+import com.github.fakemongo.junit.FongoRule;
+import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.output.StatData;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
+import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
+
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MappingFactory.class, TestUtil.class, ConfigurationProducer.class})
-@ActivatedAlternatives(TestConfigProvider.class)
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class})
+@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
 public class StatControllerTest {
 
 
     @Inject
     StatController controller;
 
-    @Before
-    public void resetDatabase() {
-        TestUtil.initTestData();
+    @Inject
+    FongoRule fongoRule;
+
+    @Rule
+    public FongoRule fongoRule() {
+        return fongoRule;
     }
 
 
     @Test
     public void testGetSummary() {
         //given
-
+        loadTo(fongoRule,"show","show-3utas.json");
+        loadTo(fongoRule,"show","show-vendeglo.json");
+        loadTo(fongoRule,"episode","episode-episode1.json");
+        loadTo(fongoRule,"episode","episode-episode2.json");
         //when
         StatData data = controller.getSummary();
 
         //then
-        Assert.assertEquals(3, data.showCount);
-        Assert.assertEquals(1, data.episodeCount);
+        Assert.assertEquals(2, data.showCount);
+        Assert.assertEquals(2, data.episodeCount);
     }
 }

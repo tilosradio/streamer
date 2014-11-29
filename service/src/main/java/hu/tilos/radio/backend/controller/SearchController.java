@@ -1,7 +1,10 @@
 package hu.tilos.radio.backend.controller;
 
 
-import hu.radio.tilos.model.*;
+import com.mongodb.DB;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.data.output.SearchResponse;
 import hu.tilos.radio.backend.data.output.SearchResponseElement;
@@ -13,8 +16,9 @@ import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.util.StopwordAnalyzerBase;
-import org.apache.lucene.document.*;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -30,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -39,17 +42,16 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import static org.apache.lucene.util.Version.LUCENE_48;
 
 @Path("api/v1/search")
 public class SearchController {
 
-    @Inject
-    private EntityManager entityManager;
-
     private static final Logger LOG = LoggerFactory.getLogger(SearchController.class);
+
+    @Inject
+    private DB db;
 
     private Directory index;
 
@@ -110,11 +112,11 @@ public class SearchController {
 
 
     /**
-     * @exclude
      * @param search
      * @return
      * @throws IOException
      * @throws ParseException
+     * @exclude
      */
     @Path(value = "query")
     @GET
@@ -160,22 +162,22 @@ public class SearchController {
     }
 
     private void addAuthors(IndexWriter w) throws IOException {
-        List<Author> authors = entityManager.createQuery("SELECT a FROM Author a").getResultList();
-        for (Author a : authors) {
+        DBCursor authors = db.getCollection("author").find();
+        for (DBObject a : authors) {
             Document doc = new Document();
-            doc.add(new TextField("name", a.getName(), Field.Store.YES));
-            if (a.getAlias() != null) {
-                doc.add(new TextField("alias", a.getAlias(), Field.Store.NO));
-            }
-            if (a.getIntroduction() != null) {
-                doc.add(new TextField("introduction", a.getIntroduction(), Field.Store.NO));
-                doc.add(new TextField("description", shorten(a.getIntroduction(), 100), Field.Store.YES));
+            doc.add(new TextField("name", safe(a, "name"), Field.Store.YES));
+
+            doc.add(new TextField("alias", safe(a, "alias"), Field.Store.NO));
+
+            if (a.get("introduction") != null) {
+                doc.add(new TextField("introduction", a.get("introduction").toString(), Field.Store.NO));
+                doc.add(new TextField("description", shorten(a.get("introduction").toString(), 100), Field.Store.YES));
             } else {
                 doc.add(new TextField("description", "", Field.Store.YES));
             }
 
             doc.add(new TextField("type", "author", Field.Store.YES));
-            doc.add(new TextField("uri", "/author/" + a.getAlias(), Field.Store.YES));
+            doc.add(new TextField("uri", "/author/" + safe(a, "alias"), Field.Store.YES));
             w.addDocument(doc);
         }
 
@@ -190,23 +192,15 @@ public class SearchController {
     }
 
     private void addShows(IndexWriter w) throws IOException {
-        List<Show> shows = entityManager.createQuery("SELECT a FROM Show a").getResultList();
-        for (Show show : shows) {
+        DBCursor shows = db.getCollection("show").find();
+        for (DBObject show : shows) {
             Document doc = new Document();
-            doc.add(new TextField("name", show.getName(), Field.Store.YES));
-            if (show.getAlias() != null) {
-                doc.add(new TextField("alias", show.getAlias(), Field.Store.NO));
-            }
-            if (show.getDefinition() != null) {
-                doc.add(new TextField("description", show.getDefinition(), Field.Store.YES));
-            } else {
-                doc.add(new TextField("description", "", Field.Store.YES));
-            }
-            if (show.getDescription() != null) {
-                doc.add(new TextField("introduction", show.getDescription(), Field.Store.NO));
-            }
+            doc.add(new TextField("name", safe(show, "name"), Field.Store.YES));
+            doc.add(new TextField("alias", safe(show, "alias"), Field.Store.NO));
+            doc.add(new TextField("description", safe(show, "description"), Field.Store.YES));
+            doc.add(new TextField("introduction", safe(show, "description"), Field.Store.NO));
             doc.add(new TextField("type", "show", Field.Store.YES));
-            doc.add(new TextField("uri", "/show/" + show.getAlias(), Field.Store.YES));
+            doc.add(new TextField("uri", "/show/" + safe(show, "alias"), Field.Store.YES));
 
             w.addDocument(doc);
         }
@@ -214,20 +208,20 @@ public class SearchController {
     }
 
     private void addPages(IndexWriter w) throws IOException {
-        List<TextContent> textContents = entityManager.createQuery("SELECT t FROM TextContent t where t.type = 'page'").getResultList();
-        for (TextContent page : textContents) {
+        DBCursor pages = db.getCollection("page").find();
+        for (DBObject page : pages) {
             Document doc = new Document();
 
-            doc.add(new TextField("content", safe(page.getContent()), Field.Store.NO));
-            doc.add(new TextField("alias", safe(page.getAlias() != null ? page.getAlias() : ""), Field.Store.YES));
-            doc.add(new TextField("name", safe(page.getTitle()), Field.Store.YES));
-            doc.add(new TextField("description", shorten(safe(page.getContent()), 100), Field.Store.YES));
-            doc.add(new TextField("content", safe(page.getContent()), Field.Store.NO));
+            doc.add(new TextField("content", safe(page, "content"), Field.Store.NO));
+            doc.add(new TextField("alias", safe(page, "alias"), Field.Store.YES));
+            doc.add(new TextField("name", safe(page, "title"), Field.Store.YES));
+            doc.add(new TextField("description", shorten(safe(page, "content"), 100), Field.Store.YES));
+            doc.add(new TextField("content", safe(page, "content"), Field.Store.NO));
             doc.add(new TextField("type", "page", Field.Store.YES));
-            if (page.getAlias() != null && page.getAlias().length() > 0) {
-                doc.add(new TextField("uri", "/page/" + page.getAlias(), Field.Store.YES));
+            if (safe(page, "alias").length() > 0) {
+                doc.add(new TextField("uri", "/page/" + page.get("alias"), Field.Store.YES));
             } else {
-                doc.add(new TextField("uri", "/page/" + page.getId(), Field.Store.YES));
+                doc.add(new TextField("uri", "/page/" + page.get("_id"), Field.Store.YES));
             }
             w.addDocument(doc);
         }
@@ -236,21 +230,23 @@ public class SearchController {
 
     private void addEpisodes(final IndexWriter w) throws IOException {
 
-        List<Episode> episodes = entityManager.createQuery("SELECT e FROM Episode e").getResultList();
-        for (Episode e : episodes) {
-            TextContent text = e.getText();
+        DBCursor episodes = db.getCollection("episode").find();
+        for (DBObject e : episodes) {
+            DBObject text = (DBObject) e.get("text");
             if (text != null) {
 
 
                 Document doc = new Document();
-                doc.add(new TextField("content", safe(text.getContent()), Field.Store.NO));
+                doc.add(new TextField("content", safe(text, "content"), Field.Store.NO));
                 //doc.add(new TextField("alias", safe(page.getAlias()), Field.Store.NO));
-                doc.add(new TextField("name", safe(text.getTitle()), Field.Store.YES));
-                doc.add(new TextField("description", shorten(safe(text.getContent()), 100), Field.Store.YES));
-                doc.add(new TextField("content", safe(text.getContent()), Field.Store.NO));
+                doc.add(new TextField("name", safe(text, "title"), Field.Store.YES));
+                doc.add(new TextField("description", shorten(safe(text, "content"), 100), Field.Store.YES));
+                doc.add(new TextField("content", safe(text, "content"), Field.Store.NO));
                 doc.add(new TextField("type", "episode", Field.Store.YES));
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-                doc.add(new TextField("uri", "/episode/" + e.getShow().getAlias() + "/" + dateFormat.format(new Date(e.getPlannedFrom().getTime())), Field.Store.YES));
+                Date plannedFrom = (Date) e.get("plannedFrom");
+                String alias = (String) ((DBObject) e.get("show")).get("alias");
+                doc.add(new TextField("uri", "/episode/" + alias + "/" + dateFormat.format(new Date(plannedFrom.getTime())), Field.Store.YES));
                 try {
                     w.addDocument(doc);
                 } catch (IOException ex) {
@@ -261,11 +257,11 @@ public class SearchController {
     }
 
 
-    private String safe(String content) {
-        if (content == null) {
+    private String safe(DBObject object, String content) {
+        if (object.get(content) == null) {
             return "";
         }
-        return content;
+        return object.get(content).toString();
     }
 
 

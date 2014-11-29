@@ -1,15 +1,16 @@
 package hu.tilos.radio.backend;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
 import hu.radio.tilos.model.Role;
-import hu.radio.tilos.model.User;
 import hu.tilos.radio.backend.data.Token;
+import hu.tilos.radio.backend.data.types.UserDetailed;
 import hu.tilos.radio.backend.util.JWTEncoder;
-import org.modelmapper.ModelMapper;
+import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -36,14 +37,14 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     Session session;
 
     @Inject
-    ModelMapper modelMapper;
+    DozerBeanMapper modelMapper;
 
     @Inject
     @Configuration(name = "auth.url")
     private String serverUrl;
 
     @Inject
-    private EntityManager entityManager;
+    private DB db;
 
     @Inject
     private JWTEncoder jwtEncoder;
@@ -66,7 +67,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
                 Token token = jwtEncoder.decode(bearer);
 
-                User user = (User) entityManager.createNamedQuery("user.byUsername").setParameter("username", token.getUsername()).getSingleResult();
+                UserDetailed user = modelMapper.map(db.getCollection("user").findOne(new BasicDBObject("username", token.getUsername())), UserDetailed.class);
 
                 session.setCurrentUser(user);
             } catch (Exception e) {
@@ -79,7 +80,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         if (m.isAnnotationPresent(Security.class)) {
             Security s = m.getAnnotation(Security.class);
             if (s.role() != Role.GUEST && s.role() != Role.UNKNOWN) {
-                User user = session.getCurrentUser();
+                UserDetailed user = session.getCurrentUser();
                 if (user == null || (s.role().ordinal() > user.getRole().ordinal())) {
                     requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).build());
                     return;

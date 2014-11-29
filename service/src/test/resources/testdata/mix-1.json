@@ -1,0 +1,18 @@
+{
+  "id": 1,
+  "type": 1,
+  "author": "asd",
+  "title": "good mix",
+  "file": "asd.mp3",
+  "date": "2013-04-05",
+  "show_id": 1,
+  "category": 2,
+  "show": {
+    "alias": "3utas",
+    "name": "3. utas",
+    "ref": {
+      "$ref": "show",
+      "$id": "<REF1>"
+    }
+  }
+}

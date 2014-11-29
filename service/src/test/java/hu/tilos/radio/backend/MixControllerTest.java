@@ -1,59 +1,57 @@
 package hu.tilos.radio.backend;
 
-import hu.radio.tilos.model.Mix;
+import com.github.fakemongo.junit.FongoRule;
+import com.mongodb.DBObject;
+import com.mongodb.DBRef;
 import hu.radio.tilos.model.type.MixCategory;
 import hu.radio.tilos.model.type.MixType;
 import hu.tilos.radio.backend.controller.MixController;
-import hu.tilos.radio.backend.converters.MappingFactory;
 import hu.tilos.radio.backend.data.response.CreateResponse;
+import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.MixData;
 import hu.tilos.radio.backend.data.types.MixSimple;
 import hu.tilos.radio.backend.data.types.ShowSimple;
 import org.hamcrest.CustomMatcher;
+import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import java.util.List;
 
+import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
+import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MappingFactory.class, TestUtil.class})
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class})
+@ActivatedAlternatives(FongoCreator.class)
 public class MixControllerTest {
-
-    private static EntityManagerFactory factory;
 
     @Inject
     MixController controller;
 
-    @BeforeClass
-    public static void setUp() throws Exception {
-        factory = TestUtil.initPersistence();
-    }
+    @Inject
+    FongoRule fongoRule;
 
-    @Before
-    public void resetDatabase() {
-        TestUtil.initTestData();
+    @Rule
+    public FongoRule fongoRule() {
+        return fongoRule;
     }
 
     @Test
     public void testGet() {
-
         //given
-        controller.setEntityManager(factory.createEntityManager());
+        loadTo(fongoRule, "mix", "mix-1.json");
 
         //when
-        MixData r = controller.get(1);
+        MixData r = controller.get("1");
 
         //then
         Assert.assertEquals("good mix", r.getTitle());
@@ -61,20 +59,23 @@ public class MixControllerTest {
         Assert.assertEquals(MixType.MUSIC.SPEECH, r.getType());
         Assert.assertEquals(MixCategory.SHOW, r.getCategory());
         Assert.assertEquals("3. utas", r.getShow().getName());
+        Assert.assertNotNull(r.getShow().getId());
+        Assert.assertEquals(r.getLink(),"http://archive.tilos.hu/sounds/asd.mp3");
     }
 
 
     @Test
     public void testList() {
-
         //given
-        controller.setEntityManager(factory.createEntityManager());
+        String showId = loadTo(fongoRule, "show", "show-3utas.json");
+        loadTo(fongoRule, "mix", "mix-1.json", showId);
+        loadTo(fongoRule, "mix", "mix-2.json");
 
         //when
         List<MixSimple> responses = controller.list(null, null);
 
         //then
-        Assert.assertEquals(3, responses.size());
+        Assert.assertEquals(2, responses.size());
         assertThat(responses, hasItem(new CustomMatcher<MixSimple>("Mix with show") {
 
             @Override
@@ -94,26 +95,21 @@ public class MixControllerTest {
 
     @Test
     public void testListWithShowId() {
-
         //given
-        controller.setEntityManager(factory.createEntityManager());
+        String showId = loadTo(fongoRule, "show", "show-3utas.json");
+        loadTo(fongoRule, "mix", "mix-1.json", showId);
 
         //when
         List<MixSimple> responses = controller.list("3utas", null);
 
         //then
-        Assert.assertEquals(2, responses.size());
+        Assert.assertEquals(1, responses.size());
     }
 
 
     @Test
     public void testCreate() {
-
         //given
-        EntityManager em = factory.createEntityManager();
-
-        controller.setEntityManager(em);
-
         MixData r = new MixData();
         r.setAuthor("lajos");
         r.setTitle("new mix");
@@ -121,54 +117,46 @@ public class MixControllerTest {
         r.setType(MixType.SPEECH);
         r.setCategory(MixCategory.DJ);
 
-        ShowSimple showSimple = new ShowSimple();
-        showSimple.setId(1);
-        r.setShow(showSimple);
 
         //when
-        em.getTransaction().begin();
         CreateResponse response = controller.create(r);
-        em.getTransaction().commit();
 
         //then
         Assert.assertTrue(response.isSuccess());
         Assert.assertNotEquals(0, response.getId());
 
-        Mix mix = em.find(Mix.class, response.getId());
-        Assert.assertEquals("lajos", mix.getAuthor());
-        Assert.assertEquals(1, mix.getShow().getId());
-        em.close();
+        DBObject mix = fongoRule.getDB().getCollection("mix").findOne(aliasOrId(response.getId()));
+        Assert.assertEquals("lajos", mix.get("author"));
+
     }
 
 
     @Test
     public void testUpdate() {
-
         //given
-        EntityManager em = factory.createEntityManager();
-        controller.setEntityManager(em);
-        MixData req = controller.get(1);
+        String mix1Id = loadTo(fongoRule, "mix", "mix-1.json");
+        String showId = loadTo(fongoRule, "show", "show-3utas.json");
+        MixData req = controller.get(mix1Id);
 
         req.setTitle("this Is the title");
         req.setDate("2014-10-23");
         Assert.assertEquals(MixType.SPEECH, req.getType());
         req.setType(MixType.MUSIC);
-        //req.setShow(new EntitySelector(2));
+
+        ShowSimple show = new ShowSimple();
+        show.setId(showId);
+        req.setShow(show);
 
         //when
-        em.getTransaction().begin();
-        CreateResponse response = controller.update(1, req);
-        em.getTransaction().commit();
+        UpdateResponse response = controller.update(mix1Id, req);
 
         //then
         Assert.assertTrue(response.isSuccess());
 
-        Mix mix = em.find(Mix.class, 1);
-        Assert.assertEquals("this Is the title", mix.getTitle());
-        Assert.assertEquals(9, mix.getDate().getMonth());
-        Assert.assertEquals(23, mix.getDate().getDate());
-        Assert.assertEquals(MixType.MUSIC, mix.getType());
-        em.close();
+        DBObject mix = fongoRule.getDB().getCollection("mix").findOne(aliasOrId(mix1Id));
+        Assert.assertEquals("this Is the title", mix.get("title"));
+        Assert.assertEquals(MixType.MUSIC.ordinal(), mix.get("type"));
+        Assert.assertEquals(showId, ((DBRef) ((DBObject) mix.get("show")).get("ref")).getId());
     }
 
 

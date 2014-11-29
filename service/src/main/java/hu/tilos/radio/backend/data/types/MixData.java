@@ -6,7 +6,7 @@ import hu.tilos.radio.backend.data.EntitySelector;
 
 public class MixData {
 
-    private int id;
+    private String  id;
 
     private String author;
 
@@ -42,11 +42,11 @@ public class MixData {
         this.link = link;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -19,7 +19,7 @@ public class SchedulingSimple {
 
     private Date validTo;
 
-    private long base;
+    private Date base;
 
     private int weekType;
 
@@ -73,11 +73,11 @@ public class SchedulingSimple {
         this.validTo = validTo;
     }
 
-    public long getBase() {
+    public Date getBase() {
         return base;
     }
 
-    public void setBase(long base) {
+    public void setBase(Date base) {
         this.base = base;
     }
 
