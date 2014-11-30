@@ -159,6 +159,16 @@
 
 
     <mapping map-null="false">
+        <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
+        <class-b>hu.tilos.radio.backend.data.types.EpisodeData</class-b>
+        <field>
+            <a key="_id">this</a>
+            <b>id</b>
+        </field>
+    </mapping>
+
+
+    <mapping map-null="false">
         <class-a>hu.tilos.radio.backend.data.input.ShowToSave</class-a>
         <class-b map-get-method="get" map-set-method="put">org.bson.BSONObject</class-b>
         <field custom-converter="hu.tilos.radio.backend.converters.EnumEncoder">

@@ -50,7 +50,7 @@ public class EpisodeUtil {
         this.scheduledProvider = scheduledProvider;
     }
 
-    public void linkGenerator(EpisodeData episode) {
+    public static EpisodeData linkGenerator(EpisodeData episode) {
         if (episode.getRealTo().compareTo(new Date()) < 0) {
             episode.setM3uUrl("http://tilos.hu/mp3/tilos-" +
                     YYYYMMDD.format(episode.getRealFrom()) +
@@ -59,5 +59,6 @@ public class EpisodeUtil {
                     "-" +
                     HHMMSS.format(episode.getRealTo()) + ".m3u");
         }
+        return episode;
     }
 }

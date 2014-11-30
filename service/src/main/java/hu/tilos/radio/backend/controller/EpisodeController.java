@@ -2,6 +2,7 @@ package hu.tilos.radio.backend.controller;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Security;
@@ -9,6 +10,7 @@ import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.converters.TagUtil;
 import hu.tilos.radio.backend.data.input.EpisodeToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
+import hu.tilos.radio.backend.data.response.ErrorResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.EpisodeData;
 import hu.tilos.radio.backend.data.types.TagData;
@@ -21,9 +23,9 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import javax.ws.rs.core.Response;
+
+import java.util.*;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
@@ -59,6 +61,78 @@ public class EpisodeController {
     }
 
     @GET
+    @Path("/")
+    @Security(role = Role.GUEST)
+    @Produces("application/json")
+    @Transactional
+    public Response listEpisodes(@QueryParam("start") long from, @QueryParam("end") long to) {
+        Date fromDate = new Date();
+        fromDate.setTime(from);
+        Date toDate = new Date();
+        toDate.setTime(to);
+
+        if (to - from > 1000 * 60 * 60 * 168) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponse("Period is too big")).build();
+        }
+        List<EpisodeData> episodeData = episodeUtil.getEpisodeData(null, fromDate, toDate);
+        Collections.sort(episodeData, new Comparator<EpisodeData>() {
+            @Override
+            public int compare(EpisodeData e1, EpisodeData e2) {
+                return e1.getPlannedFrom().compareTo(e2.getPlannedFrom()) * -1;
+            }
+        });
+        return Response.ok(episodeData).build();
+
+    }
+
+    @GET
+    @Path("/next")
+    @Security(role = Role.GUEST)
+    @Produces("application/json")
+    public List<EpisodeData> next() {
+        Date start = new Date();
+        Date end = new Date();
+        end.setTime(start.getTime() + (long) 168 * 60 * 60 * 1000);
+
+        BasicDBObject query = new BasicDBObject();
+        query.put("plannedFrom", new BasicDBObject("$lt", end));
+        query.put("plannedTo", new BasicDBObject("$gt", start));
+
+        DBCursor episodes = db.getCollection("episode").find(query).sort(new BasicDBObject("plannedFrom", 1)).limit(5);
+        List<EpisodeData> result = new ArrayList<>();
+        for (DBObject episode : episodes) {
+            EpisodeData episodeData = modelMapper.map(episode, EpisodeData.class);
+            EpisodeUtil.linkGenerator(episodeData);
+            result.add(episodeData);
+        }
+        return result;
+    }
+
+
+    @GET
+    @Path("/last")
+    @Security(role = Role.GUEST)
+    @Produces("application/json")
+    public List<EpisodeData> last() {
+        Date start = new Date();
+        start.setTime(start.getTime() - (long) 30 * 24 * 60 * 60 * 1000);
+
+        BasicDBObject query = new BasicDBObject();
+        query.put("created", new BasicDBObject("$gt", start));
+        query.put("text.content", new BasicDBObject("$exists", true));
+
+        DBCursor episodes = db.getCollection("episode").find(query).sort(new BasicDBObject("created", -1)).limit(10);
+        List<EpisodeData> result = new ArrayList<>();
+        for (DBObject episode : episodes) {
+            EpisodeData episodeData = modelMapper.map(episode, EpisodeData.class);
+            EpisodeUtil.linkGenerator(episodeData);
+            result.add(episodeData);
+        }
+        return result;
+    }
+
+
+    @GET
     @Path("/{show}/{year}/{month}/{day}")
     @Security(role = Role.GUEST)
     @Produces("application/json")
@@ -71,7 +145,7 @@ public class EpisodeController {
             //todo, error handling
             throw new IllegalArgumentException("Can't find the appropriate episode");
         } else {
-            return episodeData.get(0);
+            return EpisodeUtil.linkGenerator(episodeData.get(0));
         }
     }
 
@@ -100,7 +174,7 @@ public class EpisodeController {
 
 
         BasicDBObject newMongoOBject = modelMapper.map(entity, BasicDBObject.class);
-
+        newMongoOBject.put("created", new Date());
         newMongoOBject.remove("id");
         newMongoOBject.remove("persistent");
         //FIXME

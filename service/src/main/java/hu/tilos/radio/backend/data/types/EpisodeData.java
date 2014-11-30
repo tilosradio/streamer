@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class EpisodeData {
 
-    private int id;
+    private String id;
 
     private Date plannedFrom;
 
@@ -42,11 +42,11 @@ public class EpisodeData {
         this.tags = tags;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
