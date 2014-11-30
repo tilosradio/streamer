@@ -51,10 +51,10 @@ public class ShowController {
         BasicDBObject criteria = new BasicDBObject();
 
         //FIXME
-//        if (showStatus != null) {
-//            select.where(criteriaBuilder.equal(showRoot.get("status"), showStatus));
-//        }
-        DBCursor selectedShows = db.getCollection("show").find();
+        if (!"all".equals("showStatus")) {
+            criteria.put("status", ShowStatus.ACTIVE.ordinal());
+        }
+        DBCursor selectedShows = db.getCollection("show").find(criteria).sort(new BasicDBObject("name", 1));
 
         List<ShowSimple> mappedShows = new ArrayList<>();
         for (DBObject show : selectedShows) {
