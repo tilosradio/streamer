@@ -78,7 +78,7 @@ public class EpisodeController {
         Collections.sort(episodeData, new Comparator<EpisodeData>() {
             @Override
             public int compare(EpisodeData e1, EpisodeData e2) {
-                return e1.getPlannedFrom().compareTo(e2.getPlannedFrom()) * -1;
+                return e1.getPlannedFrom().compareTo(e2.getPlannedFrom());
             }
         });
         return Response.ok(episodeData).build();
