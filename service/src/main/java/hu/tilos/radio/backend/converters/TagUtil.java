@@ -1,7 +1,9 @@
 package hu.tilos.radio.backend.converters;
 
 
-import hu.radio.tilos.model.Tag;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import hu.radio.tilos.model.type.TagType;
 import hu.tilos.radio.backend.data.types.TagData;
 import org.jsoup.Jsoup;
@@ -44,6 +46,7 @@ public class TagUtil {
         patterns.get(TagType.PERSON).add(Pattern.compile(PERSON_SIMPLE));
         patterns.get(TagType.PERSON).add(Pattern.compile(PERSON_COMPLEX));
     }
+
 
     public boolean doesIncludeTags(String plainText) {
         for (TagType type : patterns.keySet()) {
@@ -95,6 +98,27 @@ public class TagUtil {
         }
         return doc.select("body").html();
     }
+
+    public BasicDBList createTagObject(DBObject original, String... address) {
+        BasicDBList tagObject = new BasicDBList();
+        DBObject textParent = original;
+        for (int i = 0; i < address.length - 1; i++) {
+            if (textParent.get(address[i]) == null) {
+                return tagObject;
+            } else {
+                textParent = (DBObject) textParent.get(address[i]);
+            }
+        }
+        String text = (String) textParent.get(address[address.length - 1]);
+        for (TagData tagData : getTags(text)) {
+            BasicDBObject obj = new BasicDBObject();
+            obj.put("name", tagData.getName());
+            obj.put("type", tagData.getType().ordinal());
+            tagObject.add(obj);
+        }
+        return tagObject;
+    }
+
 
     public Set<TagData> getTags(String text) {
         //remove html tags

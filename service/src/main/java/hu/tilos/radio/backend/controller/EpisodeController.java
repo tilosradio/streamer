@@ -212,7 +212,6 @@ public class EpisodeController {
         if (episode.getText() != null && episode.getText().getContent() != null) {
             Set<TagData> newTags = tagUtil.getTags(episode.getText().getContent());
             episode.setTags(newTags);
-
         }
     }
 
