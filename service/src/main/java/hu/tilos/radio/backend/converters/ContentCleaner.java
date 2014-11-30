@@ -8,7 +8,7 @@ import javax.inject.Inject;
 public class ContentCleaner  implements ConfigurableCustomConverter {
 
     @Inject
-    StrictHTMLSanitizer sanitizer;
+    HTMLSanitizer sanitizer;
 
     @Inject
     TagUtil tagUtil;
