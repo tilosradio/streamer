@@ -44,23 +44,23 @@ public class CommentController {
     @Path("/{type}/{identifier}")
     @Security(role = Role.GUEST)
     @Produces("application/json")
-    public List<CommentData> list(@PathParam("type") CommentType type, @PathParam("identifier") int id) {
+    public List<CommentData> list(@PathParam("type") CommentType type, @PathParam("identifier") String id) {
         BasicDBObject query = new BasicDBObject();
         query.put("type", type.ordinal());
         query.put("identifier", id);
-        query.put("status", CommentStatus.ACCEPTED);
+        query.put("status", CommentStatus.ACCEPTED.ordinal());
         //FIXME status or current author
         DBCursor comments = db.getCollection("comment").find(query);
 
         Map<String, CommentData> commentsById = new HashMap<>();
 
         for (DBObject comment : comments) {
-            commentsById.put((String) comment.get("_id"), modelMapper.map(comment, CommentData.class));
+            commentsById.put(comment.get("_id").toString(), modelMapper.map(comment, CommentData.class));
         }
         for (DBObject comment : comments) {
             if (comment.get("parent") != null) {
                 DBRef parent = (DBRef) comment.get("parent");
-                commentsById.get((String) parent.getId()).getChildren().add(commentsById.get(comment.get("_id")));
+                commentsById.get((String) parent.getId()).getChildren().add(commentsById.get(comment.get("_id").toString()));
             }
         }
 
@@ -68,7 +68,7 @@ public class CommentController {
 
         for (DBObject comment : comments) {
             if (comment.get("parent") == null) {
-                topLevelComments.add(commentsById.get(comment.get("_id")));
+                topLevelComments.add(commentsById.get(comment.get("_id").toString()));
             }
         }
 

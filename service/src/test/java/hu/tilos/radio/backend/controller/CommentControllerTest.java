@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
 
+import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -43,20 +44,19 @@ public class CommentControllerTest {
         return fongoRule;
     }
 
-//    @Test
-//    @InRequestScope
-//    public void list() {
-//        //given
-//        //session.setCurrentUser(entityManager.find(User.class, 1));
-//
-//        //when
-//        List<CommentData> list = controller.list(CommentType.EPISODE, 1);
-//
-//        //then
-//        assertThat(list.size(), equalTo(2));
-//        assertThat(list.get(0).getAuthor(), Matchers.notNullValue());
-//        assertThat(list.get(0).getComment(), equalTo("mi ez a fos zene"));
-//    }
+    @Test
+    public void list() {
+        //given
+        loadTo(fongoRule,"comment","comment-list-comment1.json");
+
+        //when
+        List<CommentData> list = controller.list(CommentType.EPISODE, "1");
+
+        //then
+        assertThat(list.size(), equalTo(1));
+        assertThat(list.get(0).getAuthor(), Matchers.notNullValue());
+        assertThat(list.get(0).getComment(), equalTo("mi ez a fos zene"));
+    }
 //
 //    @Test
 //    @InRequestScope
