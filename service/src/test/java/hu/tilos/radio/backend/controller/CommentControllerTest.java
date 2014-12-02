@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend.controller;
 
+import com.github.fakemongo.junit.FongoRule;
 import hu.radio.tilos.model.type.CommentStatus;
 import hu.radio.tilos.model.type.CommentType;
 import hu.tilos.radio.backend.*;
@@ -12,6 +13,7 @@ import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
 import org.jglue.cdiunit.InRequestScope;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,21 +24,25 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-//@RunWith(CdiRunner.class)
-//@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class})
-//@ActivatedAlternatives(FongoCreator.class)
+@RunWith(CdiRunner.class)
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class})
+@ActivatedAlternatives(FongoCreator.class)
 public class CommentControllerTest {
 
-//    @Inject
-//    CommentController controller;
-//
-//    @Inject
-//    EntityManager entityManager;
-//
-//    @Inject
-//    Session session;
+    @Inject
+    CommentController controller;
 
-//
+    @Inject
+    Session session;
+
+    @Inject
+    FongoRule fongoRule;
+
+    @Rule
+    public FongoRule fongoRule() {
+        return fongoRule;
+    }
+
 //    @Test
 //    @InRequestScope
 //    public void list() {

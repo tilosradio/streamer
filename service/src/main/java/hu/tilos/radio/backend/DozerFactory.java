@@ -43,6 +43,7 @@ public class DozerFactory {
         converters.put("uploadUrl", new PrefixingConverter("https://tilos.hu/upload/"));
         converters.put("contentCleaner", cleaner);
         converters.put("showReference", new ReferenceEncoder(db, "show", new String[]{"alias", "name"}));
+        converters.put("authorReference", new ReferenceEncoder(db, "author", new String[]{"alias", "name"}));
         converters.put("childEncoder", new MongoObjectEncoder(mapper));
         converters.put("resolvedReferenceDecoder", new ResolvedReferenceDecoder(db, mapper));
         converters.put("soundLink", new PrefixingConverter("http://archive.tilos.hu/sounds/", "http"));

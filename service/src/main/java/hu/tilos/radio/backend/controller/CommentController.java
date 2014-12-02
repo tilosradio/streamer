@@ -1,10 +1,6 @@
 package hu.tilos.radio.backend.controller;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import hu.radio.tilos.model.Comment;
+import com.mongodb.*;
 import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.CommentStatus;
 import hu.radio.tilos.model.type.CommentType;
@@ -20,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import java.util.*;
@@ -57,24 +52,25 @@ public class CommentController {
         //FIXME status or current author
         DBCursor comments = db.getCollection("comment").find(query);
 
-//        Map<Integer, CommentData> commentsById = new HashMap<>();
-//
-//        for (DBObject comment : comments) {
-//            commentsById.put(comment.getId(), modelMapper.map(comment, CommentData.class));
-//        }
-//        for (Comment comment : comments) {
-//            if (comment.getParent() != null) {
-//                commentsById.get(comment.getParent().getId()).getChildren().add(commentsById.get(comment.getId()));
-//            }
-//        }
+        Map<String, CommentData> commentsById = new HashMap<>();
+
+        for (DBObject comment : comments) {
+            commentsById.put((String) comment.get("_id"), modelMapper.map(comment, CommentData.class));
+        }
+        for (DBObject comment : comments) {
+            if (comment.get("parent") != null) {
+                DBRef parent = (DBRef) comment.get("parent");
+                commentsById.get((String) parent.getId()).getChildren().add(commentsById.get(comment.get("_id")));
+            }
+        }
 
         List<CommentData> topLevelComments = new ArrayList();
 
-//        for (Comment comment : comments) {
-//            if (comment.getParent() == null) {
-//                topLevelComments.add(commentsById.get(comment.getId()));
-//            }
-//        }
+        for (DBObject comment : comments) {
+            if (comment.get("parent") == null) {
+                topLevelComments.add(commentsById.get(comment.get("_id")));
+            }
+        }
 
         return topLevelComments;
     }
@@ -84,19 +80,15 @@ public class CommentController {
     @Security(role = Role.GUEST)
     @Produces("application/json")
     public List<CommentData> listAll(@QueryParam("status") String status) {
-//        Query selectComments;
-//        if (status == null) {
-//            selectComments = entityManager.createQuery("SELECT c FROM Comment c ORDER BY c.created desc");
-//        } else {
-//            selectComments = entityManager.createQuery("SELECT c FROM Comment c WHERE c.status = :status ORDER BY c.created desc").setParameter("status", CommentStatus.valueOf(status));
-//        }
-//
-//        List<Comment> comments = selectComments.getResultList();
-
+        BasicDBObject query = new BasicDBObject();
+        if (status != null) {
+            query.put("status", CommentStatus.valueOf(status).ordinal());
+        }
+        DBCursor comments = db.getCollection("comment").find(query).sort(new BasicDBObject("created", -1));
         List<CommentData> commentDtos = new ArrayList();
-//        for (Comment comment : comments) {
-//            commentDtos.add(modelMapper.map(comment, CommentData.class));
-//        }
+        for (DBObject comment : comments) {
+            commentDtos.add(modelMapper.map(comment, CommentData.class));
+        }
 
         return commentDtos;
     }
@@ -109,12 +101,11 @@ public class CommentController {
     @Security(role = Role.ADMIN)
     @Produces("application/json")
     @Transactional
-    public CommentData approve(@PathParam("id") int id) {
-//        Comment comment = entityManager.find(Comment.class, id);
-//        comment.setStatus(CommentStatus.ACCEPTED);
-//        entityManager.persist(comment);
-//        return modelMapper.map(comment, CommentData.class);
-        return null;
+    public CommentData approve(@PathParam("id") String id) {
+        DBObject comment = db.getCollection("comment").findOne(new BasicDBObject("_id", id));
+        comment.put("status", CommentStatus.ACCEPTED);
+        db.getCollection("comment").update(new BasicDBObject("_id", id), comment);
+        return modelMapper.map(comment, CommentData.class);
     }
 
     /**
@@ -126,10 +117,7 @@ public class CommentController {
     @Produces("application/json")
     @Transactional
     public void delete(@PathParam("id") int id) {
-//        Comment comment = entityManager.find(Comment.class, id);
-//
-//        entityManager.remove(comment);
-
+        db.getCollection("comment").remove(new BasicDBObject("_id", id));
     }
 
 
@@ -142,21 +130,19 @@ public class CommentController {
     @POST
     @Transactional
     public CreateResponse create(@PathParam("type") CommentType type, @PathParam("identifier") int id, CommentToSave data) {
-//        Comment comment = new Comment();
-//        comment.setMoment(data.getMoment());
-//        comment.setComment(data.getComment());
-//        comment.setAuthor(session.getCurrentUser());
-//        comment.setType(type);
-//        comment.setIdentifier(id);
-//        comment.setCreated(new Date());
-//        if (data.getParentId() > 0) {
-//            comment.setParent(entityManager.find(Comment.class, data.getParentId()));
-//        }
-//
-//        entityManager.persist(comment);
-//        entityManager.flush();
-//        return new CreateResponse(comment.getId());
-        return null;
+        BasicDBObject comment = modelMapper.map(data, BasicDBObject.class);
+        comment.put("type", type.ordinal());
+        comment.put("identifier", id);
+        comment.put("created", new Date());
+
+        BasicDBObject author = new BasicDBObject();
+        author.put("username", session.getCurrentUser().getUsername());
+        author.put("ref", new DBRef(db, "user", session.getCurrentUser().getId()));
+
+        comment.put("creator", author);
+
+        db.getCollection("comment").insert(comment);
+        return new CreateResponse((String) comment.get("_id"));
     }
 
 

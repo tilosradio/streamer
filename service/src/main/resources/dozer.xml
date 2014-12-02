@@ -106,6 +106,15 @@
             <b>link</b>
         </field>
     </mapping>
+
+    <mapping map-null="false" type="one-way">
+        <class-a>hu.tilos.radio.backend.data.input.ContributorToSave</class-a>
+        <class-b map-get-method="get" map-set-method="put">org.bson.BSONObject</class-b>
+        <field custom-converter-id="authorReference" type="one-way">
+            <a>author</a>
+            <b key="show">this</b>
+        </field>
+    </mapping>
     <mapping map-null="false" type="one-way">
         <class-a>hu.tilos.radio.backend.data.types.MixData</class-a>
         <class-b map-get-method="get" map-set-method="put">org.bson.BSONObject</class-b>
@@ -194,6 +203,10 @@
             <a>status</a>
             <b key="status">this</b>
         </field>
+        <field custom-converter="hu.tilos.radio.backend.converters">
+            <a>type</a>
+            <b key="type">this</b>
+        </field>
     </mapping>
     <mapping map-null="false" type="one-way">
         <class-a>hu.tilos.radio.backend.data.types.TextData</class-a>
@@ -211,7 +224,6 @@
             <b key="show">this</b>
         </field>
     </mapping>
-
 
 
 </mappings>
