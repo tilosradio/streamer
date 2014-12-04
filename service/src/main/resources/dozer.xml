@@ -48,10 +48,6 @@
             <a key="_id">this</a>
             <b>id</b>
         </field>
-        <field custom-converter-id="uploadUrl">
-            <a key="avatar">this</a>
-            <b>avatar</b>
-        </field>
         <field>
             <a key="contributions">this</a>
             <b>contributions</b>
@@ -64,10 +60,6 @@
         <field>
             <a key="_id">this</a>
             <b>id</b>
-        </field>
-        <field custom-converter-id="uploadUrl">
-            <a key="avatar">this</a>
-            <b>avatar</b>
         </field>
     </mapping>
 

@@ -16,7 +16,7 @@ import javax.ws.rs.Path;
 /**
  * Various functions to check data consistency.
  */
-@Path("api/v1/fix")
+@Path("api/v1/locateAvatar")
 public class DataFixController {
 
 

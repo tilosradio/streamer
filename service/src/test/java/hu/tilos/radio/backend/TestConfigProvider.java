@@ -13,6 +13,8 @@ public class TestConfigProvider extends TilosConfigSource {
         properties.put("server.url", "http://tilos.hu");
         properties.put("jwt.secret", "veryeasy");
         properties.put("influxdb.url", "localhost");
+        properties.put("mongo.db", "tilosunit");
+        properties.put("upload.dir", "src/test/resources");
     }
 
     @Override

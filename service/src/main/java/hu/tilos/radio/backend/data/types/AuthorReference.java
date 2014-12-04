@@ -1,6 +1,6 @@
 package hu.tilos.radio.backend.data.types;
 
-public class AuthorReference {
+public class AuthorReference implements AuthorBasic {
 
     private String id;
 

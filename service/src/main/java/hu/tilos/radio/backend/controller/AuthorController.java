@@ -10,6 +10,7 @@ import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.AuthorDetailed;
 import hu.tilos.radio.backend.data.types.AuthorListElement;
 import hu.tilos.radio.backend.data.types.UserDetailed;
+import hu.tilos.radio.backend.util.AvatarLocator;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ public class AuthorController {
     @Inject
     private DB db;
 
+    @Inject
+    AvatarLocator avatarLocator;
 
     @Produces("application/json")
     @Path("/")
@@ -62,7 +65,9 @@ public class AuthorController {
     @Transactional
     public AuthorDetailed get(@PathParam("alias") String alias) {
         DBObject one = findAuthor(alias);
-        return mapper.map(one, AuthorDetailed.class);
+        AuthorDetailed author = mapper.map(one, AuthorDetailed.class);
+        avatarLocator.locateAvatar(author);
+        return author;
 
     }
 

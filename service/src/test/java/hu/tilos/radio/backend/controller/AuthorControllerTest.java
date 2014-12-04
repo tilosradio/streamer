@@ -2,14 +2,12 @@ package hu.tilos.radio.backend.controller;
 
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.DBObject;
-import hu.tilos.radio.backend.DozerFactory;
-import hu.tilos.radio.backend.FongoCreator;
-import hu.tilos.radio.backend.MongoProducer;
-import hu.tilos.radio.backend.Session;
+import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.input.AuthorToSave;
 import hu.tilos.radio.backend.data.types.AuthorDetailed;
 import hu.tilos.radio.backend.data.types.AuthorListElement;
 import hu.tilos.radio.backend.data.types.UserDetailed;
+import org.apache.deltaspike.core.spi.config.ConfigSource;
 import org.dozer.DozerBeanMapper;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
@@ -28,8 +26,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class})
-@ActivatedAlternatives(FongoCreator.class)
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class})
+@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
 public class AuthorControllerTest {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMddHHmm");
@@ -81,7 +79,7 @@ public class AuthorControllerTest {
 
         //then
         assertThat(author.getName(), equalTo("AUTHOR1"));
-        assertThat(author.getAvatar(), equalTo("https://tilos.hu/upload/avatar/asd.jpg"));
+        assertThat(author.getAvatar(), equalTo("https://tilos.hu/upload/avatar/author1.jpg"));
         assertThat(author.getUrls().size(), equalTo(1));
         assertThat(author.getUrls().get(0).getAddress(), equalTo("http://szabi.hu"));
 

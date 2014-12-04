@@ -11,6 +11,7 @@ import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.*;
 import hu.tilos.radio.backend.episode.EpisodeUtil;
+import hu.tilos.radio.backend.util.AvatarLocator;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
@@ -42,6 +43,8 @@ public class ShowController {
     @Inject
     private DB db;
 
+    @Inject
+    AvatarLocator avatarLocator;
 
     @Produces("application/json")
     @Path("/")
@@ -104,7 +107,13 @@ public class ShowController {
             if (ss.getValidFrom().compareTo(now) < 0 && ss.getValidTo().compareTo(now) > 0)
                 ss.setText(schedulingTextUtil.create(ss));
         }
-
+        if (detailed.getContributors() != null) {
+            for (ShowContribution contributor : detailed.getContributors()) {
+                if (contributor.getAuthor() != null) {
+                    avatarLocator.locateAvatar(contributor.getAuthor());
+                }
+            }
+        }
         long mixCount = db.getCollection("mix").count(new BasicDBObject("show.ref", new DBRef(db, "show", one.get("_id").toString())));
         detailed.getStats().mixCount = (int) mixCount;
         return detailed;
