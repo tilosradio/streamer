@@ -121,11 +121,13 @@ public class TagUtil {
 
 
     public Set<TagData> getTags(String text) {
+        Set<TagData> tags = new HashSet<>();
+        if (text == null) {
+            return tags;
+        }
         //remove html tags
         text = Pattern.compile("<style>.*</style>", Pattern.DOTALL).matcher(text).replaceAll("");
         text = text.replaceAll("\\<.*?>", "");
-        System.out.println(text);
-        Set<TagData> tags = new HashSet<>();
         for (TagType type : patterns.keySet()) {
             for (Pattern p : patterns.get(type)) {
                 Matcher m = p.matcher(text);
