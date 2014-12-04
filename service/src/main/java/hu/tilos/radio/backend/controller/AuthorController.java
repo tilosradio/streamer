@@ -67,6 +67,9 @@ public class AuthorController {
         DBObject one = findAuthor(alias);
         AuthorDetailed author = mapper.map(one, AuthorDetailed.class);
         avatarLocator.locateAvatar(author);
+        if (session.getCurrentUser().getRole() == Role.ADMIN || session.getCurrentUser().getRole() == Role.AUTHOR) {
+            author.setEmail((String) one.get("email"));
+        }
         return author;
 
     }

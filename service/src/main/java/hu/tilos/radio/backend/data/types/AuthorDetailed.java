@@ -5,7 +5,7 @@ import java.util.List;
 
 public class AuthorDetailed extends AuthorSimple implements AuthorBasic{
 
-
+    private String email;
 
     private List<UrlData> urls = new ArrayList();
 
@@ -21,7 +21,13 @@ public class AuthorDetailed extends AuthorSimple implements AuthorBasic{
         this.contributions = contributions;
     }
 
+    public String getEmail() {
+        return email;
+    }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getIntroduction() {
         return introduction;
