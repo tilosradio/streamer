@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,17 +63,21 @@ public class StatController {
     @Security(role = Role.GUEST)
     @GET
     @Path("/listener")
-    public List<ListenerStat> getListenerSTat() {
+    public List<ListenerStat> getListenerSTat(@QueryParam("from") Long fromTimestamp, @QueryParam("to") Long toTimestamp) {
         InfluxDB influxDB = InfluxDBFactory.connect(influxDbUrl, "root", "root");
 
         List<ListenerStat> result = new ArrayList<>();
-        Date now = new Date();
-        now.setTime(now.getTime() - 3600000L);
-        Date weekAgo = new Date();
-        //weekAgo.setTime(now.getTime() - (long) 604800000L);
-        weekAgo.setTime(now.getTime() - (long) 30L * 60 * 60 * 24 * 1000);
+        Date toDate = new Date();
+        Date fromDate = new Date();
+        fromDate.setTime(toDate.getTime() - (long) 7L * 60 * 60 * 24 * 1000);
+        if (fromTimestamp != null) {
+            fromDate.setTime(fromTimestamp);
+        }
+        if (toTimestamp != null) {
+            toDate.setTime(toTimestamp);
+        }
 
-        List<EpisodeData> episodeList = episodeUtil.getEpisodeData(null, weekAgo, now);
+        List<EpisodeData> episodeList = episodeUtil.getEpisodeData(null, fromDate, toDate);
         for (EpisodeData episode : episodeList) {
             ListenerStat stat = new ListenerStat();
             stat.setEpisode(mapper.map(episode, EpisodeData.class));
@@ -84,7 +89,7 @@ public class StatController {
 
             String query = String.format("select min(expr0),mean(expr0),max(expr0) from calc.icecast where time > %ds and time < %ds", from, to);
             LOG.debug(query);
-            List<Serie> series = influxDB.query("tilos", query, TimeUnit.DAYS.SECONDS);
+            List<Serie> series = influxDB.query("tilos2", query, TimeUnit.DAYS.SECONDS);
 
             if (series.size() > 0 && series.get(0).getRows().size() > 0) {
                 stat.setMean(convertToInt(series.get(0).getRows().get(0).get("mean")));
