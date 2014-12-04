@@ -70,9 +70,11 @@ public class AuthorControllerTest {
     }
 
     @Test
+    @InRequestScope
     public void get() throws Exception {
         //given
         loadTo(fongoRule, "author", "author-author1.json");
+        session.setCurrentUser(null);
 
         //when
         AuthorDetailed author = controller.get("author1");
