@@ -3,10 +3,7 @@ package hu.tilos.radio.backend.controller;
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import hu.tilos.radio.backend.DozerFactory;
-import hu.tilos.radio.backend.FongoCreator;
-import hu.tilos.radio.backend.MongoProducer;
-import hu.tilos.radio.backend.TestUtil;
+import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.input.EpisodeToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
@@ -27,8 +24,8 @@ import javax.inject.Inject;
 import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class})
-@ActivatedAlternatives(FongoCreator.class)
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class})
+@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
 public class EpisodeControllerTest {
 
     @Inject

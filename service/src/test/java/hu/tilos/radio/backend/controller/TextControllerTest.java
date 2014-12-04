@@ -2,9 +2,7 @@ package hu.tilos.radio.backend.controller;
 
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.DBObject;
-import hu.tilos.radio.backend.DozerFactory;
-import hu.tilos.radio.backend.FongoCreator;
-import hu.tilos.radio.backend.MongoProducer;
+import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.input.TextToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
@@ -25,8 +23,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class})
-@ActivatedAlternatives(FongoCreator.class)
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class})
+@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
 public class TextControllerTest {
 
     @Inject

@@ -1,9 +1,7 @@
 package hu.tilos.radio.backend.controller;
 
 import com.github.fakemongo.junit.FongoRule;
-import hu.tilos.radio.backend.DozerFactory;
-import hu.tilos.radio.backend.FongoCreator;
-import hu.tilos.radio.backend.MongoProducer;
+import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.output.SearchResponse;
 import hu.tilos.radio.backend.data.output.SearchResponseElement;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -22,8 +20,8 @@ import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 
 
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class})
-@ActivatedAlternatives(FongoCreator.class)
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class, ConfigurationProducer.class})
+@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
 public class SearchControllerTest {
 
     @Inject

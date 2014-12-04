@@ -1,10 +1,7 @@
 package hu.tilos.radio.backend.controller;
 
 import com.github.fakemongo.junit.FongoRule;
-import hu.tilos.radio.backend.DozerFactory;
-import hu.tilos.radio.backend.FongoCreator;
-import hu.tilos.radio.backend.MongoProducer;
-import hu.tilos.radio.backend.Session;
+import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.UserInfo;
 import hu.tilos.radio.backend.data.types.UserDetailed;
 import org.dozer.DozerBeanMapper;
@@ -23,8 +20,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class})
-@ActivatedAlternatives(FongoCreator.class)
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class, ConfigurationProducer.class})
+@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
 public class UserControllerTest {
 
     @Inject

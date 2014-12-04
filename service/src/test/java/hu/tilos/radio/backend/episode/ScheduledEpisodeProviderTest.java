@@ -3,9 +3,9 @@ package hu.tilos.radio.backend.episode;
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
-import hu.tilos.radio.backend.DozerFactory;
-import hu.tilos.radio.backend.MongoProducer;
+import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.types.EpisodeData;
+import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
@@ -21,7 +21,8 @@ import java.util.List;
 import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class})
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class})
+@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
 public class ScheduledEpisodeProviderTest {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
