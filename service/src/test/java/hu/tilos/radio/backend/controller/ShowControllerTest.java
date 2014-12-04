@@ -57,8 +57,8 @@ public class ShowControllerTest {
     @Test
     public void testGet() throws Exception {
         //given
-        controller.setDb(fongoRule.getDB());
-        String showId = loadTo(fongoRule, "show", "show-3utas.json");
+        String authorId = loadTo(fongoRule, "author", "author-author2.json");
+        String showId = loadTo(fongoRule, "show", "show-3utas2.json", authorId);
         loadTo(fongoRule, "mix", "mix-1.json", showId);
 
         //when
@@ -68,9 +68,10 @@ public class ShowControllerTest {
         Assert.assertEquals("3utas", show.getAlias());
         Assert.assertEquals("3. utas", show.getName());
 
-        Assert.assertEquals(2, show.getContributors().size());
+        Assert.assertEquals(1, show.getContributors().size());
 
-        Assert.assertEquals("bela", show.getContributors().get(0).getNick());
+        Assert.assertEquals("AUTHOR2", show.getContributors().get(0).getNick());
+        Assert.assertEquals(authorId, show.getContributors().get(0).getAuthor().getId());
 
         Assert.assertEquals(1, show.getSchedulings().size());
 
@@ -81,7 +82,6 @@ public class ShowControllerTest {
     @Test
     public void testGetWithId() throws Exception {
         //given
-        controller.setDb(fongoRule.getDB());
         loadTo(fongoRule, "show", "show-3utas.json");
 
         //when
@@ -90,8 +90,6 @@ public class ShowControllerTest {
         //then
         Assert.assertEquals("3utas", show.getAlias());
         Assert.assertEquals("3. utas", show.getName());
-
-        Assert.assertEquals(2, show.getContributors().size());
 
         Assert.assertEquals(1, show.getSchedulings().size());
 

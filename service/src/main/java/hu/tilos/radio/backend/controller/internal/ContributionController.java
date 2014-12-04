@@ -7,9 +7,7 @@ import hu.tilos.radio.backend.data.input.ContributionToSave;
 import org.bson.types.ObjectId;
 
 import javax.inject.Inject;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 
 @Path("api/int/contribution")
 public class ContributionController {
@@ -17,11 +15,14 @@ public class ContributionController {
     @Inject
     DB db;
 
-    public void delete(ContributionToSave contributionToSave) {
-        BasicDBObject authorQuery = new BasicDBObject("_id", new ObjectId(contributionToSave.getAuthor().getId()));
+    @Produces("application/json")
+    @Security(role = Role.ADMIN)
+    @DELETE
+    public void delete(@QueryParam("author") String authorId, @QueryParam("show") String showId) {
+        BasicDBObject authorQuery = new BasicDBObject("_id", new ObjectId(authorId));
         DBObject author = db.getCollection("author").findOne(authorQuery);
 
-        BasicDBObject showQuery = new BasicDBObject("_id", new ObjectId(contributionToSave.getShow().getId()));
+        BasicDBObject showQuery = new BasicDBObject("_id", new ObjectId(showId));
         DBObject show = db.getCollection("show").findOne(showQuery);
 
         deleteFromCollection((BasicDBList) author.get("contributions"), "show", show.get("_id"));
@@ -47,7 +48,7 @@ public class ContributionController {
     }
 
     @Produces("application/json")
-    @Security(role = Role.GUEST)
+    @Security(role = Role.ADMIN)
     @POST
     public void save(ContributionToSave contributionToSave) {
         BasicDBObject authorQuery = new BasicDBObject("_id", new ObjectId(contributionToSave.getAuthor().getId()));

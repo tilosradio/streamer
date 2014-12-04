@@ -1,11 +1,10 @@
 {
-  "_id": {"$oid": "<REF1>"},
-  "id": 2,
-  "name": "AUTHOR2",
+  "id": 3,
+  "name": "AUTHOR3",
   "photo": "asd",
   "avatar": "asd",
   "introduction": "nothing",
-  "alias": "alias2",
+  "alias": "alias",
   "contributions": [
     {
       "nick": "joci",
@@ -14,7 +13,7 @@
         "name": "Vendéglő a világ végén",
         "ref": {
           "$ref": "show",
-          "$id": {"$oid": "<REF2>"}
+          "$id": {"$oid": "<REF1>"}
         }
       }
     }

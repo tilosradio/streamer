@@ -4,7 +4,7 @@ public class Contribution {
 
     private String nick;
 
-    private ShowSimple show;
+    private ShowReference show;
 
     public String getNick() {
         return nick;
@@ -14,11 +14,11 @@ public class Contribution {
         this.nick = nick;
     }
 
-    public ShowSimple getShow() {
+    public ShowReference getShow() {
         return show;
     }
 
-    public void setShow(ShowSimple show) {
+    public void setShow(ShowReference show) {
         this.show = show;
     }
 }

@@ -71,7 +71,7 @@ public class ContributionControllerTest {
         controller.save(toSave);
 
         //when
-        controller.delete(toSave);
+        controller.delete(authorId, showId);
 
         //then
         DBObject show = fongoRule.getDB().getCollection("show").findOne();

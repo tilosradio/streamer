@@ -54,15 +54,19 @@ public class AuthorControllerTest {
     @Test
     public void list() throws Exception {
         //given
+        String showId = loadTo(fongoRule, "show", "show-vendeglo.json");
         loadTo(fongoRule, "author", "author-author1.json");
         loadTo(fongoRule, "author", "author-author2.json");
+        loadTo(fongoRule, "author", "author-author3.json", showId);
 
         //when
         List<AuthorListElement> authors = controller.list();
 
         //then
-        assertThat(authors.size(), equalTo(2));
+        assertThat(authors.size(), equalTo(3));
         assertThat(authors.get(0).getAlias(), equalTo("author1"));
+        assertThat(authors.get(2).getContributions().size(), equalTo(1));
+        assertThat(authors.get(2).getContributions().get(0).getShow().getId(), equalTo(showId));
 
 
     }

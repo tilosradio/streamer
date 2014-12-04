@@ -16,5 +16,17 @@
       "base": {"$date": "2014-04-15T10:00:00.000Z"},
       "weekDay": 5
     }
+  ],
+  "contributors": [
+    {
+      "nick": "AUTHOR2",
+      "author": {
+        "alias": "author2",
+        "ref": {
+          "$ref": "author",
+          "$id": {"$oid": "<REF1>"}
+        }
+      }
+    }
   ]
 }

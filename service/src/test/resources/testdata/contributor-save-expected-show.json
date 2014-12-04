@@ -22,7 +22,7 @@
     {
       "nick": "joci",
       "author": {
-        "alias": "alias",
+        "alias": "alias2",
         "ref": {
           "$ref": "author",
           "$id": {"$oid": "<REF2>"}

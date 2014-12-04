@@ -34,7 +34,6 @@ public class CommentData {
     }
 
     public String getId() {
-        
         return id;
     }
 

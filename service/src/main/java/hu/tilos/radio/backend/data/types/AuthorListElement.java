@@ -5,7 +5,7 @@ import java.util.List;
 
 public class AuthorListElement {
 
-    private Integer id;
+    private String id;
 
     private String name;
 
@@ -23,13 +23,11 @@ public class AuthorListElement {
         this.contributions = contributions;
     }
 
-
-
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

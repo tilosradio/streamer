@@ -1,18 +1,12 @@
 package hu.tilos.radio.backend.data.types;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class AuthorSimple {
+public class ShowReference {
 
     private String id;
 
     private String name;
 
     private String alias;
-
-    private String avatar;
-
 
     public String getId() {
         return id;
@@ -36,13 +30,5 @@ public class AuthorSimple {
 
     public void setAlias(String alias) {
         this.alias = alias;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
     }
 }

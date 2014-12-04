@@ -10,7 +10,7 @@ public class ReferenceDecoder implements CustomConverter {
     public Object convert(Object existingDestinationFieldValue, Object sourceFieldValue, Class<?> destinationClass, Class<?> sourceClass) {
         DBRef ref = (DBRef) sourceFieldValue;
         if (sourceFieldValue != null) {
-            return ref.getId();
+            return ref.getId().toString();
         } else {
             return null;
         }
