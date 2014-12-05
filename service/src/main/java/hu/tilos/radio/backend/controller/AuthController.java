@@ -127,7 +127,7 @@ public class AuthController {
 
         String token = authUtil.generateSalt();
         user.put("passwordChangeTokenCreated", new Date());
-        user.put("passwordChangeTokenCreated", token);
+        user.put("passwordChangeToken", token);
         db.getCollection("user").update(new BasicDBObject("username", user.get("username")), user);
 
         //send mail
