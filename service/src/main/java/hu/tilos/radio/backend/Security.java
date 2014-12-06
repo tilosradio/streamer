@@ -7,5 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Security {
-    Role role();
+    Role role() default Role.GUEST;
+
+    String permission() default "";
 }

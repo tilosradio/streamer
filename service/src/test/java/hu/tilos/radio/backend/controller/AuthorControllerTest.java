@@ -3,11 +3,10 @@ package hu.tilos.radio.backend.controller;
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.DBObject;
 import hu.tilos.radio.backend.*;
+import hu.tilos.radio.backend.data.UserInfo;
 import hu.tilos.radio.backend.data.input.AuthorToSave;
 import hu.tilos.radio.backend.data.types.AuthorDetailed;
 import hu.tilos.radio.backend.data.types.AuthorListElement;
-import hu.tilos.radio.backend.data.types.UserDetailed;
-import org.apache.deltaspike.core.spi.config.ConfigSource;
 import org.dozer.DozerBeanMapper;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
@@ -94,7 +93,7 @@ public class AuthorControllerTest {
         //given
         String authorId = loadTo(fongoRule, "author", "author-author1.json");
         loadTo(fongoRule, "user", "user-1.json", authorId);
-        session.setCurrentUser(mapper.map(fongoRule.getDB().getCollection("user").findOne(), UserDetailed.class));
+        session.setCurrentUser(mapper.map(fongoRule.getDB().getCollection("user").findOne(), UserInfo.class));
 
 
         AuthorToSave save = new AuthorToSave();

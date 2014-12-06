@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import hu.radio.tilos.model.Role;
+import hu.tilos.radio.backend.AuthUtil;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.data.UserInfo;
@@ -38,8 +39,10 @@ public class UserController {
     @GET
     @Transactional
     public UserInfo me() {
-        DBObject user = db.getCollection("user").findOne(new BasicDBObject("username", session.getCurrentUser().getUsername()));
-        return mapper.map(user, UserInfo.class);
+        DBObject userObject = db.getCollection("user").findOne(new BasicDBObject("username", session.getCurrentUser().getUsername()));
+        UserInfo user = mapper.map(userObject, UserInfo.class);
+        AuthUtil.calculatePermissions(user);
+        return user;
     }
 
 

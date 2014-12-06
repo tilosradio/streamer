@@ -3,7 +3,6 @@ package hu.tilos.radio.backend.controller;
 import com.github.fakemongo.junit.FongoRule;
 import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.UserInfo;
-import hu.tilos.radio.backend.data.types.UserDetailed;
 import org.dozer.DozerBeanMapper;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
@@ -47,7 +46,7 @@ public class UserControllerTest {
         //given
         String authorId = loadTo(fongoRule, "author", "author-author1.json");
         loadTo(fongoRule, "user", "user-1.json", authorId);
-        session.setCurrentUser(mapper.map(fongoRule.getDB().getCollection("user").findOne(),UserDetailed.class));
+        session.setCurrentUser(mapper.map(fongoRule.getDB().getCollection("user").findOne(), UserInfo.class));
 
 
         //when

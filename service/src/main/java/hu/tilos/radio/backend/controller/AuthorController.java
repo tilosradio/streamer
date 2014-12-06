@@ -4,6 +4,7 @@ import com.mongodb.*;
 import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.Session;
+import hu.tilos.radio.backend.data.UserInfo;
 import hu.tilos.radio.backend.data.input.AuthorToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
@@ -85,7 +86,7 @@ public class AuthorController {
      */
     @Produces("application/json")
     @Path("/{alias}")
-    @Security(role = Role.AUTHOR)
+    @Security(permission = "/author/{alias}")
     @PUT
     @Transactional
     public UpdateResponse update(@PathParam("alias") String alias, AuthorToSave authorToSave) {
@@ -97,7 +98,7 @@ public class AuthorController {
 
     }
 
-    protected void checkPermission(DBObject author, UserDetailed currentUser) {
+    protected void checkPermission(DBObject author, UserInfo currentUser) {
 
         if (currentUser.getRole() == Role.ADMIN) {
             return;

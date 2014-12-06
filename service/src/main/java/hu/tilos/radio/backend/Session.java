@@ -12,13 +12,13 @@ import javax.enterprise.context.RequestScoped;
 @RequestScoped
 public class Session {
 
-    private UserDetailed currentUser;
+    private UserInfo currentUser;
 
-    public UserDetailed getCurrentUser() {
+    public UserInfo getCurrentUser() {
         return currentUser;
     }
 
-    public void setCurrentUser(UserDetailed currentUser) {
+    public void setCurrentUser(UserInfo currentUser) {
         this.currentUser = currentUser;
     }
 }

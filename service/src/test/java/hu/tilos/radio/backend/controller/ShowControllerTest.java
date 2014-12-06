@@ -6,6 +6,7 @@ import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.*;
+import hu.tilos.radio.backend.data.UserInfo;
 import hu.tilos.radio.backend.data.input.ShowToSave;
 import hu.tilos.radio.backend.data.types.EpisodeData;
 import hu.tilos.radio.backend.data.types.ShowDetailed;
@@ -130,7 +131,7 @@ public class ShowControllerTest {
         //given
         controller.setDb(fongoRule.getDB());
         loadTo(fongoRule, "show", "show-3utas.json");
-        UserDetailed detailed = new UserDetailed();
+        UserInfo detailed = new UserInfo();
         detailed.setRole(Role.ADMIN);
         session.setCurrentUser(detailed);
 

@@ -6,6 +6,7 @@ import hu.radio.tilos.model.type.ShowStatus;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.converters.SchedulingTextUtil;
+import hu.tilos.radio.backend.data.UserInfo;
 import hu.tilos.radio.backend.data.input.ShowToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
@@ -148,12 +149,11 @@ public class ShowController {
      */
     @Produces("application/json")
     @Path("/{alias}")
-    @Security(role = Role.AUTHOR)
+    @Security(permission = "/show/{alias}")
     @PUT
     @Transactional
     public UpdateResponse update(@PathParam("alias") String alias, ShowToSave showToSave) {
         DBObject show = findShow(alias);
-        checkPermission(show, session.getCurrentUser());
         mapper.map(showToSave, show);
         db.getCollection("show").update(aliasOrId(alias), show);
         return new UpdateResponse(true);
@@ -164,7 +164,7 @@ public class ShowController {
         return db.getCollection("show").findOne(aliasOrId(alias));
     }
 
-    protected void checkPermission(DBObject show, UserDetailed currentUser) {
+    protected void checkPermission(DBObject show, UserInfo currentUser) {
         if (currentUser.getRole() == Role.ADMIN) {
             return;
         }

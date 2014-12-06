@@ -1,5 +1,8 @@
 package hu.tilos.radio.backend;
 
+import hu.tilos.radio.backend.data.UserInfo;
+import hu.tilos.radio.backend.data.types.Contribution;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -35,6 +38,19 @@ public class AuthUtil {
 
     public String encode(String password, String salt) {
         return toSHA1(password + salt);
+    }
+
+    public static void calculatePermissions(UserInfo userInfo){
+        if (userInfo.getAuthor()!=null) {
+            userInfo.getPermissions().add("/author/"+userInfo.getAuthor().getId());
+            userInfo.getPermissions().add("/author/"+userInfo.getAuthor().getAlias());
+            for (Contribution contribution : userInfo.getAuthor().getContributions()) {
+                userInfo.getPermissions().add("/show/"+contribution.getShow().getId());
+                userInfo.getPermissions().add("/show/"+contribution.getShow().getAlias());
+                
+            }
+        }
+
     }
 
 }

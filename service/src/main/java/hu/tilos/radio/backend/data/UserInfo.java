@@ -3,6 +3,9 @@ package hu.tilos.radio.backend.data;
 import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.data.types.AuthorWithContribution;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserInfo {
 
     private String username;
@@ -11,9 +14,24 @@ public class UserInfo {
 
     private Role role;
 
-    private int id;
+    private String id;
 
     private AuthorWithContribution author;
+
+    private List<String> permissions = new ArrayList<>();
+
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public List<String> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<String> permissions) {
+        this.permissions = permissions;
+    }
 
     public AuthorWithContribution getAuthor() {
         return author;
@@ -47,11 +65,7 @@ public class UserInfo {
         this.role = role;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 }
