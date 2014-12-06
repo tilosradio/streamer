@@ -3,9 +3,12 @@ package hu.tilos.radio.backend.controller;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
+import com.mongodb.DBRef;
 import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.Token;
+import hu.tilos.radio.backend.data.error.InternalErrorException;
+import hu.tilos.radio.backend.data.error.NotFoundException;
 import hu.tilos.radio.backend.data.input.PasswordReset;
 import hu.tilos.radio.backend.data.input.RegisterData;
 import hu.tilos.radio.backend.data.output.LoginData;
@@ -119,21 +122,42 @@ public class AuthController {
 
     private Response generateToken(PasswordReset passwordReset) {
 
-
         DBObject user = db.getCollection("user").findOne(new BasicDBObject("email", passwordReset.getEmail()));
+        if (user == null) {
+            user = createUserAtFirstTime(passwordReset.getEmail());
+        }
 
 
         //create new token
-
         String token = authUtil.generateSalt();
         user.put("passwordChangeTokenCreated", new Date());
         user.put("passwordChangeToken", token);
         db.getCollection("user").update(new BasicDBObject("username", user.get("username")), user);
 
-        //send mail
-        sendMail(user, token);
+        try {
+            //send mail
+            sendMail(user, token);
+        } catch (Exception ex) {
+            throw new InternalErrorException("Nem sikerült az emailt kiküldeni a levelző szerveren keresztül.");
+        }
 
-        return Response.ok().entity(new OkResponse("Password reminder has been sent")).build();
+        return Response.ok().entity(new OkResponse("A jelszóemlékeztető kiküldtük a megadott email címre.")).build();
+    }
+
+    private DBObject createUserAtFirstTime(String email) {
+        DBObject author = db.getCollection("author").findOne(new BasicDBObject("email", email));
+        if (author == null) {
+            throw new NotFoundException("Se felhasználó, se műsorkészítő nincs ilyen email címmel.");
+        }
+        DBObject user = new BasicDBObject();
+        user.put("username", author.get("alias"));
+        user.put("role", Role.AUTHOR.ordinal());
+        user.put("email", author.get("email"));
+        user.put("salt", null);
+        user.put("password", null);
+        user.put("author", new DBRef(db, "author", author.get("_id")));
+        db.getCollection("user").insert(user);
+        return user;
     }
 
     protected void sendMail(DBObject user, String token) {
@@ -148,7 +172,7 @@ public class AuthController {
     private String createBody(DBObject user, String token) {
         String body = "Valaki jelszoemlekeztetot kert erre a cimre. \n\n A jelszo megvaltoztatasahoz kattints a  " +
                 serverUrl + "/password_reset?token=" + token +
-                "&email=" + ((String) user.get("email")).replaceAll("@", "%40") + " cimre";
+                "&email=" + ((String) user.get("email")).replaceAll("@", "%40") + " cimre.\n\n(Felhasznallo: " + user.get("username") + ")";
         LOG.debug("Creating mail: " + body);
         return body;
     }
