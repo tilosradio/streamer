@@ -6,6 +6,10 @@ var system = require('system')
 var t
 var address
 
+page.customHeaders = {
+  "Prerendered": "true"
+};
+
 if (system.args.length === 1) {
   console.log('Usage: loadspeed.js <some URL>')
   phantom.exit()

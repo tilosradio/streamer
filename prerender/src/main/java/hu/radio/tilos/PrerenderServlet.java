@@ -14,18 +14,21 @@ import java.nio.charset.Charset;
 @WebServlet(urlPatterns = "/prerender")
 public class PrerenderServlet extends HttpServlet {
 
-    private String workDir = "/tmp/prerender";
+    private static Logger LOG = LoggerFactory.getLogger(PrerenderServlet.class);
 
-    private String server = "http://tilos.hu/";
+    private String workDir = "/tmp/prerender";
     //private String server = "http://localhost/";
 
-    private static Logger LOG = LoggerFactory.getLogger(PrerenderServlet.class);
+    private String server = "http://tilos.hu/";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         checkWorkDir();
-
+        if (req.getHeader("Prerender") != null) {
+            LOG.error("Prerender circular loop detected. Canceling...");
+            return;
+        }
         LOG.debug("Prerendering | " + req.getRequestURI() + " | " + req.getHeader("User-Agent"));
         String command = workDir + "/node_modules/phantomjs/bin/phantomjs " + workDir + "/prerender.js " + server + req.getRequestURI();
         resp.setCharacterEncoding("UTF-8");
@@ -47,6 +50,7 @@ public class PrerenderServlet extends HttpServlet {
     private String execute(String command) {
         try {
             String line;
+            LOG.debug("Executing command " + command);
             Process p = Runtime.getRuntime().exec(command, new String[0], new File(workDir));
             BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream(), Charset.forName("UTF-8")));
             StringBuilder b = new StringBuilder();
