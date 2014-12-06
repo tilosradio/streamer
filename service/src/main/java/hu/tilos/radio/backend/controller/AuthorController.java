@@ -91,27 +91,12 @@ public class AuthorController {
     @Transactional
     public UpdateResponse update(@PathParam("alias") String alias, AuthorToSave authorToSave) {
         DBObject author = findAuthor(alias);
-        checkPermission(author, session.getCurrentUser());
         mapper.map(authorToSave, author);
         db.getCollection("author").update(aliasOrId(alias), author);
         return new UpdateResponse(true);
 
     }
 
-    protected void checkPermission(DBObject author, UserInfo currentUser) {
-
-        if (currentUser.getRole() == Role.ADMIN) {
-            return;
-        }
-
-        DBObject originalUser = db.getCollection("user").findOne(new BasicDBObject("_id", new ObjectId(currentUser.getId())));
-        DBRef authorRef = (DBRef) originalUser.get("author");
-        if (authorRef!=null && authorRef.getId().equals(author.get("_id").toString())){
-            return;
-        }
-
-        throw new IllegalArgumentException("No permission to modify");
-    }
 
 
     /**

@@ -29,6 +29,21 @@ public class AuthUtil {
         return result;
     }
 
+    public static void calculatePermissions(UserInfo userInfo) {
+        if (userInfo.getAuthor() != null) {
+            userInfo.getPermissions().add("/author/" + userInfo.getAuthor().getId());
+            userInfo.getPermissions().add("/author/" + userInfo.getAuthor().getAlias());
+            if (userInfo.getAuthor().getContributions() != null) {
+                for (Contribution contribution : userInfo.getAuthor().getContributions()) {
+                    userInfo.getPermissions().add("/show/" + contribution.getShow().getId());
+                    userInfo.getPermissions().add("/show/" + contribution.getShow().getAlias());
+
+                }
+            }
+        }
+
+    }
+
     public String generateSalt() {
         Random r = new SecureRandom();
         byte[] salt = new byte[32];
@@ -38,19 +53,6 @@ public class AuthUtil {
 
     public String encode(String password, String salt) {
         return toSHA1(password + salt);
-    }
-
-    public static void calculatePermissions(UserInfo userInfo){
-        if (userInfo.getAuthor()!=null) {
-            userInfo.getPermissions().add("/author/"+userInfo.getAuthor().getId());
-            userInfo.getPermissions().add("/author/"+userInfo.getAuthor().getAlias());
-            for (Contribution contribution : userInfo.getAuthor().getContributions()) {
-                userInfo.getPermissions().add("/show/"+contribution.getShow().getId());
-                userInfo.getPermissions().add("/show/"+contribution.getShow().getAlias());
-                
-            }
-        }
-
     }
 
 }

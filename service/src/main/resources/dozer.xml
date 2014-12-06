@@ -203,6 +203,10 @@
             <a key="role_id">this</a>
             <b>role</b>
         </field>
+        <field>
+            <a key="_id">this</a>
+            <b>id</b>
+        </field>
         <field custom-converter-id="resolvedReferenceDecoder">
             <a key="author">this</a>
             <b>author</b>
