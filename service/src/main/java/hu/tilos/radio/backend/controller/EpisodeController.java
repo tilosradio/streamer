@@ -120,6 +120,7 @@ public class EpisodeController {
         BasicDBObject query = new BasicDBObject();
         query.put("created", new BasicDBObject("$gt", start));
         query.put("text.content", new BasicDBObject("$exists", true));
+        query.put("plannedFrom", new BasicDBObject("$lt", new Date()));
 
         DBCursor episodes = db.getCollection("episode").find(query).sort(new BasicDBObject("created", -1)).limit(10);
         List<EpisodeData> result = new ArrayList<>();
