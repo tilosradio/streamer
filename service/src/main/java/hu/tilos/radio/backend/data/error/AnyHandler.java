@@ -19,6 +19,7 @@ public class AnyHandler implements ExceptionMapper<Exception> {
     @Override
     public Response toResponse(Exception exception) {
         LOG.error(exception.getMessage(), exception);
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).entity(new ErrorResponse("Ismeretlen hiba történt. Ha nem javult a helyzet fordulj a rendszergazdához")).build();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).entity(new ErrorResponse(
+                "Valami hiba történt (" + exception.getMessage() + "). Ha nem tudod miért, vagy nem javul a helyzet, fordulj a rendszergazdához")).build();
     }
 }
