@@ -164,6 +164,7 @@ public class ShowControllerTest {
         showToSave.setType(ShowType.MUSIC);
         showToSave.setStatus(ShowStatus.ACTIVE);
         showToSave.setName("test");
+        showToSave.setAlias("alias");
         UrlToSave url = new UrlToSave();
         url.setAddress("http://pipacs.com");
         showToSave.getUrls().add(url);

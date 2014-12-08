@@ -14,4 +14,14 @@ public class ValidationException extends RuntimeException {
     public Set<ConstraintViolation<Object>> getValidationErrors() {
         return validationErrors;
     }
+
+    @Override
+    public String getMessage() {
+        String errors = "";
+        for (ConstraintViolation violation : validationErrors) {
+            errors += violation.getPropertyPath() + " " + violation.getMessage() + "; ";
+        }
+        return (super.getMessage() == null ? "" : super.getMessage() + ": ") + errors;
+
+    }
 }
