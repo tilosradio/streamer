@@ -271,6 +271,14 @@
             <a>status</a>
             <b key="status">this</b>
         </field>
+        <field custom-converter-id="childListEncoder">
+            <a>urls</a>
+            <b key="urls">this</b>
+        </field>
+        <field-exclude>
+            <a>alias</a>
+            <b key="alias">this</b>
+        </field-exclude>
     </mapping>
     <mapping map-null="false" type="one-way">
         <class-a>hu.tilos.radio.backend.data.types.TextData</class-a>

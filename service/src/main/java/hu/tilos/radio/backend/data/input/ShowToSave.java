@@ -4,11 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.radio.tilos.model.type.ShowType;
 
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ShowToSave {
 
+    @NotNull
     public String alias;
 
+    @NotNull
     private String name;
 
     private String definition;
@@ -20,6 +26,16 @@ public class ShowToSave {
     private ShowType type;
 
     private ShowStatus status;
+
+    private List<UrlToSave> urls = new ArrayList<>();
+
+    public List<UrlToSave> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(List<UrlToSave> urls) {
+        this.urls = urls;
+    }
 
     public String getName() {
         return name;

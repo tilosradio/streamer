@@ -3,10 +3,10 @@ package hu.tilos.radio.backend.controller;
 import com.mongodb.*;
 import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.ShowStatus;
+import hu.tilos.radio.backend.ObjectValidator;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.converters.SchedulingTextUtil;
-import hu.tilos.radio.backend.data.UserInfo;
 import hu.tilos.radio.backend.data.input.ShowToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
@@ -33,19 +33,22 @@ public class ShowController {
     private final SchedulingTextUtil schedulingTextUtil = new SchedulingTextUtil();
 
     @Inject
+    ObjectValidator validator;
+
+    @Inject
     EpisodeUtil episodeUtil;
 
     @Inject
     Session session;
 
     @Inject
+    AvatarLocator avatarLocator;
+
+    @Inject
     private DozerBeanMapper mapper;
 
     @Inject
     private DB db;
-
-    @Inject
-    AvatarLocator avatarLocator;
 
     @Produces("application/json")
     @Path("/")
@@ -153,6 +156,7 @@ public class ShowController {
     @PUT
     @Transactional
     public UpdateResponse update(@PathParam("alias") String alias, ShowToSave showToSave) {
+        validator.validate(showToSave);
         DBObject show = findShow(alias);
         mapper.map(showToSave, show);
         db.getCollection("show").update(aliasOrId(alias), show);
@@ -164,24 +168,6 @@ public class ShowController {
         return db.getCollection("show").findOne(aliasOrId(alias));
     }
 
-    protected void checkPermission(DBObject show, UserInfo currentUser) {
-        if (currentUser.getRole() == Role.ADMIN) {
-            return;
-        }
-//      FIXME
-//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<Contribution> query = criteriaBuilder.createQuery(Contribution.class);
-//        Root<Contribution> fromContribution = query.from(Contribution.class);
-//        query.where(criteriaBuilder.equal(fromContribution.get("author").get("user").get("id"), currentUser.getId()));
-//        List<Contribution> contributions = entityManager.createQuery(query).getResultList();
-//
-//        for (hu.radio.tilos.model.Contribution contribution : contributions) {
-//            if (contribution.getShow().getId() == ((Integer) show.get("id")).intValue()) {
-//                return;
-//            }
-//        }
-        throw new IllegalArgumentException("No permission to modify");
-    }
 
     /**
      * @exclude
@@ -192,7 +178,9 @@ public class ShowController {
     @POST
     @Transactional
     public CreateResponse create(ShowToSave objectToSave) {
+        validator.validate(objectToSave);
         DBObject newObject = mapper.map(objectToSave, BasicDBObject.class);
+        newObject.put("alias", objectToSave.getAlias());
         db.getCollection("show").insert(newObject);
         return new CreateResponse(((ObjectId) newObject.get("_id")).toHexString());
     }

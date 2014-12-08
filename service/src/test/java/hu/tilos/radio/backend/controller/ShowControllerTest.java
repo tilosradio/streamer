@@ -1,17 +1,21 @@
 package hu.tilos.radio.backend.controller;
 
 import com.github.fakemongo.junit.FongoRule;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.UserInfo;
 import hu.tilos.radio.backend.data.input.ShowToSave;
+import hu.tilos.radio.backend.data.input.UrlToSave;
+import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.EpisodeData;
 import hu.tilos.radio.backend.data.types.ShowDetailed;
 import hu.tilos.radio.backend.data.types.ShowSimple;
-import hu.tilos.radio.backend.data.types.UserDetailed;
+import org.dozer.DozerBeanMapper;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
@@ -20,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.inject.Inject;
 import java.text.ParseException;
@@ -27,12 +32,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static hu.tilos.radio.backend.MongoTestUtil.loadFrom;
 import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 @RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class})
+@AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class, ValidatorProducer.class})
 @ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
 public class ShowControllerTest {
 
@@ -46,6 +52,9 @@ public class ShowControllerTest {
 
     @Inject
     FongoRule fongoRule;
+
+    @Inject
+    DozerBeanMapper mapper;
 
     @Rule
     public FongoRule fongoRule() {
@@ -94,6 +103,22 @@ public class ShowControllerTest {
     }
 
     @Test
+    public void testMapping() {
+        //given
+        ShowToSave save = new ShowToSave();
+        save.setName("showname");
+        save.setType(ShowType.SPEECH);
+
+        //when
+        BasicDBObject mapped = mapper.map(save, BasicDBObject.class);
+
+        //then
+        Assert.assertEquals("showname", mapped.get("name"));
+        Assert.assertEquals(1, mapped.get("type"));
+    }
+
+
+    @Test
     public void testListEpisodes() throws ParseException {
         //given
         Date start = SDF.parse("201404010000");
@@ -129,8 +154,8 @@ public class ShowControllerTest {
     @InRequestScope
     public void update() throws Exception {
         //given
-        controller.setDb(fongoRule.getDB());
-        loadTo(fongoRule, "show", "show-3utas.json");
+        String showId = loadTo(fongoRule, "show", "show-update-original.json");
+
         UserInfo detailed = new UserInfo();
         detailed.setRole(Role.ADMIN);
         session.setCurrentUser(detailed);
@@ -139,54 +164,19 @@ public class ShowControllerTest {
         showToSave.setType(ShowType.MUSIC);
         showToSave.setStatus(ShowStatus.ACTIVE);
         showToSave.setName("test");
+        UrlToSave url = new UrlToSave();
+        url.setAddress("http://pipacs.com");
+        showToSave.getUrls().add(url);
 
         //when
-        controller.update("3utas", showToSave);
+        UpdateResponse update = controller.update("3utas", showToSave);
 
         //then
-        DBObject one = fongoRule.getDB().getCollection("show").findOne();
-        Assert.assertThat((String) one.get("name"), equalTo("test"));
-        Assert.assertEquals(0, one.get("type"));
-        Assert.assertEquals(1, one.get("status"));
+        DBObject user = fongoRule.getDB().getCollection("show").findOne();
+        String expectedUser = loadFrom("show-update-expected.json", showId);
+        System.out.println(JSON.serialize(user));
+        JSONAssert.assertEquals(expectedUser, JSON.serialize(user), false);
     }
-//    @Test
-//    public void checkPermission() throws Exception {
-//        //given
-//        EntityManager em = controller.getEntityManager();
-//        Show show = em.find(Show.class, 1);
-//        User user = em.find(User.class, 2);
-//
-//        //when
-//        try {
-//            controller.checkPermission(show, user);
-//        } catch (IllegalArgumentException ex) {
-//            fail();
-//        }
-//
-//        //then
-//
-//
-//    }
-
-//    @Test
-//    public void checkPermissionFailed() throws Exception {
-//        //given
-//
-//        Show show = em.find(Show.class, 1);
-//        User user = em.find(User.class, 1);
-//
-//        //when
-//        try {
-//            controller.checkPermission(show, user);
-//            fail();
-//        } catch (IllegalArgumentException ex) {
-//
-//        }
-//
-//        //then
-//
-//
-//    }
 
 
     @Test
