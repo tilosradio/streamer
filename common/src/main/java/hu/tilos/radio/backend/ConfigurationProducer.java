@@ -16,4 +16,11 @@ public class ConfigurationProducer {
         return configSource.getConfiguration(annotation.name());
     }
 
+    @Produces
+    @Configuration(name = "")
+    public int injectConfigurationInt(InjectionPoint ip) {
+        Configuration annotation = ip.getAnnotated().getAnnotation(Configuration.class);
+        return Integer.parseInt(configSource.getConfiguration(annotation.name()).trim());
+    }
+
 }
