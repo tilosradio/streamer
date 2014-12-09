@@ -15,4 +15,5 @@ public class ConfigurationProducer {
         Configuration annotation = ip.getAnnotated().getAnnotation(Configuration.class);
         return configSource.getConfiguration(annotation.name());
     }
+
 }
