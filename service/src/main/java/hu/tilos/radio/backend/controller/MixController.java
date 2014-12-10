@@ -4,7 +4,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
-import com.mongodb.DBCursor;
 import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.MixCategory;
 import hu.tilos.radio.backend.Security;
@@ -47,7 +46,7 @@ public class MixController {
         }
         //FIXME
         //query += " ORDER BY m.date DESC, m.id DESC";
-        DBCursor sort = new BasicDBObject("date", -1);
+        BasicDBObject sort = new BasicDBObject("date", -1);
         sort.append("id", -1);
 
 
