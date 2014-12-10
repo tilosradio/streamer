@@ -46,7 +46,7 @@ public class MixController {
         }
         //FIXME
         //query += " ORDER BY m.date DESC, m.id DESC";
-        DBCursor sort = BasicDBObject("date", -1);
+        DBCursor sort = new BasicDBObject("date", -1);
         sort.append("id", -1);
 
 
