@@ -44,8 +44,6 @@ public class MixController {
         if (category != null) {
             query.put("category", MixCategory.valueOf(category.toUpperCase()).ordinal());
         }
-        //FIXME
-        //query += " ORDER BY m.date DESC, m.id DESC";
         BasicDBObject sort = new BasicDBObject("date", -1);
         sort.append("id", -1);
 
