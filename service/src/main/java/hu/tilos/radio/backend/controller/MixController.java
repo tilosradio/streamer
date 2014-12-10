@@ -46,8 +46,8 @@ public class MixController {
         }
         //FIXME
         //query += " ORDER BY m.date DESC, m.id DESC";
-        DBCursor sort = BasicDBObject('date', -1);
-        sort.append('id', -1);
+        DBCursor sort = BasicDBObject("date", -1);
+        sort.append("id", -1);
 
 
         List<MixSimple> response = new ArrayList<>();
