@@ -46,10 +46,12 @@ public class MixController {
         }
         //FIXME
         //query += " ORDER BY m.date DESC, m.id DESC";
+        DBCursor sort = BasicDBObject('date', -1);
+        sort.append('id', -1);
 
 
         List<MixSimple> response = new ArrayList<>();
-        for (DBObject mix : db.getCollection("mix").find(query)) {
+        for (DBObject mix : db.getCollection("mix").find(query).sort(sort)) {
             response.add(mapper.map(mix, MixSimple.class));
         }
 
