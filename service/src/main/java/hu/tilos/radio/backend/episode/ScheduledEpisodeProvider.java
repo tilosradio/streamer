@@ -79,11 +79,17 @@ public class ScheduledEpisodeProvider {
                 //create episode from scheduling
                 EpisodeData d = new EpisodeData();
                 d.setPlannedFrom(c.getTime());
-                Date dateToSet = new Date();
-                dateToSet.setTime(d.getPlannedFrom().getTime() + (s.getDuration() + 30) * 60 * 1000);
-                d.setPlannedTo(dateToSet);
                 d.setRealFrom(d.getPlannedFrom());
-                d.setRealTo(d.getPlannedTo());
+
+                Date exactToDate = new Date();
+                exactToDate.setTime(d.getPlannedFrom().getTime() + (s.getDuration()) * 60 * 1000);
+                d.setPlannedTo(exactToDate);
+
+
+                Date estimatedToDate = new Date();
+                estimatedToDate.setTime(d.getPlannedFrom().getTime() + (s.getDuration() + 30) * 60 * 1000);
+                d.setRealTo(estimatedToDate);
+
                 d.setPersistent(false);
                 d.setShow(show);
                 result.add(d);
