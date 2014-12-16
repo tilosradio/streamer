@@ -11,10 +11,7 @@ import hu.tilos.radio.backend.data.output.TaggedEpisode;
 import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import java.util.Date;
 
 @Path("api/v1/tag")
@@ -50,7 +47,13 @@ public class TagController {
     @Path("/")
     @Security(role = Role.GUEST)
     @Produces("application/json")
-    public TagCloud list() {
+    public TagCloud list(@QueryParam("limit") Integer limit) {
+        if (limit == null) {
+            limit = 10;
+        }
+        if (limit > 50) {
+            limit = 50;
+        }
         String map = "function() {\n" +
                 "    if (!this.tags) {\n" +
                 "        return;\n" +
@@ -66,7 +69,7 @@ public class TagController {
 
         TagCloud result = new TagCloud();
 
-        for (DBObject tagResult : db.getCollection("tags").find().sort(new BasicDBObject("value", -1)).limit(10)) {
+        for (DBObject tagResult : db.getCollection("tags").find().sort(new BasicDBObject("value", -1)).limit(limit)) {
             BasicDBObject id = (BasicDBObject) tagResult.get("_id");
             TagCloudElement element = new TagCloudElement();
             element.setName((String) id.get("name"));
