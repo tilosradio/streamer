@@ -53,7 +53,7 @@ public class TagControllerTest {
         loadTo(fongoRule, "episode", "episode-episode4.json");
 
         //when
-        TagCloud list = controller.list();
+        TagCloud list = controller.list(null);
 
         //then
         Assert.assertEquals(2, list.getTags().size());
