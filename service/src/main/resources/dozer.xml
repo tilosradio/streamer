@@ -275,6 +275,10 @@
             <a>urls</a>
             <b key="urls">this</b>
         </field>
+        <field custom-converter-id="childListEncoder">
+            <a>schedulings</a>
+            <b key="schedulings">this</b>
+        </field>
         <field-exclude>
             <a>alias</a>
             <b key="alias">this</b>

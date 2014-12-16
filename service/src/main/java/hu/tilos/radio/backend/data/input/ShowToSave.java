@@ -29,6 +29,16 @@ public class ShowToSave {
 
     private List<UrlToSave> urls = new ArrayList<>();
 
+    private List<SchedulingToSave> schedulings = new ArrayList<>();
+
+    public List<SchedulingToSave> getSchedulings() {
+        return schedulings;
+    }
+
+    public void setSchedulings(List<SchedulingToSave> schedulings) {
+        this.schedulings = schedulings;
+    }
+
     public List<UrlToSave> getUrls() {
         return urls;
     }
