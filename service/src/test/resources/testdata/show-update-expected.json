@@ -6,17 +6,6 @@
   "description": "a potyoutasok műsora",
   "type": 0,
   "status": 1,
-  "schedulings": [
-    {
-      "validFrom": {"$date": "2014-04-15T10:00:00.000Z"},
-      "validTo": {"$date": "2014-06-10T10:00:00.000Z"},
-      "hourFrom": 8,
-      "minFrom": 0,
-      "duration": 120,
-      "weekType": 1,
-      "base": {"$date": "2014-04-15T10:00:00.000Z"},
-      "weekDay": 5
-    }
-  ],
+  "schedulings": [],
   "urls": [{"address": "http://pipacs.com"}]
 }
