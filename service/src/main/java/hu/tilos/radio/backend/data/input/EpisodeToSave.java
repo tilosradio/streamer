@@ -7,10 +7,11 @@ import hu.tilos.radio.backend.data.types.TextData;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EpisodeToSave {
+
+    List<TagData> tags;
 
     private Date plannedFrom;
 
@@ -24,13 +25,11 @@ public class EpisodeToSave {
 
     private TextData text;
 
-    Set<TagData> tags;
-
-    public Set<TagData> getTags() {
+    public List<TagData> getTags() {
         return tags;
     }
 
-    public void setTags(Set<TagData> tags) {
+    public void setTags(List<TagData> tags) {
         this.tags = tags;
     }
 

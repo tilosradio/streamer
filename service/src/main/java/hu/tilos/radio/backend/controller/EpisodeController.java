@@ -174,12 +174,12 @@ public class EpisodeController {
         }
 
 
+        updateTags(entity);
         BasicDBObject newMongoOBject = modelMapper.map(entity, BasicDBObject.class);
         newMongoOBject.put("created", new Date());
         newMongoOBject.remove("id");
         newMongoOBject.remove("persistent");
-        //FIXME
-        updateTags(entity);
+
         db.getCollection("episode").insert(newMongoOBject);
 
         return new CreateResponse(((ObjectId) newMongoOBject.get("_id")).toHexString());
@@ -212,7 +212,7 @@ public class EpisodeController {
     public void updateTags(EpisodeToSave episode) {
         if (episode.getText() != null && episode.getText().getContent() != null) {
             Set<TagData> newTags = tagUtil.getTags(episode.getText().getContent());
-            episode.setTags(newTags);
+            episode.setTags(new ArrayList<TagData>(newTags));
         }
     }
 

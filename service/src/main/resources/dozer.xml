@@ -11,6 +11,11 @@
             </converter>
             <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
                 <class-a>java.lang.Integer</class-a>
+                <class-b>hu.radio.tilos.model.type.TagType</class-b>
+            </converter>
+
+            <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
+                <class-a>java.lang.Integer</class-a>
                 <class-b>hu.radio.tilos.model.type.MixType</class-b>
             </converter>
             <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
@@ -226,12 +231,23 @@
         </field>
     </mapping>
 
+
+
     <mapping map-null="false" type="one-way">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
         <class-b>hu.tilos.radio.backend.data.types.TagData</class-b>
         <field>
             <a key="type">this</a>
             <b>type</b>
+        </field>
+    </mapping>
+
+    <mapping map-null="false" type="one-way">
+        <class-a>hu.tilos.radio.backend.data.types.TagData</class-a>
+        <class-b map-get-method="get" map-set-method="put">org.bson.BSONObject</class-b>
+        <field custom-converter="hu.tilos.radio.backend.converters.EnumEncoder">
+            <a>type</a>
+            <b key="type">this</b>
         </field>
     </mapping>
 
@@ -294,6 +310,10 @@
         <field custom-converter-id="childEncoder">
             <a>text</a>
             <b key="text">this</b>
+        </field>
+        <field custom-converter-id="childListEncoder">
+            <a>tags</a>
+            <b key="tags">this</b>
         </field>
         <field custom-converter-id="showReference">
             <a>show</a>

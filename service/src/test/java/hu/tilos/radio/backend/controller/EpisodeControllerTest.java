@@ -1,8 +1,8 @@
 package hu.tilos.radio.backend.controller;
 
 import com.github.fakemongo.junit.FongoRule;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.data.input.EpisodeToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
@@ -14,13 +14,19 @@ import org.dozer.DozerBeanMapper;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
+import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareResult;
+import org.skyscreamer.jsonassert.comparator.JSONComparator;
 
 import javax.inject.Inject;
+import java.text.SimpleDateFormat;
 
+import static hu.tilos.radio.backend.MongoTestUtil.loadFrom;
 import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 
 @RunWith(CdiRunner.class)
@@ -60,7 +66,7 @@ public class EpisodeControllerTest {
     @Test
     public void testGetByDate() throws Exception {
         //given
-        String showId = loadTo (fongoRule, "show", "show-3utas.json");
+        String showId = loadTo(fongoRule, "show", "show-3utas.json");
         loadTo(fongoRule, "episode", "episode-episode2.json", showId);
 
         //when
@@ -94,9 +100,10 @@ public class EpisodeControllerTest {
 
         //then
         DBObject mongoEpisode = fongoRule.getDB().getCollection("episode").findOne();
-        Assert.assertNotNull(mongoEpisode.get("text"));
-        Assert.assertEquals("Title", ((DBObject) mongoEpisode.get("text")).get("title"));
-        Assert.assertEquals("3utas", ((DBObject) mongoEpisode.get("show")).get("alias"));
+        System.out.println(JSON.serialize(mongoEpisode));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String expectedUser = loadFrom("episode-create-expected.json", createResponse.getId(), showId, sdf.format(mongoEpisode.get("created")));
+        //TODO: 
 
     }
 
