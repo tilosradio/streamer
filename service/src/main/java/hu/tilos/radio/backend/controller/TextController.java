@@ -11,6 +11,7 @@ import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.TextData;
 import hu.tilos.radio.backend.data.types.TextDataSimple;
+import hu.tilos.radio.backend.util.TextConverter;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 
@@ -24,6 +25,9 @@ import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
 @Path("/api/v1/text")
 public class TextController {
+
+    @Inject
+    private TextConverter textConverter;
 
     @Inject
     private DB db;
@@ -52,7 +56,9 @@ public class TextController {
     @Produces("application/json")
     @Transactional
     public TextData get(@PathParam("id") String alias, @PathParam("type") String type) {
-        return mapper.map(db.getCollection("page").findOne(aliasOrId(alias)), TextData.class);
+        TextData page = mapper.map(db.getCollection("page").findOne(aliasOrId(alias)), TextData.class);
+        page.setFormatted(textConverter.format(page.getFormat(), page.getContent()));
+        return page;
     }
 
 
@@ -67,6 +73,7 @@ public class TextController {
     public UpdateResponse update(@PathParam("type") String type, @PathParam("id") String alias, TextToSave objectToSave) {
         DBObject original = db.getCollection("page").findOne(aliasOrId(alias));
         mapper.map(objectToSave, original);
+        original.put("format", "markdown");
         db.getCollection("page").update(aliasOrId(alias), original);
         return new UpdateResponse(true);
     }
@@ -81,7 +88,7 @@ public class TextController {
     @Transactional
     public CreateResponse create(@PathParam("type") String type, TextToSave objectToSave) {
         DBObject newObject = mapper.map(objectToSave, BasicDBObject.class);
-        newObject.put("format", "default");
+        newObject.put("format", "markdown");
         newObject.put("type", type);
         db.getCollection("page").insert(newObject);
         return new CreateResponse(((ObjectId) newObject.get("_id")).toHexString());

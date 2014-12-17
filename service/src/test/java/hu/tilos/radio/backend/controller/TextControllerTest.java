@@ -51,6 +51,22 @@ public class TextControllerTest {
 
         //then
         assertThat(page.getTitle(), equalTo("tamogatas"));
+        assertThat(page.getContent(), equalTo("<p>asd</p>"));
+
+    }
+
+    @Test
+    public void getMd() throws Exception {
+        //given
+
+        loadTo(fongoRule, "page", "page-page3.json");
+
+        //when
+        TextData page = controller.get("1", "page");
+
+        //then
+        assertThat(page.getTitle(), equalTo("tamogatas"));
+        assertThat(page.getFormatted(), equalTo("<p>asd</p><p>asd</p><p><a href=\\\"http://index.hu\\\">test</a></p>"));
 
     }
 

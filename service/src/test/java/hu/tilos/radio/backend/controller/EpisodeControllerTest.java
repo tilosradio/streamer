@@ -103,7 +103,7 @@ public class EpisodeControllerTest {
         System.out.println(JSON.serialize(mongoEpisode));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         String expectedUser = loadFrom("episode-create-expected.json", createResponse.getId(), showId, sdf.format(mongoEpisode.get("created")));
-        //TODO: 
+        //TODO:
 
     }
 

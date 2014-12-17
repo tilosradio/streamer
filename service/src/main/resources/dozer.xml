@@ -226,8 +226,21 @@
             <b>formatted</b>
         </field>
         <field>
+            <a key="_id">this</a>
+            <b>id</b>
+        </field>
+        <field>
             <a key="content">this</a>
             <b>content</b>
+        </field>
+    </mapping>
+
+    <mapping map-null="false" type="one-way">
+        <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
+        <class-b>hu.tilos.radio.backend.data.types.TextDataSimple</class-b>
+        <field>
+            <a key="_id">this</a>
+            <b>id</b>
         </field>
     </mapping>
 

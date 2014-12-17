@@ -15,6 +15,7 @@ import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.EpisodeData;
 import hu.tilos.radio.backend.data.types.TagData;
 import hu.tilos.radio.backend.episode.EpisodeUtil;
+import hu.tilos.radio.backend.util.TextConverter;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
@@ -49,6 +50,9 @@ public class EpisodeController {
     @Inject
     DB db;
 
+    @Inject
+    TextConverter converter;
+
     @GET
     @Path("/{id}")
     @Security(role = Role.GUEST)
@@ -57,6 +61,9 @@ public class EpisodeController {
         DBObject episode = db.getCollection("episode").findOne(aliasOrId(id));
         EpisodeData r = modelMapper.map(episode, EpisodeData.class);
         episodeUtil.linkGenerator(r);
+        if (r.getText() != null) {
+            r.getText().setFormatted(converter.format(r.getText().getFormat(), r.getText().getContent()));
+        }
         return r;
     }
 
@@ -102,6 +109,9 @@ public class EpisodeController {
         List<EpisodeData> result = new ArrayList<>();
         for (DBObject episode : episodes) {
             EpisodeData episodeData = modelMapper.map(episode, EpisodeData.class);
+            if (episodeData.getText() != null) {
+                episodeData.getText().setFormatted(converter.format(episodeData.getText().getFormat(), episodeData.getText().getContent()));
+            }
             EpisodeUtil.linkGenerator(episodeData);
             result.add(episodeData);
         }
@@ -127,6 +137,9 @@ public class EpisodeController {
         for (DBObject episode : episodes) {
             EpisodeData episodeData = modelMapper.map(episode, EpisodeData.class);
             EpisodeUtil.linkGenerator(episodeData);
+            if (episodeData.getText() != null) {
+                episodeData.getText().setFormatted(converter.format(episodeData.getText().getFormat(), episodeData.getText().getContent()));
+            }
             result.add(episodeData);
         }
         return result;
@@ -146,6 +159,9 @@ public class EpisodeController {
             //todo, error handling
             throw new IllegalArgumentException("Can't find the appropriate episode");
         } else {
+            if (episodeData.get(0).getText() != null) {
+                episodeData.get(0).getText().setFormatted(converter.format(episodeData.get(0).getText().getFormat(), episodeData.get(0).getText().getContent()));
+            }
             return EpisodeUtil.linkGenerator(episodeData.get(0));
         }
     }
@@ -163,7 +179,7 @@ public class EpisodeController {
 
         if (entity.getText() != null) {
             entity.getText().setAlias("");
-            entity.getText().setFormat("default");
+            entity.getText().setFormat("markdown");
             entity.getText().setType("episode");
         }
         if (entity.getRealFrom() == null) {
@@ -197,7 +213,7 @@ public class EpisodeController {
 
         if (objectToSave.getText() != null) {
             objectToSave.getText().setAlias("");
-            objectToSave.getText().setFormat("default");
+            objectToSave.getText().setFormat("markdown");
             objectToSave.getText().setType("episode");
         }
 
