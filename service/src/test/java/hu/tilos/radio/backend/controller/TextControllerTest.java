@@ -66,7 +66,7 @@ public class TextControllerTest {
 
         //then
         assertThat(page.getTitle(), equalTo("tamogatas"));
-        assertThat(page.getFormatted(), equalTo("<p>asd</p><p>asd</p><p><a href=\\\"http://index.hu\\\">test</a></p>"));
+        assertThat(page.getFormatted(), equalTo("<p>asd</p><p>asd</p><p><a href=\"http://index.hu\">test</a></p>"));
 
     }
 
