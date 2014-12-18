@@ -25,7 +25,6 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-
 import java.util.*;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
@@ -60,9 +59,18 @@ public class EpisodeController {
     public EpisodeData get(@PathParam("id") String id) {
         DBObject episode = db.getCollection("episode").findOne(aliasOrId(id));
         EpisodeData r = modelMapper.map(episode, EpisodeData.class);
+        enrichEpisode(r);
+        return r;
+    }
+
+    private EpisodeData enrichEpisode(EpisodeData r) {
         episodeUtil.linkGenerator(r);
         if (r.getText() != null) {
+            if (r.getText().getFormat() == null) {
+                r.getText().setFormat("legacy");
+            }
             r.getText().setFormatted(converter.format(r.getText().getFormat(), r.getText().getContent()));
+            return r;
         }
         return r;
     }
@@ -109,10 +117,7 @@ public class EpisodeController {
         List<EpisodeData> result = new ArrayList<>();
         for (DBObject episode : episodes) {
             EpisodeData episodeData = modelMapper.map(episode, EpisodeData.class);
-            if (episodeData.getText() != null) {
-                episodeData.getText().setFormatted(converter.format(episodeData.getText().getFormat(), episodeData.getText().getContent()));
-            }
-            EpisodeUtil.linkGenerator(episodeData);
+            enrichEpisode(episodeData);
             result.add(episodeData);
         }
         return result;
@@ -136,10 +141,7 @@ public class EpisodeController {
         List<EpisodeData> result = new ArrayList<>();
         for (DBObject episode : episodes) {
             EpisodeData episodeData = modelMapper.map(episode, EpisodeData.class);
-            EpisodeUtil.linkGenerator(episodeData);
-            if (episodeData.getText() != null) {
-                episodeData.getText().setFormatted(converter.format(episodeData.getText().getFormat(), episodeData.getText().getContent()));
-            }
+            enrichEpisode(episodeData);
             result.add(episodeData);
         }
         return result;
@@ -159,10 +161,7 @@ public class EpisodeController {
             //todo, error handling
             throw new IllegalArgumentException("Can't find the appropriate episode");
         } else {
-            if (episodeData.get(0).getText() != null) {
-                episodeData.get(0).getText().setFormatted(converter.format(episodeData.get(0).getText().getFormat(), episodeData.get(0).getText().getContent()));
-            }
-            return EpisodeUtil.linkGenerator(episodeData.get(0));
+            return enrichEpisode(episodeData.get(0));
         }
     }
 
