@@ -121,7 +121,8 @@ public class CommentController {
     }
 
 
-    /**
+    /**me
+     *
      * @exclude
      */
     @Produces("application/json")

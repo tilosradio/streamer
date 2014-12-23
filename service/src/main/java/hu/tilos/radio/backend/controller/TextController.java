@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
@@ -40,9 +41,13 @@ public class TextController {
     @Security(role = Role.GUEST)
     @Produces("application/json")
     @Transactional
-    public List<TextDataSimple> list(@PathParam("type") String type) {
+    public List<TextDataSimple> list(@PathParam("type") String type, @QueryParam("limit") Integer limit) {
+        checkType(type);
         BasicDBObject query = new BasicDBObject("type", type);
-        DBCursor pages = db.getCollection("page").find(query);
+        DBCursor pages = db.getCollection(type).find(query).sort(new BasicDBObject("created", -1));
+        if (limit != null) {
+            pages.limit(limit);
+        }
         List<TextDataSimple> result = new ArrayList<>();
         for (DBObject page : pages) {
             result.add(mapper.map(page, TextDataSimple.class));
@@ -56,7 +61,8 @@ public class TextController {
     @Produces("application/json")
     @Transactional
     public TextData get(@PathParam("id") String alias, @PathParam("type") String type) {
-        TextData page = mapper.map(db.getCollection("page").findOne(aliasOrId(alias)), TextData.class);
+        checkType(type);
+        TextData page = mapper.map(db.getCollection(type).findOne(aliasOrId(alias)), TextData.class);
         page.setFormatted(textConverter.format(page.getFormat(), page.getContent()));
         return page;
     }
@@ -71,10 +77,11 @@ public class TextController {
     @PUT
     @Transactional
     public UpdateResponse update(@PathParam("type") String type, @PathParam("id") String alias, TextToSave objectToSave) {
-        DBObject original = db.getCollection("page").findOne(aliasOrId(alias));
+        checkType(type);
+        DBObject original = db.getCollection(type).findOne(aliasOrId(alias));
         mapper.map(objectToSave, original);
         original.put("format", "markdown");
-        db.getCollection("page").update(aliasOrId(alias), original);
+        db.getCollection(type).update(aliasOrId(alias), original);
         return new UpdateResponse(true);
     }
 
@@ -87,11 +94,21 @@ public class TextController {
     @POST
     @Transactional
     public CreateResponse create(@PathParam("type") String type, TextToSave objectToSave) {
+        checkType(type);
         DBObject newObject = mapper.map(objectToSave, BasicDBObject.class);
         newObject.put("format", "markdown");
         newObject.put("type", type);
-        db.getCollection("page").insert(newObject);
+        newObject.put("created", new Date());
+        db.getCollection(type).insert(newObject);
         return new CreateResponse(((ObjectId) newObject.get("_id")).toHexString());
+    }
+
+    private void checkType(String type) {
+        if (type.equals("page") || type.equals("news") || type.equals("adminnews")) {
+            return;
+        } else {
+            throw new IllegalArgumentException("Invalid type: " + type);
+        }
     }
 
 

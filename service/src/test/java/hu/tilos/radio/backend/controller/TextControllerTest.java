@@ -66,7 +66,7 @@ public class TextControllerTest {
 
         //then
         assertThat(page.getTitle(), equalTo("tamogatas"));
-        assertThat(page.getFormatted(), equalTo("<p>asd</p><p>asd</p><p><a href=\"http://index.hu\">test</a></p>"));
+        assertThat(page.getFormatted(), equalTo("<p>asd</p><p>asd</p><p><a href=\"http://pipacs.com\">test</a></p>"));
 
     }
 
@@ -76,7 +76,7 @@ public class TextControllerTest {
         loadTo(fongoRule, "page", "page-page1.json");
 
         //when
-        List<TextDataSimple> pages = controller.list("page");
+        List<TextDataSimple> pages = controller.list("page", 1);
 
         //then
         assertThat(pages.size(), equalTo(1));

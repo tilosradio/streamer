@@ -1,5 +1,7 @@
 package hu.tilos.radio.backend.data.types;
 
+import java.util.Date;
+
 /**
  * Data transfer object for text data.
  */
@@ -12,6 +14,16 @@ public class TextDataSimple {
     private String alias;
 
     private String type;
+
+    private Date created;
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
 
     public String getId() {
         return id;
