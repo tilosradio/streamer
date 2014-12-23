@@ -7,7 +7,6 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>integration</module>
         <module>prerender</module>
         <module>model</module>
         <module>smoketest</module>
