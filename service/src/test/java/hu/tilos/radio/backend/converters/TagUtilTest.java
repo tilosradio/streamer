@@ -1,7 +1,6 @@
 package hu.tilos.radio.backend.converters;
 
 
-import hu.radio.tilos.model.Tag;
 import hu.tilos.radio.backend.data.types.TagData;
 import org.junit.Assert;
 import org.junit.Test;

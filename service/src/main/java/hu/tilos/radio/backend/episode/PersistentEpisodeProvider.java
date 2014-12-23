@@ -2,7 +2,7 @@ package hu.tilos.radio.backend.episode;
 
 
 import com.mongodb.*;
-import hu.radio.tilos.model.Bookmark;
+import hu.tilos.radio.backend.data.types.BookmarkData;
 import hu.tilos.radio.backend.data.types.EpisodeData;
 import hu.tilos.radio.backend.data.types.TextData;
 import org.dozer.DozerBeanMapper;
@@ -66,7 +66,7 @@ public class PersistentEpisodeProvider {
 
     }
 
-    private void useBookmarkForEpisodeText(EpisodeData episodeData, Bookmark bookmark) {
+    private void useBookmarkForEpisodeText(EpisodeData episodeData, BookmarkData bookmark) {
         if (bookmark != null) {
             TextData textData = new TextData();
             textData.setTitle(bookmark.getTitle());
@@ -74,11 +74,11 @@ public class PersistentEpisodeProvider {
         }
     }
 
-    private Bookmark chooseTheBestBookmark(List<Bookmark> bookmarks) {
+    private BookmarkData chooseTheBestBookmark(List<BookmarkData> bookmarks) {
         if (bookmarks.size() == 0) {
             return null;
         }
-        for (Bookmark bookmark : bookmarks) {
+        for (BookmarkData bookmark : bookmarks) {
             if (bookmark.isSelected()) {
                 return bookmark;
             }

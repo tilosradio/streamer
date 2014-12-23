@@ -1,6 +1,5 @@
 package hu.tilos.radio.backend.converters;
 
-import hu.radio.tilos.model.Scheduling;
 import hu.tilos.radio.backend.data.types.SchedulingSimple;
 
 /**

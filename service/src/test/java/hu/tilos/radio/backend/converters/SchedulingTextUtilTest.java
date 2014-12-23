@@ -1,11 +1,8 @@
 package hu.tilos.radio.backend.converters;
 
-import hu.radio.tilos.model.Scheduling;
 import hu.tilos.radio.backend.data.types.SchedulingSimple;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class SchedulingTextUtilTest {
 
@@ -24,7 +21,7 @@ public class SchedulingTextUtilTest {
         String response = util.create(s);
 
         //then
-        Assert.assertEquals("minden második péntek 13:30-15:30",response);
+        Assert.assertEquals("minden második péntek 13:30-15:30", response);
 
     }
 }

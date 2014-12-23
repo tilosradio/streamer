@@ -1,6 +1,5 @@
 package hu.tilos.radio.backend.data.types;
 
-import hu.radio.tilos.model.Url;
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.radio.tilos.model.type.ShowType;
 
