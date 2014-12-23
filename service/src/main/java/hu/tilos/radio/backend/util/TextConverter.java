@@ -7,8 +7,12 @@ import org.pegdown.Extensions;
 import org.pegdown.PegDownProcessor;
 
 import javax.inject.Inject;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TextConverter {
+
+    private static final Pattern YOUTUBE = Pattern.compile("(?![\"\\[\\(])(?:https?:)?(//)?(?:www\\.)?(?:youtube\\.com|youtu\\.be).*");
 
     @Inject
     HTMLSanitizer liberalSanitizer;
@@ -33,10 +37,22 @@ public class TextConverter {
             return tagUtil.replaceToHtml(liberalSanitizer.clean(content));
         } else if (type.equals("markdown")) {
             content = fairSanitizer.clean(content);
-            String tagged = tagUtil.htmlize(content);
+            String youtubized = youtubize(content);
+            String tagged = tagUtil.htmlize(youtubized);
             return pegdown.markdownToHtml(tagged);
         }
         throw new IllegalArgumentException("Unkown content type: " + type);
+    }
+
+    public String youtubize(String str) {
+        Matcher m = YOUTUBE.matcher(str);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            String url = m.group(0).replace("watch?v=", "embed/").replace("watch?v&#61;","embed/");
+            m.appendReplacement(sb, "<iframe width=\"420\" height=\"315\" src=\"" + url + "\" frameborder=\"0\" allowfullscreen></iframe>");
+        }
+        m.appendTail(sb);
+        return sb.toString();
     }
 
 
