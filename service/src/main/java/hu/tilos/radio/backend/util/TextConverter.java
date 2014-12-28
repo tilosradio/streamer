@@ -38,7 +38,8 @@ public class TextConverter {
         } else if (type.equals("markdown")) {
             content = fairSanitizer.clean(content);
             String youtubized = youtubize(content);
-            String tagged = tagUtil.htmlize(youtubized);
+            String cleanAt = youtubized.replaceAll("&#64;","@");
+            String tagged = tagUtil.htmlize(cleanAt);
             return pegdown.markdownToHtml(tagged);
         }
         throw new IllegalArgumentException("Unkown content type: " + type);
