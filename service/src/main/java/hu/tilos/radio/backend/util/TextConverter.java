@@ -33,7 +33,7 @@ public class TextConverter {
         if (type == null || content == null) {
             return content;
         }
-        if (type.equals("default") || type.equals("legacy")) {
+        if (type.equals("default") || type.equals("legacy") || type.equals("normal")) {
             return tagUtil.replaceToHtml(liberalSanitizer.clean(content));
         } else if (type.equals("markdown")) {
             content = fairSanitizer.clean(content);
