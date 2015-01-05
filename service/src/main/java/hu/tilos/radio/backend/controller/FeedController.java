@@ -115,6 +115,14 @@ public class FeedController {
 
 
     @GET
+    @Path("/show/itunes/{alias}")
+    @Security(role = Role.GUEST)
+    @Produces("application/atom+xml")
+    public Response itunesFeed(@PathParam("alias") String alias) {
+        return feed(alias, null);
+    }
+
+    @GET
     @Path("/show/{alias}{year:(/.*)?}")
     @Security(role = Role.GUEST)
     @Produces("application/atom+xml")
