@@ -152,6 +152,7 @@ public class AuthController {
         DBObject user = new BasicDBObject();
         user.put("username", author.get("alias"));
         user.put("role", Role.AUTHOR.ordinal());
+        user.put("role_id", Role.USER.ordinal());
         user.put("email", author.get("email"));
         user.put("salt", null);
         user.put("password", null);
