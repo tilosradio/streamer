@@ -61,6 +61,15 @@
 
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
+        <class-b>hu.tilos.radio.backend.data.types.AuthorWithContribution</class-b>
+        <field>
+            <a key="_id">this</a>
+            <b>id</b>
+        </field>
+    </mapping>
+
+    <mapping map-null="false">
+        <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
         <class-b>hu.tilos.radio.backend.data.types.AuthorDetailed</class-b>
         <field>
             <a key="_id">this</a>
