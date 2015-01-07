@@ -238,6 +238,7 @@ public class AuthController {
         user.put("email", registerData.getEmail());
         user.put("username", registerData.getUsername());
         user.put("role_id", Role.USER.ordinal());
+        user.put("role", Role.USER.ordinal());
         user.put("salt", authUtil.generateSalt());
         user.put("password", authUtil.encode(registerData.getPassword(), (String) user.get("salt")));
 
