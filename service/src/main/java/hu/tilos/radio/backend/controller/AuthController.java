@@ -186,15 +186,28 @@ public class AuthController {
     @Security(role = Role.GUEST)
     @POST
     public Response login(LoginData loginData) {
-
+        String username = loginData.getUsername();
+        String sudo = "";
+        if (username.contains(":")) {
+            String[] parts = username.split(":");
+            username = parts[0];
+            sudo = parts[1];
+        }
         try {
-            DBObject user = db.getCollection("user").findOne(new BasicDBObject("username", loginData.getUsername()));
+            DBObject user = db.getCollection("user").findOne(new BasicDBObject("username", username));
             if (user == null) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
             if (authUtil.encode(loginData.getPassword(), (String) user.get("salt")).equals((String) user.get("password"))) {
                 try {
-                    return Response.ok(createToken(loginData.getUsername(), Role.values()[(int) user.get("role_id")])).build();
+                    if (!"".equals(sudo) && user.get("role_id").equals(Role.ADMIN.ordinal())) {
+                        user = db.getCollection("user").findOne(new BasicDBObject("username", sudo));
+                        if (user == null) {
+                            return Response.status(Response.Status.NOT_FOUND).build();
+                        }
+                    }
+                    return Response.ok(createToken((String) user.get("username"), Role.values()[(int) user.get("role_id")])).build();
+
                 } catch (Exception e) {
                     throw new RuntimeException("Can't encode the token", e);
                 }
