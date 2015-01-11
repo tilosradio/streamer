@@ -58,7 +58,7 @@ public class ShowController {
         BasicDBObject criteria = new BasicDBObject();
 
         //FIXME
-        if (!"all".equals("showStatus")) {
+        if (!"all".equals(status)) {
             criteria.put("status", ShowStatus.ACTIVE.ordinal());
         }
         DBCursor selectedShows = db.getCollection("show").find(criteria).sort(new BasicDBObject("name", 1));
@@ -67,6 +67,12 @@ public class ShowController {
         for (DBObject show : selectedShows) {
             mappedShows.add(mapper.map(show, ShowSimple.class));
         }
+        Collections.sort(mappedShows, new Comparator<ShowSimple>() {
+            @Override
+            public int compare(ShowSimple s1, ShowSimple s2) {
+                return s1.getName().toLowerCase().compareTo(s2.getName().toLowerCase());
+            }
+        });
         return mappedShows;
 
     }
