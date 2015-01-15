@@ -2,6 +2,7 @@ package hu.tilos.radio.backend;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.WriteConcern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ public class MongoProducer {
         try {
             LOG.debug("Connection to the mongodb");
             MongoClient mongoClient = new MongoClient();
+            mongoClient.setWriteConcern(WriteConcern.ACKNOWLEDGED);
             db = mongoClient.getDB(dbName);
         } catch (Exception ex) {
             throw new AssertionError("Can't connect to the mongodb");
