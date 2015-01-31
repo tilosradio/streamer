@@ -11,6 +11,8 @@ public class ShowSimple {
 
     public String alias;
 
+    private String definition;
+
     public ShowType type;
 
     public ShowStatus status;
@@ -53,5 +55,13 @@ public class ShowSimple {
 
     public void setStatus(ShowStatus status) {
         this.status = status;
+    }
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
     }
 }
