@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class TextConverter {
 
-    private static final Pattern YOUTUBE = Pattern.compile("(?![\"\\[\\(])(?:https?:)?(//)?(?:www\\.)?(?:youtube\\.com|youtu\\.be).*");
+    private static final Pattern YOUTUBE = Pattern.compile("^\\s*(?![\"\\[\\(])(?:https?:)?(//)?(?:www\\.)?(?:youtube\\.com|youtu\\.be)\\S+\\s*$" ,Pattern.MULTILINE);
 
     @Inject
     HTMLSanitizer liberalSanitizer;
@@ -38,7 +38,7 @@ public class TextConverter {
         } else if (type.equals("markdown")) {
             content = fairSanitizer.clean(content);
             String youtubized = youtubize(content);
-            String cleanAt = youtubized.replaceAll("&#64;","@");
+            String cleanAt = youtubized.replaceAll("&#64;", "@");
             String tagged = tagUtil.htmlize(cleanAt);
             return pegdown.markdownToHtml(tagged);
         }
@@ -49,7 +49,7 @@ public class TextConverter {
         Matcher m = YOUTUBE.matcher(str);
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
-            String url = m.group(0).replace("watch?v=", "embed/").replace("watch?v&#61;","embed/");
+            String url = m.group(0).replace("watch?v=", "embed/").replace("watch?v&#61;", "embed/");
             m.appendReplacement(sb, "<iframe width=\"420\" height=\"315\" src=\"" + url + "\" frameborder=\"0\" allowfullscreen></iframe>");
         }
         m.appendTail(sb);
