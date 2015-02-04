@@ -1,18 +1,13 @@
 package hu.tilos.radio.backend.controller;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
+import com.mongodb.*;
 import hu.radio.tilos.model.Role;
-import hu.tilos.radio.backend.Configuration;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.data.output.ListenerStat;
 import hu.tilos.radio.backend.data.output.StatData;
 import hu.tilos.radio.backend.data.types.EpisodeData;
 import hu.tilos.radio.backend.episode.EpisodeUtil;
 import org.dozer.DozerBeanMapper;
-import org.influxdb.InfluxDB;
-import org.influxdb.InfluxDBFactory;
-import org.influxdb.dto.Serie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +20,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+
 
 @Path("api/v1/stat")
 public class StatController {
@@ -40,10 +35,6 @@ public class StatController {
 
     @Inject
     DozerBeanMapper mapper;
-
-    @Inject
-    @Configuration(name = "influxdb.url")
-    String influxDbUrl;
 
     @Produces("application/json")
     @Security(role = Role.GUEST)
@@ -64,7 +55,6 @@ public class StatController {
     @GET
     @Path("/listener")
     public List<ListenerStat> getListenerSTat(@QueryParam("from") Long fromTimestamp, @QueryParam("to") Long toTimestamp) {
-        InfluxDB influxDB = InfluxDBFactory.connect(influxDbUrl, "root", "root");
 
         List<ListenerStat> result = new ArrayList<>();
         Date toDate = new Date();
@@ -81,25 +71,35 @@ public class StatController {
         for (EpisodeData episode : episodeList) {
             ListenerStat stat = new ListenerStat();
             stat.setEpisode(mapper.map(episode, EpisodeData.class));
-            long from = episode.getPlannedFrom().getTime() / 1000;
-            long to = episode.getPlannedTo().getTime() / 1000;
+            long from = episode.getPlannedFrom().getTime();
             if (episode.getPlannedFrom().equals(episode.getRealFrom())) {
-                from += 60 * 15; //15 min
+                from += 60 * 15 * 1000; //15 min
+            }
+            Date episodeFromDate = new Date(from);
+
+            List<DBObject> pipeline = new ArrayList<>();
+
+            DBObject match = new BasicDBObject("$match", QueryBuilder.start().put("time").greaterThan(episodeFromDate).lessThan(episode.getPlannedTo()).get());
+            pipeline.add(match);
+            BasicDBList fields = new BasicDBList();
+            fields.add("$tilos");
+            fields.add("$tilos_128_mp3");
+            fields.add("$tilos_32_mp3");
+            fields.add("$tilos_high_ogg");
+            fields.add("$tilos_low_ogg");
+            BasicDBObject group = new BasicDBObject().append("_id", null);
+            group.append("min", new BasicDBObject("$min", new BasicDBObject("$add", fields)));
+            group.append("max", new BasicDBObject("$max", new BasicDBObject("$add", fields)));
+            group.append("avg", new BasicDBObject("$avg", new BasicDBObject("$add", fields)));
+            pipeline.add(new BasicDBObject("$group", group));
+            System.out.println(pipeline);
+            AggregationOutput stat_icecast = db.getCollection("stat_icecast").aggregate(pipeline);
+            for (DBObject o : stat_icecast.results()) {
+                stat.setMax((Integer) o.get("max"));
+                stat.setMin((Integer) o.get("min"));
+                stat.setMean((int) Math.round((Double) o.get("avg")));
             }
 
-            String query = String.format("select min(expr0),mean(expr0),max(expr0) from calc.icecast where time > %ds and time < %ds", from, to);
-            LOG.debug(query);
-            List<Serie> series = influxDB.query("tilos2", query, TimeUnit.DAYS.SECONDS);
-
-            if (series.size() > 0 && series.get(0).getRows().size() > 0) {
-                stat.setMean(convertToInt(series.get(0).getRows().get(0).get("mean")));
-                stat.setMax(convertToInt(series.get(0).getRows().get(0).get("max")));
-                stat.setMin(convertToInt(series.get(0).getRows().get(0).get("min")));
-            } else {
-                stat.setMean(0);
-                stat.setMax(0);
-                stat.setMin(0);
-            }
             result.add(stat);
         }
         return result;

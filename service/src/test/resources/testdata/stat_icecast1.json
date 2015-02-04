@@ -1,0 +1,11 @@
+{
+  "csakaszavak_ogg": 8,
+  "csakazene_ogg": 0,
+  "tilos": 27,
+  "tilos_128_mp3": 9,
+  "tilos_32_mp3": 0,
+  "tilos_high_ogg": 0,
+  "tilos_low_ogg": 0,
+  "tordas_radio_online": 3,
+  "time":  {"$date": "2014-04-19T06:23:00.000Z"}
+}
