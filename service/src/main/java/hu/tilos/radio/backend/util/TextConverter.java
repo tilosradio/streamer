@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class TextConverter {
 
-    private static final Pattern YOUTUBE = Pattern.compile("^\\s*   (?![\"\\[\\(])(?:https?:)?(//)?(?:www\\.)?(?:youtube\\.com|youtu\\.be)\\S+\\s*$" ,Pattern.MULTILINE);
+    private static final Pattern YOUTUBE = Pattern.compile("^\\s*(?![\"\\[\\(])(?:https?:)?(//)?(?:www\\.)?(?:youtube\\.com|youtu\\.be)\\S+\\s*$" ,Pattern.MULTILINE);
 
     @Inject
     HTMLSanitizer liberalSanitizer;
