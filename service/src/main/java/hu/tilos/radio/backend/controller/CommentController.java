@@ -11,6 +11,7 @@ import hu.tilos.radio.backend.data.input.CommentToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.types.CommentData;
 import hu.tilos.radio.backend.episode.EpisodeUtil;
+import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +49,13 @@ public class CommentController {
         BasicDBObject query = new BasicDBObject();
         query.put("type", type.ordinal());
         query.put("identifier", id);
-        query.put("status", CommentStatus.ACCEPTED.ordinal());
-        //FIXME status or current author
+
+        BasicDBList or = new BasicDBList();
+        or.add(new BasicDBObject("status", CommentStatus.ACCEPTED.ordinal()));
+        or.add(new BasicDBObject("author.ref", new DBRef(db, "user", session.getCurrentUser().getId())));
+
+        query.put("$or", or);
+
         DBCursor comments = db.getCollection("comment").find(query);
 
         Map<String, CommentData> commentsById = new HashMap<>();
@@ -59,8 +65,7 @@ public class CommentController {
         }
         for (DBObject comment : comments) {
             if (comment.get("parent") != null) {
-                DBRef parent = (DBRef) comment.get("parent");
-                commentsById.get((String) parent.getId()).getChildren().add(commentsById.get(comment.get("_id").toString()));
+                commentsById.get((String) comment.get("parent")).getChildren().add(commentsById.get(comment.get("_id").toString()));
             }
         }
 
@@ -102,9 +107,9 @@ public class CommentController {
     @Produces("application/json")
     @Transactional
     public CommentData approve(@PathParam("id") String id) {
-        DBObject comment = db.getCollection("comment").findOne(new BasicDBObject("_id", id));
-        comment.put("status", CommentStatus.ACCEPTED);
-        db.getCollection("comment").update(new BasicDBObject("_id", id), comment);
+        DBObject comment = db.getCollection("comment").findOne(new BasicDBObject("_id", new ObjectId(id)));
+        comment.put("status", CommentStatus.ACCEPTED.ordinal());
+        db.getCollection("comment").update(new BasicDBObject("_id", new ObjectId(id)), comment);
         return modelMapper.map(comment, CommentData.class);
     }
 
@@ -116,12 +121,13 @@ public class CommentController {
     @Security(role = Role.ADMIN)
     @Produces("application/json")
     @Transactional
-    public void delete(@PathParam("id") int id) {
-        db.getCollection("comment").remove(new BasicDBObject("_id", id));
+    public void delete(@PathParam("id") String id) {
+        db.getCollection("comment").remove(new BasicDBObject("_id", new ObjectId(id)));
     }
 
 
-    /**me
+    /**
+     * me
      *
      * @exclude
      */
@@ -130,20 +136,24 @@ public class CommentController {
     @Path("/{type}/{identifier}")
     @POST
     @Transactional
-    public CreateResponse create(@PathParam("type") CommentType type, @PathParam("identifier") int id, CommentToSave data) {
+    public CreateResponse create(@PathParam("type") CommentType type, @PathParam("identifier") String id, CommentToSave data) {
         BasicDBObject comment = modelMapper.map(data, BasicDBObject.class);
         comment.put("type", type.ordinal());
         comment.put("identifier", id);
         comment.put("created", new Date());
+        comment.put("status", CommentStatus.NEW.ordinal());
+        if (data.getParentId() != null) {
+            comment.put("parent", data.getParentId());
+        }
 
         BasicDBObject author = new BasicDBObject();
         author.put("username", session.getCurrentUser().getUsername());
         author.put("ref", new DBRef(db, "user", session.getCurrentUser().getId()));
 
-        comment.put("creator", author);
+        comment.put("author", author);
 
         db.getCollection("comment").insert(comment);
-        return new CreateResponse((String) comment.get("_id"));
+        return new CreateResponse(comment.get("_id").toString());
     }
 
 

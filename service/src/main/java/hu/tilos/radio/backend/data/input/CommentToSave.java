@@ -4,17 +4,17 @@ import java.util.Date;
 
 public class CommentToSave {
 
-    private int parentId;
+    private String parentId;
 
     private String comment;
 
     private Date moment;
 
-    public int getParentId() {
+    public String getParentId() {
         return parentId;
     }
 
-    public void setParentId(int parentId) {
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 
