@@ -2,6 +2,7 @@ package hu.tilos.radio.backend;
 
 import hu.tilos.radio.backend.streamer.Backend;
 import hu.tilos.radio.backend.streamer.StatPersistence;
+import hu.tilos.radio.backend.streamer.StatToLog;
 import hu.tilos.radio.backend.streamer.util.Mp3Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,9 @@ public class StreamController extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp, OutputStream output) throws ServletException, IOException {
+        if (stat == null) {
+            stat = new StatToLog();
+        }
         MDC.put("requestId", "" + Math.round(Math.random() * 10000));
         Segment segment = null;
         try {
