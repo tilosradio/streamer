@@ -8,7 +8,7 @@ import java.io.OutputStream;
 
 public interface Backend {
 
-    public void stream(ResourceCollection collection, int startOffset, int endPosition, OutputStream out) throws Exception;
+    public int stream(ResourceCollection collection, int startOffset, int endPosition, OutputStream out) throws Exception;
 
     public int getSize(ResourceCollection collection);
 

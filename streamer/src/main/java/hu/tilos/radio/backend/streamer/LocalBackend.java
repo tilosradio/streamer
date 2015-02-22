@@ -33,7 +33,7 @@ public class LocalBackend implements Backend {
     }
 
     @Override
-    public void stream(ResourceCollection collection, int startOffset, int endPosition, OutputStream out) throws Exception {
+    public int stream(ResourceCollection collection, int startOffset, int endPosition, OutputStream out) throws Exception {
         InputStream[] streams = new InputStream[collection.getCollection().size()];
 
         int i = 0;
@@ -41,6 +41,7 @@ public class LocalBackend implements Backend {
             streams[i++] = new LimitedInputStream(new FileInputStream(root + file.getName()), file.getStartOffset(), file.getEndOffset());
         }
         byte[] b = new byte[4096];
+        int writtenData = 0;
         int r;
         InputStream is = new LimitedInputStream(new CombinedInputStream(streams), startOffset, endPosition);
         if (throttleLimit > 0) {
@@ -50,25 +51,26 @@ public class LocalBackend implements Backend {
 
         try {
             while ((r = is.read(b)) != -1) {
+                writtenData += r;
                 out.write(b, 0, r);
             }
         } catch (Exception ex) {
             //these exceptions about the stream is closing.
-            //TODO: FIlter out the real excetptions...
+            //TODO: Filter out the real exceptions...
         } finally {
             is.close();
             try {
                 out.flush();
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 //don't worry
             }
             try {
                 out.close();
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 //be happy
             }
         }
-
+        return writtenData;
 
     }
 
