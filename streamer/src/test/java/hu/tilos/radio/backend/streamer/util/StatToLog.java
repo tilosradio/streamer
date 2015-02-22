@@ -1,5 +1,6 @@
-package hu.tilos.radio.backend.streamer;
+package hu.tilos.radio.backend.streamer.util;
 
+import hu.tilos.radio.backend.streamer.StatPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
