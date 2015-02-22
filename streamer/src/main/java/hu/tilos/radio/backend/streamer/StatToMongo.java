@@ -17,8 +17,8 @@ public class StatToMongo {
 
     public String startDownload(Date startDate) {
         BasicDBObject newRecord = new BasicDBObject("startDate", startDate);
-        WriteResult result = db.getCollection("stat_download").save(newRecord);
-        return result.getUpsertedId().toString();
+        WriteResult result = db.getCollection("stat_download").insert(newRecord);
+        return "" + newRecord.getString("_id");
     }
 
     public void seek(String token, int position) {
