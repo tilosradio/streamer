@@ -1,7 +1,7 @@
 package hu.tilos.radio.backend;
 
 import hu.tilos.radio.backend.streamer.Backend;
-import hu.tilos.radio.backend.streamer.StatToMongo;
+import hu.tilos.radio.backend.streamer.StatPersistence;
 import hu.tilos.radio.backend.streamer.util.Mp3Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class StreamController extends HttpServlet {
     Backend backend;
 
     @Inject
-    StatToMongo stat;
+    StatPersistence stat;
 
     @Inject
     @Configuration(name = "server.url")
