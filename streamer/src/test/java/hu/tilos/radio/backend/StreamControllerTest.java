@@ -2,7 +2,6 @@ package hu.tilos.radio.backend;
 
 
 import hu.tilos.radio.backend.streamer.LocalBackend;
-import hu.tilos.radio.backend.streamer.util.StatToLog;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -22,7 +21,7 @@ public class StreamControllerTest {
     @Test
     public void generateSplittedResources() {
         //given
-        StreamController controller = new StreamController(new StatToLog());
+        StreamController controller = new StreamController();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         //when
@@ -38,7 +37,7 @@ public class StreamControllerTest {
     @Test
     public void testDoGet() throws IOException, ServletException {
         //given
-        StreamController controller = new StreamController(new StatToLog()) {
+        StreamController controller = new StreamController() {
             @Override
             public ResourceCollection getMp3Links(Date start, int duration) {
                 ResourceCollection c = new ResourceCollection();
@@ -65,7 +64,7 @@ public class StreamControllerTest {
     @Test
     public void testDoGetPartial() throws IOException, ServletException {
         //given
-        StreamController controller = new StreamController(new StatToLog()) {
+        StreamController controller = new StreamController() {
             @Override
             public ResourceCollection getMp3Links(Date start, int duration) {
                 ResourceCollection c = new ResourceCollection();
@@ -92,7 +91,7 @@ public class StreamControllerTest {
     @Test
     public void testParse() throws ParseException {
         //given
-        StreamController controller = new StreamController(new StatToLog());
+        StreamController controller = new StreamController();
         //when
         Segment segment = controller.parse("/mp3/tilos-20131012-200000-230000.mp3");
 
@@ -116,7 +115,7 @@ public class StreamControllerTest {
     @Test
     public void testGetPrevHalfHour() throws Exception {
         //given
-        StreamController controller = new StreamController(new StatToLog());
+        StreamController controller = new StreamController();
         Date start = SDF.parse("201406011234");
         start.setTime(start.getTime() + 100);
         //when
@@ -143,7 +142,7 @@ public class StreamControllerTest {
     @Test
     public void testGetPrevHalfHourExactHour() throws Exception {
         //given
-        StreamController controller = new StreamController(new StatToLog());
+        StreamController controller = new StreamController();
         Date start = SDF.parse("201406011200");
         //when
         Date date = controller.getPrevHalfHour(start);
@@ -169,7 +168,7 @@ public class StreamControllerTest {
 
     @Test
     public void stream() throws Exception {
-        StreamController controller = new StreamController(new StatToLog());
+        StreamController controller = new StreamController();
         ResourceCollection resources = controller.getMp3Links(SDF.parse("201406041005"), 90 * 60);
         resources.getCollection().get(0).setStartOffset(2);
         resources.getCollection().get(1).setEndOffset(8);

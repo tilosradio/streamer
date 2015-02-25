@@ -30,7 +30,7 @@ public class MongoProducer {
     @PostConstruct
     public void init() {
         try {
-            LOG.debug("Connecting to the mongodb");
+            LOG.debug("Connection to the mongodb");
             MongoClient mongoClient = new MongoClient();
             mongoClient.setWriteConcern(WriteConcern.ACKNOWLEDGED);
             db = mongoClient.getDB(dbName);
