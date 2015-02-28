@@ -13,9 +13,8 @@ public class StatToLog implements StatPersistence {
     private static final Logger LOG = LoggerFactory.getLogger(StatToLog.class);
 
     @Override
-    public String startDownload(Date startDate) {
+    public void startDownload(String token, Date startDate) {
         LOG.debug("Start downloading from " + startDate);
-        return "";
     }
 
     @Override

@@ -74,7 +74,8 @@ public class StreamController extends HttpServlet {
             return;
         }
         LOG.info("Starting to download of episode from " + SDF.format(segment.start));
-        String statToken = stat.startDownload(segment.start);
+        String statToken = new Date().getTime() + "-" + Math.round(Math.random() * 1000000);
+        stat.startDownload(statToken, segment.start);
         try {
             ResourceCollection collection = getMp3Links(segment.start, segment.duration);
             detectJoins(collection);

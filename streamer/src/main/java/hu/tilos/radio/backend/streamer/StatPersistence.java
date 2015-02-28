@@ -5,7 +5,7 @@ import java.util.Date;
 
 public interface StatPersistence {
 
-    String startDownload(Date startDate);
+    void startDownload(String token, Date startDate);
 
     void seek(String token, int position);
 
