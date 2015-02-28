@@ -1,6 +1,7 @@
 package hu.tilos.radio.backend;
 
 import hu.tilos.radio.backend.streamer.Backend;
+import hu.tilos.radio.backend.streamer.StatPersistence;
 import hu.tilos.radio.backend.streamer.util.Mp3Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +38,19 @@ public class StreamController extends HttpServlet {
     @Inject
     Backend backend;
 
+    @Inject
+    private StatPersistence stat;
 
     @Inject
     @Configuration(name = "server.url")
     private String serverUrl;
+
+    public StreamController(StatPersistence stat) {
+        this.stat = stat;
+    }
+
+    public StreamController() {
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -64,6 +74,7 @@ public class StreamController extends HttpServlet {
             return;
         }
         LOG.info("Starting to download of episode from " + SDF.format(segment.start));
+        String statToken = stat.startDownload(segment.start);
         try {
             ResourceCollection collection = getMp3Links(segment.start, segment.duration);
             detectJoins(collection);
@@ -82,7 +93,8 @@ public class StreamController extends HttpServlet {
                 Matcher m = RANGE_PATTERN.matcher(range);
                 if (m.matches()) {
                     int start = Integer.valueOf(m.group(1));
-                    LOG.debug("Seeking to " + start);
+                    LOG.info("Seeking to " + start);
+                    stat.seek(statToken, start);
                     int to = size;
                     if (m.group(2) != null) {
                         to = Integer.parseInt(m.group(2)) + 1;
@@ -95,8 +107,9 @@ public class StreamController extends HttpServlet {
                     resp.setHeader("Content-Range", "bytes=" + start + "-" + (to - 1) + "/" + size); // The size of the range
                     try {
                         //monitor.increment();
-                        int stream = backend.stream(collection, start, size, output);
-                        LOG.info("Streaming has been stopped. Written bytes: " + stream);
+                        int writtenBytes = backend.stream(collection, start, size, output);
+                        LOG.info("Streaming has been stopped. Written bytes: " + writtenBytes);
+                        stat.endDownload(statToken, writtenBytes);
                     } finally {
                         //monitor.decrement();
                     }
@@ -113,8 +126,9 @@ public class StreamController extends HttpServlet {
                 resp.setHeader("Accept-Ranges", "bytes");
                 try {
                     //monitor.increment();
-                    int stream = backend.stream(collection, 0, size, output);
-                    LOG.info("Streaming has been stopped. Written bytes: " + stream);
+                    int writtenBytes = backend.stream(collection, 0, size, output);
+                    LOG.info("Streaming has been stopped. Written bytes: " + writtenBytes);
+                    stat.endDownload(statToken, writtenBytes);
                 } finally {
                     //monitor.decrement();
                 }
