@@ -69,38 +69,42 @@ public class StatController {
 
         List<EpisodeData> episodeList = episodeUtil.getEpisodeData(null, fromDate, toDate);
         for (EpisodeData episode : episodeList) {
-            ListenerStat stat = new ListenerStat();
-            stat.setEpisode(mapper.map(episode, EpisodeData.class));
-            long from = episode.getPlannedFrom().getTime();
-            if (episode.getPlannedFrom().equals(episode.getRealFrom())) {
-                from += 60 * 15 * 1000; //15 min
+            try {
+                ListenerStat stat = new ListenerStat();
+                stat.setEpisode(mapper.map(episode, EpisodeData.class));
+                long from = episode.getPlannedFrom().getTime();
+                if (episode.getPlannedFrom().equals(episode.getRealFrom())) {
+                    from += 60 * 15 * 1000; //15 min
+                }
+                Date episodeFromDate = new Date(from);
+
+                List<DBObject> pipeline = new ArrayList<>();
+
+                DBObject match = new BasicDBObject("$match", QueryBuilder.start().put("time").greaterThan(episodeFromDate).lessThan(episode.getPlannedTo()).get());
+                pipeline.add(match);
+                BasicDBList fields = new BasicDBList();
+                fields.add("$tilos");
+                fields.add("$tilos_128_mp3");
+                fields.add("$tilos_32_mp3");
+                fields.add("$tilos_high_ogg");
+                fields.add("$tilos_low_ogg");
+                BasicDBObject group = new BasicDBObject().append("_id", null);
+                group.append("min", new BasicDBObject("$min", new BasicDBObject("$add", fields)));
+                group.append("max", new BasicDBObject("$max", new BasicDBObject("$add", fields)));
+                group.append("avg", new BasicDBObject("$avg", new BasicDBObject("$add", fields)));
+                pipeline.add(new BasicDBObject("$group", group));
+                System.out.println(pipeline);
+                AggregationOutput stat_icecast = db.getCollection("stat_icecast").aggregate(pipeline);
+                for (DBObject o : stat_icecast.results()) {
+                    stat.setMax((Integer) o.get("max"));
+                    stat.setMin((Integer) o.get("min"));
+                    stat.setMean((int) Math.round((Double) o.get("avg")));
+                }
+
+                result.add(stat);
+            } catch (Exception ex) {
+                LOG.error("Can't calculate listening stat for " + episode.getPlannedFrom());
             }
-            Date episodeFromDate = new Date(from);
-
-            List<DBObject> pipeline = new ArrayList<>();
-
-            DBObject match = new BasicDBObject("$match", QueryBuilder.start().put("time").greaterThan(episodeFromDate).lessThan(episode.getPlannedTo()).get());
-            pipeline.add(match);
-            BasicDBList fields = new BasicDBList();
-            fields.add("$tilos");
-            fields.add("$tilos_128_mp3");
-            fields.add("$tilos_32_mp3");
-            fields.add("$tilos_high_ogg");
-            fields.add("$tilos_low_ogg");
-            BasicDBObject group = new BasicDBObject().append("_id", null);
-            group.append("min", new BasicDBObject("$min", new BasicDBObject("$add", fields)));
-            group.append("max", new BasicDBObject("$max", new BasicDBObject("$add", fields)));
-            group.append("avg", new BasicDBObject("$avg", new BasicDBObject("$add", fields)));
-            pipeline.add(new BasicDBObject("$group", group));
-            System.out.println(pipeline);
-            AggregationOutput stat_icecast = db.getCollection("stat_icecast").aggregate(pipeline);
-            for (DBObject o : stat_icecast.results()) {
-                stat.setMax((Integer) o.get("max"));
-                stat.setMin((Integer) o.get("min"));
-                stat.setMean((int) Math.round((Double) o.get("avg")));
-            }
-
-            result.add(stat);
         }
         return result;
     }
