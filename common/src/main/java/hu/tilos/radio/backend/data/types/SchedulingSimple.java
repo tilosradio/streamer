@@ -1,6 +1,5 @@
 package hu.tilos.radio.backend.data.types;
 
-import javax.persistence.*;
 import java.util.Date;
 
 public class SchedulingSimple {

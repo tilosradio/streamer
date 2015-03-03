@@ -14,6 +14,7 @@
         <module>streamer</module>
         <module>resteasy-atom</module>
         <module>common</module>
+        <module>processor</module>
     </modules>
     <properties>
 

@@ -102,11 +102,6 @@
             <version>0.7.2</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
-            <artifactId>owasp-java-html-sanitizer</artifactId>
-            <version>[r136,)</version>
-        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -153,16 +148,8 @@
             <version>2.4.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.7.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.influxdb</groupId>
-            <artifactId>influxdb-java</artifactId>
-            <version>1.5</version>
-        </dependency>
+
+
         <dependency>
             <groupId>org.jboss.weld.se</groupId>
             <artifactId>weld-se-core</artifactId>
@@ -196,11 +183,7 @@
             <artifactId>jackson-annotations</artifactId>
             <version>2.3.3</version>
         </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>2.12.4</version>
-        </dependency>
+
         <dependency>
             <groupId>com.github.fakemongo</groupId>
             <artifactId>fongo</artifactId>

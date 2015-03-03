@@ -1,7 +1,5 @@
 package hu.tilos.radio.backend.data.types;
 
-import hu.tilos.radio.backend.data.types.ShowNamed;
-
 import java.util.Date;
 
 public class BookmarkData {

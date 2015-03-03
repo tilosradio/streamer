@@ -93,7 +93,6 @@ public class StatController {
                 group.append("max", new BasicDBObject("$max", new BasicDBObject("$add", fields)));
                 group.append("avg", new BasicDBObject("$avg", new BasicDBObject("$add", fields)));
                 pipeline.add(new BasicDBObject("$group", group));
-                System.out.println(pipeline);
                 AggregationOutput stat_icecast = db.getCollection("stat_icecast").aggregate(pipeline);
                 for (DBObject o : stat_icecast.results()) {
                     stat.setMax((Integer) o.get("max"));

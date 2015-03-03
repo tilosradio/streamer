@@ -1,7 +1,6 @@
 package hu.tilos.radio.backend.converters;
 
 import org.dozer.CustomConverter;
-import org.modelmapper.AbstractConverter;
 
 /**
  * Converter to prefix string value.

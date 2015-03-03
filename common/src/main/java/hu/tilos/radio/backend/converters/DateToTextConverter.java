@@ -2,7 +2,6 @@ package hu.tilos.radio.backend.converters;
 
 import org.dozer.DozerConverter;
 
-import javax.ws.rs.PathParam;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

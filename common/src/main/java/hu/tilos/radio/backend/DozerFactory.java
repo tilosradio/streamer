@@ -3,10 +3,9 @@ package hu.tilos.radio.backend;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import hu.tilos.radio.backend.converters.*;
-import hu.tilos.radio.backend.data.input.ShowToSave;
 import org.dozer.CustomConverter;
 import org.dozer.DozerBeanMapper;
-import org.dozer.loader.api.BeanMappingBuilder;
+
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.dozer.loader.api.TypeMappingOptions.mapId;
 
 @ApplicationScoped
 public class DozerFactory {
@@ -43,12 +41,6 @@ public class DozerFactory {
         ArrayList<String> mappingFiles = new ArrayList<String>();
         mappingFiles.add("dozer.xml");
         mapper = new DozerBeanMapper(mappingFiles);
-//        mapper.addMapping(new BeanMappingBuilder() {
-//            @Override
-//            protected void configure() {
-//                mapping(ShowToSave.class, BeanMappingBuilder.class, mapId("admin"));
-//            }
-//        });
         Map<String, CustomConverter> converters = new HashMap<>();
         converters.put("uploadUrl", new PrefixingConverter("https://tilos.hu/upload/"));
         converters.put("contentCleaner", cleaner);
