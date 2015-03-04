@@ -32,7 +32,7 @@ public class DozerFactory {
     }
 
     @Produces
-    DozerBeanMapper mapperFactory() {
+    public DozerBeanMapper mapperFactory() {
         return mapper;
     }
 

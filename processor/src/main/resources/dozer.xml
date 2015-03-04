@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://dozer.sourceforge.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net
+          http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+    <configuration>
+        <custom-converters> <!-- these are always bi-directional -->
+            <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
+                <class-a>java.lang.Integer</class-a>
+                <class-b>hu.radio.tilos.model.type.MixCategory</class-b>
+            </converter>
+            <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
+                <class-a>java.lang.Integer</class-a>
+                <class-b>hu.radio.tilos.model.type.TagType</class-b>
+            </converter>
+
+            <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
+                <class-a>java.lang.Integer</class-a>
+                <class-b>hu.radio.tilos.model.type.MixType</class-b>
+            </converter>
+            <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
+                <class-a>java.lang.Integer</class-a>
+                <class-b>hu.radio.tilos.model.type.ShowType</class-b>
+            </converter>
+            <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
+                <class-a>java.lang.Integer</class-a>
+                <class-b>hu.radio.tilos.model.type.ShowStatus</class-b>
+            </converter>
+            <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
+                <class-a>java.lang.Integer</class-a>
+                <class-b>hu.radio.tilos.model.type.TagType</class-b>
+            </converter>
+            <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
+                <class-a>java.lang.Integer</class-a>
+                <class-b>hu.radio.tilos.model.type.CommentStatus</class-b>
+            </converter>
+        </custom-converters>
+    </configuration>
+    <mapping map-null="false">
+        <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
+        <class-b>hu.tilos.radio.backend.data.types.ShowSimple</class-b>
+        <field>
+            <a key="_id">this</a>
+            <b>id</b>
+        </field>
+        <field-exclude>
+            <a key="id">this</a>
+            <b>id</b>
+        </field-exclude>
+        <field custom-converter="hu.tilos.radio.backend.converters.EnumDecoder">
+            <a key="type">this</a>
+            <b>type</b>
+        </field>
+        <field custom-converter="hu.tilos.radio.backend.converters.EnumDecoder">
+            <a key="status">this</a>
+            <b>status</b>
+        </field>
+        <field custom-converter="hu.tilos.radio.backend.converters.ReferenceDecoder">
+            <a key="ref">this</a>
+            <b>id</b>
+        </field>
+    </mapping>
+    <mapping map-null="false">
+        <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
+        <class-b>hu.tilos.radio.backend.data.types.EpisodeData</class-b>
+        <field>
+            <a key="_id">this</a>
+            <b>id</b>
+        </field>
+    </mapping>
+
+</mappings>

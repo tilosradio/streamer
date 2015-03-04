@@ -45,4 +45,7 @@ public class MongoProducer {
         return db;
     }
 
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
+    }
 }
