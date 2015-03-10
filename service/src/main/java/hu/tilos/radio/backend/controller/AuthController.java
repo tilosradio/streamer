@@ -31,6 +31,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -206,7 +208,9 @@ public class AuthController {
                             return Response.status(Response.Status.NOT_FOUND).build();
                         }
                     }
-                    return Response.ok(createToken((String) user.get("username"), Role.values()[(int) user.get("role_id")])).build();
+                    Map<String, String> result = new HashMap<>();
+                    result.put("access_token", createToken((String) user.get("username"), Role.values()[(int) user.get("role_id")]));
+                    return Response.ok(result).build();
 
                 } catch (Exception e) {
                     throw new RuntimeException("Can't encode the token", e);

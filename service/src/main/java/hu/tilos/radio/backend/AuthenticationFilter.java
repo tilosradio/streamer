@@ -61,7 +61,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @Override
     @Transactional()
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        String bearer = servletRequest.getHeader("Bearer");
+        String bearer = servletRequest.getHeader("Authorization") !=null ? servletRequest.getHeader("Authorization").replace("Bearer ", "") : null;
         if (bearer != null && bearer.length() > 10) {
             try {
 
