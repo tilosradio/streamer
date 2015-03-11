@@ -51,6 +51,10 @@ public class OAuthController {
     @Configuration(name = "facebook.secret")
     private String clientKey;
 
+    @Inject
+    @Configuration(name = "server.url")
+    private String serverUrl;
+
     /**
      * @exclude
      */
@@ -107,7 +111,7 @@ public class OAuthController {
 
     private String getAccessToken(String code) throws IOException {
         //change to an access token
-        String url = String.format("https://graph.facebook.com/oauth/access_token?client_id=%s&client_secret=%s&code=%s&redirect_uri=%s", clientId, clientKey, code, "http://tiloslocal.hu/");
+        String url = String.format("https://graph.facebook.com/oauth/access_token?client_id=%s&client_secret=%s&code=%s&redirect_uri=%s", clientId, clientKey, code, serverUrl + "/");
         URLConnection uc = new URL(url).openConnection();
         String response = new Scanner(uc.getInputStream()).useDelimiter("\\Z").next();
 
