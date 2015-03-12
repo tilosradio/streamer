@@ -94,7 +94,7 @@ public class OAuthController {
         FacebookClient facebookClient = new DefaultFacebookClient(accessToken);
 
         User me = facebookClient.fetchObject("me", User.class);
-
+        LOG.debug("Facebook profile is downloaded: " + me + " with access_token " + accessToken);
         DBObject userResponse = db.getCollection("user").findOne(new BasicDBObject("facebook", me.getId()));
 
         if (userResponse == null) {

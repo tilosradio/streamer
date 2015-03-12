@@ -30,7 +30,7 @@
     <appender-ref ref="LOGFILE"/>
   </appender>
 
-  <root level="INFO">
+  <root level="DEBUG">
     <appender-ref ref="LOGFILE"/>
     <appender-ref ref="STDOUT"/>
   </root>
