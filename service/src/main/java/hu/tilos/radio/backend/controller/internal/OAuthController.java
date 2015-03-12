@@ -100,8 +100,9 @@ public class OAuthController {
         if (userResponse == null) {
             BasicDBObject newUser = new BasicDBObject()
                     .append("facebook", me.getId())
-                    .append("username", me.getEmail().split("@")[0])
+                    .append("username", me.getEmail() != null ? me.getEmail().split("@")[0] : me.getName())
                     .append("email", me.getEmail())
+                    .append("link", me.getLink())
                     .append("role_id", Role.USER.ordinal());
             db.getCollection("user").insert(newUser);
             userResponse = db.getCollection("user").findOne(new BasicDBObject("facebook", me.getId()));
