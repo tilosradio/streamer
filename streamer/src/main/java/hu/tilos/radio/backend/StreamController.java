@@ -124,7 +124,7 @@ public class StreamController extends HttpServlet {
                 resp.setHeader("Content-Type", "audio/mpeg");
                 String filename = "tilos-" + FILE_NAME_FORMAT.format(segment.start) + "-" + segment.duration;
                 if (req.getParameter("download") != null) {
-                    resp.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+                    resp.setHeader("Content-Disposition", "attachment; filename=\"" + filename + ".mp3\"");
                 } else {
                     resp.setHeader("Content-Disposition", "inline; filename=\"" + filename + ".mp3\"");
                 }
