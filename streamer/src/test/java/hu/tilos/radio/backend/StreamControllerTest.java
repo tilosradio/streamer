@@ -101,6 +101,20 @@ public class StreamControllerTest {
         Assert.assertEquals(180 * 60, segment.duration);
     }
 
+
+    @Test
+    public void testParseWithQuery() throws ParseException {
+        //given
+        StreamController controller = new StreamController(new StatToLog());
+        //when
+        Segment segment = controller.parse("/mp3/tilos-20131012-200000-230000.mp3?download=true");
+
+        //then
+        Assert.assertEquals(SDF.parse("201310122000"), segment.start);
+        Assert.assertEquals(180 * 60, segment.duration);
+    }
+
+
     @Test
     public void testParseOldFormat() throws ParseException {
         //given

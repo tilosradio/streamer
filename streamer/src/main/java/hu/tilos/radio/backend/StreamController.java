@@ -211,7 +211,7 @@ public class StreamController extends HttpServlet {
 
     protected Segment parse(String requestURI) throws ParseException {
         Segment s = new Segment();
-
+        requestURI = requestURI.replaceAll("download\\?=\\w+","");
         Matcher m = Pattern.compile("^/mp3/tilos-(\\d+)-(\\d+)-(\\d+).*$").matcher(requestURI);
         if (m.matches()) {
 
