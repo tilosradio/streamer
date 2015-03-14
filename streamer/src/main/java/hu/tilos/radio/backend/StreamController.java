@@ -13,7 +13,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -88,6 +89,10 @@ public class StreamController extends HttpServlet {
                 return;
             }
 
+            if (req.getParameter("download") != null) {
+                String fileName = req.getRequestURI().substring(req.getRequestURI().lastIndexOf("/") + 1);
+                resp.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            }
             if (req.getHeader("Range") != null) {
                 //partial request
                 String range = req.getHeader("Range");
