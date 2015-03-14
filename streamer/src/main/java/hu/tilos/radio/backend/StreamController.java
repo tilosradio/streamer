@@ -89,10 +89,6 @@ public class StreamController extends HttpServlet {
                 return;
             }
 
-            if (req.getParameter("download") != null) {
-                String fileName = req.getRequestURI().substring(req.getRequestURI().lastIndexOf("/") + 1);
-                resp.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-            }
             if (req.getHeader("Range") != null) {
                 //partial request
                 String range = req.getHeader("Range");
@@ -127,7 +123,11 @@ public class StreamController extends HttpServlet {
                 resp.setHeader("Content-Length", "" + size);
                 resp.setHeader("Content-Type", "audio/mpeg");
                 String filename = "tilos-" + FILE_NAME_FORMAT.format(segment.start) + "-" + segment.duration;
-                resp.setHeader("Content-Disposition", "inline; filename=\"" + filename + ".mp3\"");
+                if (req.getParameter("download") != null) {
+                    resp.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+                } else {
+                    resp.setHeader("Content-Disposition", "inline; filename=\"" + filename + ".mp3\"");
+                }
 
                 resp.setHeader("Accept-Ranges", "bytes");
                 try {
