@@ -10,6 +10,8 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,10 +23,19 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class NettyFileHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NettyFileHandler.class);
+
+    private final List<Handler> handlers;
+
     private File root;
 
     public NettyFileHandler(File root) {
         this.root = root;
+        handlers = new ArrayList<>();
+        handlers.add(new TestStreamHandler());
+        handlers.add(new M3uHandler(root));
+        handlers.add(new RangeStreamHandler(root));
+        handlers.add(new SimpleStreamHandler(root));
     }
 
     private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
@@ -39,11 +50,8 @@ public class NettyFileHandler extends SimpleChannelInboundHandler<FullHttpReques
         if (!request.getDecoderResult().isSuccess()) {
             sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         } else {
-            List<Handler> handlers = new ArrayList<>();
-            handlers.add(new TestStreamHandler());
-            handlers.add(new M3uHandler(root));
-            handlers.add(new RangeStreamHandler(root));
-            handlers.add(new SimpleStreamHandler(root));
+            String range = request.headers().get("Range");
+            LOGGER.info("New request " + request.getUri() + " Range: " + range);
             for (Handler handler : handlers) {
                 if (handler.isApplicable(request)) {
                     handler.handle(ctx, request);
