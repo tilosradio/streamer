@@ -7,10 +7,10 @@ public class Segment {
     /**
      * Start of the segment to play.
      */
-    Date start;
+    public Date start;
 
     /**
      * Duratin of the segment in sec.
      */
-    int duration;
+    public int duration;
 }

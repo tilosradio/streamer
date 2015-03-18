@@ -1,5 +1,7 @@
 package hu.tilos.radio.backend.streamer.util;
 
+import hu.tilos.radio.backend.Mp3File;
+import hu.tilos.radio.backend.ResourceCollection;
 import hu.tilos.radio.backend.streamer.CombinedInputStream;
 import hu.tilos.radio.backend.streamer.LimitedInputStream;
 import org.slf4j.Logger;
@@ -8,13 +10,16 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Mp3Joiner {
 
     private static final int BUFFER_SIZE = 500;
+
     private static final Logger LOG = LoggerFactory.getLogger(Mp3Joiner.class);
+
     private Map<String, OffsetDouble> cache = new ConcurrentHashMap<>();
 
     public static void main2(String[] args) throws Exception {
@@ -156,9 +161,34 @@ public class Mp3Joiner {
                 (b.get(3) & 0xCF) == 0x44;
     }
 
+    public void detectJoins(File root, ResourceCollection collection) {
+
+        List<Mp3File> mp3Files = collection.getCollection();
+        for (int i = 0; i < mp3Files.size() - 1; i++) {
+            Mp3Joiner.OffsetDouble joinPositions = findJoinPositions(new File(root, mp3Files.get(i).getName()), new File(root, mp3Files.get(i + 1).getName()));
+            if (joinPositions != null) {
+                mp3Files.get(i).setEndOffset(joinPositions.firstEndOffset);
+                mp3Files.get(i + 1).setStartOffset(joinPositions.secondStartOffset);
+            }
+        }
+    }
+
+    public  void adjustFirstFrame(File root, ResourceCollection collection) {
+        List<Mp3File> mp3Files = collection.getCollection();
+        if (mp3Files.size() > 0) {
+            int position = findNextFrame(new File(root, mp3Files.get(0).getName()), mp3Files.get(0).getStartOffset());
+            mp3Files.get(0).setStartOffset(position);
+        }
+    }
+
+    private File getLocalFile(Mp3File mp3File) {
+        return null;
+    }
 
     public static class OffsetDouble {
+
         public int firstEndOffset;
+
         public int secondStartOffset;
 
         public OffsetDouble(int firstEndOffset, int secondStartOffset) {
@@ -176,7 +206,9 @@ public class Mp3Joiner {
     }
 
     public class RingBufferWithPosition {
+
         public RingBuffer buffer;
+
         public int position;
 
         private RingBufferWithPosition(RingBuffer buffer, int position) {

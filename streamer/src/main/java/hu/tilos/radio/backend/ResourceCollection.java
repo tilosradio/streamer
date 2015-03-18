@@ -5,6 +5,8 @@ import java.util.List;
 
 public class ResourceCollection {
 
+    private Segment descriptor;
+
     private List<Mp3File> collection = new ArrayList();
 
     public void add(Mp3File mp3File) {
@@ -19,5 +21,11 @@ public class ResourceCollection {
         this.collection = collection;
     }
 
+    public Segment getDescriptor() {
+        return descriptor;
+    }
 
+    public void setDescriptor(Segment descriptor) {
+        this.descriptor = descriptor;
+    }
 }
