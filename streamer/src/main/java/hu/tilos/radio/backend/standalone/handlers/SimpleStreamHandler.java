@@ -39,11 +39,11 @@ public class SimpleStreamHandler extends BaseStreamHandler implements Handler {
         resp.headers().add("Content-Length", "" + size);
         resp.headers().add("Content-Type", "audio/mpeg");
         String filename = "tilos-" + FILE_NAME_FORMAT.format(collection.getDescriptor().start) + "-" + collection.getDescriptor().duration;
-        //if (req.getParameter("download") != null) {
-        //    resp.headers().add("Content-Disposition", "attachment; filename=\"" + filename + ".mp3\"");
-        //} else {
-        resp.headers().add("Content-Disposition", "inline; filename=\"" + filename + ".mp3\"");
-        //}
+        if (req.getUri().contains("download")) {
+            resp.headers().add("Content-Disposition", "attachment; filename=\"" + filename + ".mp3\"");
+        } else {
+            resp.headers().add("Content-Disposition", "inline; filename=\"" + filename + ".mp3\"");
+        }
 
         resp.headers().add("Accept-Ranges", "bytes");
         try {
