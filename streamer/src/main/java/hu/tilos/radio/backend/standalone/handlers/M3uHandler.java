@@ -66,7 +66,7 @@ public class M3uHandler extends BaseStreamHandler implements Handler {
             long to = parsing.parse(requestURI.substring(11, 19) + requestURI.substring(27, 33)).getTime();
             while (current < to) {
                 //http://archive.tilos.hu/online/2014/09/01/tilosradio-20140901-1700.mp3
-                builder.append(String.format("http://archive.tilos.hu/online/%s/tilosradio-%s.mp3\n", dirNameFormat.format(current), fileNameFormat.format(current)).getBytes());
+                builder.append(String.format("http://archive.tilos.hu/online/%s/tilosradio-%s.mp3\n", dirNameFormat.format(current), fileNameFormat.format(current)));
                 current += 1000 * 60 * 30;
             }
         } catch (Exception ex) {
