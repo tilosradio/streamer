@@ -54,3 +54,6 @@ composer.lock
 archive
 
 target
+
+
+streamer/dependency-reduced-pom.xml
