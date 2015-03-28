@@ -5,6 +5,7 @@ import akka.pattern.ask
 import com.nimbusds.jose.JWSObject
 import com.nimbusds.jose.crypto.MACVerifier
 import com.nimbusds.jwt.SignedJWT
+import com.typesafe.config.ConfigFactory
 import hu.tilos.service3.UserActor.GetUser
 import spray.http.{HttpCredentials, HttpHeader, HttpRequest, OAuth2BearerToken}
 import spray.routing.RequestContext
@@ -17,6 +18,8 @@ class JwtAuthenticator(userActor: ActorRef) extends spray.routing.authentication
 
   implicit val timeout = akka.util.Timeout(5 second)
 
+  val config = ConfigFactory.load()
+
   override implicit def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.global
 
   override def getChallengeHeaders(httpRequest: HttpRequest): List[HttpHeader] = {
@@ -28,7 +31,9 @@ class JwtAuthenticator(userActor: ActorRef) extends spray.routing.authentication
       case Some(OAuth2BearerToken(token)) => {
         val parsedJWT: SignedJWT = SignedJWT.parse(token)
         val jwsObject = JWSObject.parse(token);
-        val verifier = new MACVerifier("gaphico2theR6UtieN5nuwi1ooph3aiy".getBytes);
+        println(config.getString("tilos.jwt.secret"))
+        println(System.getProperty("tilos.jwt.secret"))
+        val verifier = new MACVerifier(config.getString("tilos.jwt.secret").getBytes);
         val verifiedSignature = jwsObject.verify(verifier);
         if (verifiedSignature) {
           (userActor ? GetUser(parsedJWT.getJWTClaimsSet.getStringClaim("username"))).asInstanceOf[Future[Option[UserObj]]]
