@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorLogging}
 import akka.event.LoggingReceive
 import akka.pattern.pipe
 import hu.tilos.service3.UserActor.GetUser
+import hu.tilos.service3.common.Role
 import reactivemongo.api.collections.default.BSONCollection
 import reactivemongo.bson._
 
@@ -20,8 +21,11 @@ class UserActor(mongo: MongoProvider) extends Actor with ActorLogging {
 
   implicit object UserReader extends BSONDocumentReader[UserObj] {
     override def read(bson: BSONDocument): UserObj = {
-      UserObj(bson.getAs[BSONObjectID]("_id").get.stringify,
-        bson.getAs[String]("username").get)
+      UserObj(
+        bson.getAs[BSONObjectID]("_id").get.stringify,
+        bson.getAs[String]("username").get,
+        Role(bson.getAs[Int]("role_id").get)
+      )
     }
   }
 

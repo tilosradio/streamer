@@ -31,8 +31,6 @@ class JwtAuthenticator(userActor: ActorRef) extends spray.routing.authentication
       case Some(OAuth2BearerToken(token)) => {
         val parsedJWT: SignedJWT = SignedJWT.parse(token)
         val jwsObject = JWSObject.parse(token);
-        println(config.getString("tilos.jwt.secret"))
-        println(System.getProperty("tilos.jwt.secret"))
         val verifier = new MACVerifier(config.getString("tilos.jwt.secret").getBytes);
         val verifiedSignature = jwsObject.verify(verifier);
         if (verifiedSignature) {
