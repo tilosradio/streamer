@@ -5,10 +5,11 @@ import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import akka.event.LoggingReceive
 import akka.pattern.ask
 import akka.util.Timeout
-import hu.tilos.service3.Status.Ok
+import hu.tilos.service3.Status.{BadRequest, Ok}
 import scaldi.Injector
 import scaldi.akka.AkkaInjectable
 import spray.http.MediaTypes._
+import spray.http.StatusCodes
 import spray.httpx.SprayJsonSupport
 import spray.json._
 import spray.routing._
@@ -24,8 +25,11 @@ class MyServiceActor(implicit inj: Injector) extends Actor with HttpService with
 
   implicit val timeout = Timeout(5 second)
 
-  val worker = injectActorRef[Bookmark]("bookmark")
+  val bookmarkWorker = injectActorRef[BookmarkActor]("bookmark")
 
+  val userWorker = injectActorRef[UserActor]
+
+  val authenticator = new JwtAuthenticator(userWorker)
 
   implicit def executionContext = actorRefFactory.dispatcher
 
@@ -36,10 +40,17 @@ class MyServiceActor(implicit inj: Injector) extends Actor with HttpService with
     path("api" / "bookmark") {
       post {
         respondWithMediaType(`application/json`) {
-          entity(as[BookmarkRequest]) { bookmark => requestContext =>
-            import StatusJsonSupport._
-            (worker ? Bookmark.Save(bookmark)).map {
-              case ok: Ok => requestContext.complete(ok.toJson.prettyPrint)
+          authenticate(authenticator) { user =>
+            entity(as[BookmarkRequest]) { bookmark => requestContext =>
+              import StatusJsonSupport._
+              (bookmarkWorker ? BookmarkActor.Save(bookmark, user)).map {
+                case ok: Ok => requestContext.complete(ok.toJson.prettyPrint)
+                case error: BadRequest => {
+                  println("bad request")
+                  requestContext.complete(StatusCodes.BadRequest, error.message)
+                }
+                case _ => println("Unkown message")
+              }
             }
           }
         }

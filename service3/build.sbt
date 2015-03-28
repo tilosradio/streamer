@@ -16,7 +16,7 @@ libraryDependencies ++= {
 
     "org.scaldi" %% "scaldi-akka" % "0.5.3",
     "org.scaldi" %% "scaldi" % "0.5.3",
-
+    "com.nimbusds" % "nimbus-jose-jwt" % "3.9.2",
     "org.reactivemongo" %% "reactivemongo" % "0.10.5.0.akka23",
     "ch.qos.logback" % "logback-classic" % "1.1.3",
     "io.spray" %% "spray-testkit" % sprayV % "test",
