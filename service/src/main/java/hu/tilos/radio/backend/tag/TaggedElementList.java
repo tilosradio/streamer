@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.data.output;
+package hu.tilos.radio.backend.tag;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,10 +1,7 @@
-package hu.tilos.radio.backend.controller;
+package hu.tilos.radio.backend.tag;
 
 import com.github.fakemongo.junit.FongoRule;
 import hu.tilos.radio.backend.*;
-import hu.tilos.radio.backend.data.output.TagCloud;
-import hu.tilos.radio.backend.data.output.TaggedElementList;
-import hu.tilos.radio.backend.data.output.TaggedEpisode;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
@@ -20,10 +17,10 @@ import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 @RunWith(CdiRunner.class)
 @AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class})
 @ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
-public class TagControllerTest {
+public class TagServiceTest {
 
     @Inject
-    TagController controller;
+    TagService service;
 
     @Inject
     FongoRule fongoRule;
@@ -39,7 +36,7 @@ public class TagControllerTest {
         loadTo(fongoRule, "episode", "episode-episode4.json");
 
         //when
-        TaggedElementList tagged = controller.get("bela");
+        TaggedElementList tagged = service.get("bela");
 
         //then
         Assert.assertEquals(1, tagged.getTagged().size());
@@ -53,7 +50,7 @@ public class TagControllerTest {
         loadTo(fongoRule, "episode", "episode-episode4.json");
 
         //when
-        TagCloud list = controller.list(null);
+        TagCloud list = service.list(null);
 
         //then
         Assert.assertEquals(2, list.getTags().size());

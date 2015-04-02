@@ -32,7 +32,7 @@
             </converter>
             <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
                 <class-a>java.lang.Integer</class-a>
-                <class-b>hu.radio.tilos.model.type.CommentStatus</class-b>
+                <class-b>hu.tilos.radio.backend.comment.CommentStatus</class-b>
             </converter>
         </custom-converters>
     </configuration>

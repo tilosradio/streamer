@@ -1,25 +1,17 @@
-package hu.tilos.radio.backend.controller;
+package hu.tilos.radio.backend.tag;
 
 import com.mongodb.*;
-import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.TagType;
-import hu.tilos.radio.backend.Security;
-import hu.tilos.radio.backend.data.output.TagCloud;
-import hu.tilos.radio.backend.data.output.TagCloudElement;
-import hu.tilos.radio.backend.data.output.TaggedElementList;
-import hu.tilos.radio.backend.data.output.TaggedEpisode;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
 import java.util.Date;
 
-@Path("api/v1/tag")
-public class TagController {
+public class TagService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TagController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TagService.class);
 
     @Inject
     DozerBeanMapper mapper;
@@ -27,11 +19,7 @@ public class TagController {
     @Inject
     private DB db;
 
-    @GET
-    @Path("/{tag}")
-    @Security(role = Role.GUEST)
-    @Produces("application/json")
-    public TaggedElementList get(@PathParam("tag") String tag) {
+    public TaggedElementList get(String tag) {
         TaggedElementList list = new TaggedElementList();
         DBCursor episodes = db.getCollection("episode").find(new BasicDBObject("tags.name", tag));
         for (DBObject episode : episodes) {
@@ -47,11 +35,7 @@ public class TagController {
         return list;
     }
 
-    @GET
-    @Path("/")
-    @Security(role = Role.GUEST)
-    @Produces("application/json")
-    public TagCloud list(@QueryParam("limit") Integer limit) {
+    public TagCloud list(Integer limit) {
         if (limit == null) {
             limit = 10;
         }

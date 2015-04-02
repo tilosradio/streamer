@@ -30,10 +30,6 @@
                 <class-a>java.lang.Integer</class-a>
                 <class-b>hu.radio.tilos.model.type.TagType</class-b>
             </converter>
-            <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
-                <class-a>java.lang.Integer</class-a>
-                <class-b>hu.radio.tilos.model.type.CommentStatus</class-b>
-            </converter>
         </custom-converters>
     </configuration>
 
@@ -129,22 +125,7 @@
             <b>id</b>
         </field>
     </mapping>
-    <mapping map-null="false">
-        <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.CommentData</class-b>
-        <field>
-            <a key="_id">this</a>
-            <b>id</b>
-        </field>
-        <field custom-converter="hu.tilos.radio.backend.converters.EnumDecoder">
-            <a key="type">this</a>
-            <b>type</b>
-        </field>
-        <field custom-converter="hu.tilos.radio.backend.converters.EnumDecoder">
-            <a key="status">this</a>
-            <b>status</b>
-        </field>
-    </mapping>
+
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
         <class-b>hu.tilos.radio.backend.data.types.ShowDetailed</class-b>
