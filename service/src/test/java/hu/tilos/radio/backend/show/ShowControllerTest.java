@@ -13,8 +13,6 @@ import hu.tilos.radio.backend.data.input.ShowToSave;
 import hu.tilos.radio.backend.data.input.UrlToSave;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.episode.EpisodeData;
-import hu.tilos.radio.backend.data.types.ShowDetailed;
-import hu.tilos.radio.backend.data.types.ShowSimple;
 import org.dozer.DozerBeanMapper;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;

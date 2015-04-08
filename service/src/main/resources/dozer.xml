@@ -103,7 +103,7 @@
 
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.ShowSimple</class-b>
+        <class-b>hu.tilos.radio.backend.show.ShowSimple</class-b>
         <field>
             <a key="_id">this</a>
             <b>id</b>

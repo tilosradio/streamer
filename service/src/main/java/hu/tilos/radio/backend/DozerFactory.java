@@ -2,6 +2,7 @@ package hu.tilos.radio.backend;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import hu.tilos.radio.backend.converter.ContentCleaner;
 import hu.tilos.radio.backend.converters.*;
 import org.dozer.CustomConverter;
 import org.dozer.DozerBeanMapper;
@@ -20,6 +21,9 @@ import java.util.*;
 public class DozerFactory {
 
     private static org.slf4j.Logger LOG = LoggerFactory.getLogger(DozerFactory.class);
+
+    @Inject
+    ContentCleaner cleaner;
 
     @Inject
     DB db;
@@ -43,7 +47,7 @@ public class DozerFactory {
         mapper = new DozerBeanMapper(mappingFiles);
         Map<String, CustomConverter> converters = new HashMap<>();
         converters.put("uploadUrl", new PrefixingConverter("https://tilos.hu/upload/"));
-        //converters.put("contentCleaner", cleaner);
+        converters.put("contentCleaner", cleaner);
         converters.put("showReference", new ReferenceEncoder(db, "show", new String[]{"alias", "name"}));
         converters.put("authorReference", new ReferenceEncoder(db, "author", new String[]{"alias", "name"}));
         converters.put("childEncoder", new MongoObjectEncoder(mapper));

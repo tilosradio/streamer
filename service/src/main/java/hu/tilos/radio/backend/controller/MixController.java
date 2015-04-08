@@ -9,7 +9,8 @@ import hu.radio.tilos.model.type.MixCategory;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.data.types.MixSimple;
+
+import hu.tilos.radio.backend.mix.MixSimple;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 

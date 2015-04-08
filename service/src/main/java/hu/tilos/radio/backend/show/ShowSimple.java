@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.data.types;
+package hu.tilos.radio.backend.show;
 
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.radio.tilos.model.type.ShowType;

@@ -12,10 +12,11 @@ import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.*;
 import hu.tilos.radio.backend.data.types.ShowContribution;
-import hu.tilos.radio.backend.data.types.ShowDetailed;
-import hu.tilos.radio.backend.data.types.ShowSimple;
+
+
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
+import hu.tilos.radio.backend.mix.MixSimple;
 import hu.tilos.radio.backend.util.AvatarLocator;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;

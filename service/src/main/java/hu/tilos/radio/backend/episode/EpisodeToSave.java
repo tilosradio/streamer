@@ -1,8 +1,8 @@
 package hu.tilos.radio.backend.episode;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import hu.tilos.radio.backend.show.ShowSimple;
 import hu.tilos.radio.backend.tag.TagData;
-import hu.tilos.radio.backend.data.types.ShowSimple;
 import hu.tilos.radio.backend.data.types.TextData;
 
 import java.util.Date;

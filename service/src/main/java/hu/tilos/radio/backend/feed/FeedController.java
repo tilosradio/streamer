@@ -5,9 +5,10 @@ import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.Configuration;
 import hu.tilos.radio.backend.Security;
+
 import hu.tilos.radio.backend.episode.EpisodeData;
-import hu.tilos.radio.backend.data.types.ShowSimple;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
+import hu.tilos.radio.backend.show.ShowSimple;
 import net.anzix.jaxrs.atom.Feed;
 import net.anzix.jaxrs.atom.Link;
 import org.dozer.DozerBeanMapper;
