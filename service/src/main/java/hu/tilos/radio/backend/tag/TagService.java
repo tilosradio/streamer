@@ -1,7 +1,6 @@
 package hu.tilos.radio.backend.tag;
 
 import com.mongodb.*;
-import hu.radio.tilos.model.type.TagType;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -4,9 +4,9 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import hu.radio.tilos.model.Role;
-import hu.tilos.radio.backend.AuthUtil;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.Session;
+import hu.tilos.radio.backend.auth.AuthUtil;
 import hu.tilos.radio.backend.data.UserInfo;
 import org.dozer.DozerBeanMapper;
 

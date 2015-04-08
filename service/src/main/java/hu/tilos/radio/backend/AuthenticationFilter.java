@@ -3,6 +3,7 @@ package hu.tilos.radio.backend;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import hu.radio.tilos.model.Role;
+import hu.tilos.radio.backend.auth.AuthUtil;
 import hu.tilos.radio.backend.data.Token;
 import hu.tilos.radio.backend.data.UserInfo;
 import hu.tilos.radio.backend.util.JWTEncoder;

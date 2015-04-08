@@ -2,7 +2,7 @@ package hu.tilos.radio.backend.util;
 
 import hu.tilos.radio.backend.converters.FairEnoughHtmlSanitizer;
 import hu.tilos.radio.backend.converters.HTMLSanitizer;
-import hu.tilos.radio.backend.converters.TagUtil;
+import hu.tilos.radio.backend.tag.TagUtil;
 import org.pegdown.Extensions;
 import org.pegdown.PegDownProcessor;
 

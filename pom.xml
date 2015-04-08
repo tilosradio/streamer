@@ -8,13 +8,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>prerender</module>
-        <module>model</module>
-        <module>smoketest</module>
         <module>service</module>
         <module>streamer</module>
         <module>resteasy-atom</module>
-        <module>common</module>
-        <module>processor</module>
     </modules>
     <properties>
 

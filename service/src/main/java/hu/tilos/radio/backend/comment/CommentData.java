@@ -1,6 +1,5 @@
 package hu.tilos.radio.backend.comment;
 
-import hu.radio.tilos.model.type.CommentType;
 import hu.tilos.radio.backend.data.types.UserLink;
 
 import java.util.ArrayList;

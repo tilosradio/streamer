@@ -1,7 +1,5 @@
 package hu.tilos.radio.backend.tag;
 
-import hu.radio.tilos.model.type.TagType;
-
 public class TagCloudElement {
 
     private String name;

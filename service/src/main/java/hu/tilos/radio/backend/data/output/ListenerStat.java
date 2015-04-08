@@ -1,6 +1,6 @@
 package hu.tilos.radio.backend.data.output;
 
-import hu.tilos.radio.backend.data.types.EpisodeData;
+import hu.tilos.radio.backend.episode.EpisodeData;
 
 public class ListenerStat {
 

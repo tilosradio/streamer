@@ -1,10 +1,10 @@
 package hu.tilos.radio.backend.controller;
 
 import hu.radio.tilos.model.Role;
-import hu.tilos.radio.backend.FeedRenderer;
 import hu.tilos.radio.backend.Security;
-import hu.tilos.radio.backend.data.types.EpisodeData;
-import hu.tilos.radio.backend.episode.EpisodeUtil;
+import hu.tilos.radio.backend.episode.EpisodeData;
+import hu.tilos.radio.backend.episode.util.EpisodeUtil;
+import hu.tilos.radio.backend.feed.FeedRenderer;
 import hu.tilos.radio.backend.util.Days;
 
 import javax.inject.Inject;

@@ -11,7 +11,7 @@
             </converter>
             <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
                 <class-a>java.lang.Integer</class-a>
-                <class-b>hu.radio.tilos.model.type.TagType</class-b>
+                <class-b>hu.tilos.radio.backend.tag.TagType</class-b>
             </converter>
 
             <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
@@ -28,7 +28,7 @@
             </converter>
             <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
                 <class-a>java.lang.Integer</class-a>
-                <class-b>hu.radio.tilos.model.type.TagType</class-b>
+                <class-b>hu.tilos.radio.backend.tag.TagType</class-b>
             </converter>
             <converter type="hu.tilos.radio.backend.converters.EnumDecoder">
                 <class-a>java.lang.Integer</class-a>
@@ -62,7 +62,7 @@
     </mapping>
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.EpisodeData</class-b>
+        <class-b>hu.tilos.radio.backend.episode.EpisodeData</class-b>
         <field>
             <a key="_id">this</a>
             <b>id</b>

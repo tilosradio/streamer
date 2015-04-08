@@ -1,12 +1,10 @@
 package hu.tilos.radio.backend.comment;
 
 import com.github.fakemongo.junit.FongoRule;
-import hu.radio.tilos.model.type.CommentType;
 import hu.tilos.radio.backend.DozerFactory;
 import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.data.UserInfo;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
