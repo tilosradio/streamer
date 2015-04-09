@@ -55,7 +55,7 @@ public class BaseStreamHandler {
     public int getSize(ResourceCollection collection) {
         int size = 0;
         for (Mp3File file : collection.getCollection()) {
-            size += size(file);
+            size += file.size();
         }
         return size;
     }
@@ -65,7 +65,7 @@ public class BaseStreamHandler {
         if (file.getEndOffset() < size) {
             size = file.getEndOffset();
         }
-        return size - file.getStartOffset();
+        return size;
     }
 
     public ResourceCollection preprocess(ChannelHandlerContext ctx, FullHttpRequest req) {

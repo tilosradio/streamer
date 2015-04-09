@@ -35,4 +35,8 @@ public class Mp3File {
     public void setEndOffset(int endOffset) {
         this.endOffset = endOffset;
     }
+
+    public int size() {
+        return getEndOffset() - getStartOffset();
+    }
 }
