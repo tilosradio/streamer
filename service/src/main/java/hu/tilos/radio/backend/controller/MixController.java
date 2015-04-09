@@ -9,7 +9,7 @@ import hu.radio.tilos.model.type.MixCategory;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-
+import hu.tilos.radio.backend.mix.MixData;
 import hu.tilos.radio.backend.mix.MixSimple;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
@@ -65,7 +65,7 @@ public class MixController {
     @Security(role = Role.ADMIN)
     @POST
     @Transactional
-    public CreateResponse create(hu.tilos.radio.backend.data.types.MixData objectToSave) {
+    public CreateResponse create(MixData objectToSave) {
         DBObject newObject = mapper.map(objectToSave, BasicDBObject.class);
         db.getCollection("mix").insert(newObject);
         return new CreateResponse(((ObjectId) newObject.get("_id")).toHexString());
@@ -80,7 +80,7 @@ public class MixController {
     @Transactional
     @PUT
     @Path("/{id}")
-    public UpdateResponse update(@PathParam("id") String alias, hu.tilos.radio.backend.data.types.MixData objectToSave) {
+    public UpdateResponse update(@PathParam("id") String alias, MixData objectToSave) {
         DBObject original = db.getCollection("mix").findOne(aliasOrId(alias));
         mapper.map(objectToSave, original);
         db.getCollection("mix").update(aliasOrId(alias), original);
@@ -101,16 +101,16 @@ public class MixController {
     }
 
 
+    public void setDb(DB db) {
+        this.db = db;
+    }
+
     @GET
     @Path("/{id}")
     @Security(role = Role.GUEST)
     @Produces("application/json")
-    public hu.tilos.radio.backend.data.types.MixData get(@PathParam("id") String i) {
-        hu.tilos.radio.backend.data.types.MixData r = mapper.map(db.getCollection("mix").findOne(aliasOrId(i)), hu.tilos.radio.backend.data.types.MixData.class);
+    public MixData get(@PathParam("id") String i) {
+        MixData r = mapper.map(db.getCollection("mix").findOne(aliasOrId(i)), MixData.class);
         return r;
-    }
-
-    public void setDb(DB db) {
-        this.db = db;
     }
 }

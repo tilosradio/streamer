@@ -8,7 +8,7 @@ import hu.radio.tilos.model.type.MixType;
 import hu.tilos.radio.backend.controller.MixController;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.data.types.MixData;
+import hu.tilos.radio.backend.mix.MixData;
 import hu.tilos.radio.backend.mix.MixSimple;
 import hu.tilos.radio.backend.show.ShowSimple;
 import org.hamcrest.CustomMatcher;

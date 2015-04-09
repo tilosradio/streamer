@@ -16,7 +16,7 @@ public class DozerFactoryTest {
         List<String> dozerFiles = factory.detectMappings();
 
         //then
-        Assert.assertEquals(1, dozerFiles.size());
+        Assert.assertEquals(2, dozerFiles.size());
         Assert.assertTrue(dozerFiles.contains("comment.xml"));
 
     }

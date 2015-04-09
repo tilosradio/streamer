@@ -127,7 +127,7 @@
     </mapping>
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.ShowDetailed</class-b>
+        <class-b>hu.tilos.radio.backend.show.ShowDetailed</class-b>
         <field>
             <a key="_id">this</a>
             <b>id</b>
@@ -147,7 +147,7 @@
     </mapping>
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.MixSimple</class-b>
+        <class-b>hu.tilos.radio.backend.mix.MixSimple</class-b>
         <field>
             <a key="_id">this</a>
             <b>id</b>
@@ -159,7 +159,7 @@
     </mapping>
     <mapping map-null="false" type="one-way">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.MixData</class-b>
+        <class-b>hu.tilos.radio.backend.mix.MixData</class-b>
         <field type="one-way">
             <a key="_id">this</a>
             <b>id</b>
@@ -174,7 +174,7 @@
         </field>
     </mapping>
     <mapping map-null="false" type="one-way">
-        <class-a>hu.tilos.radio.backend.data.types.MixData</class-a>
+        <class-a>hu.tilos.radio.backend.mix.MixData</class-a>
         <class-b map-get-method="get" map-set-method="put">org.bson.BSONObject</class-b>
         <field custom-converter-id="showReference" type="one-way">
             <a>show</a>

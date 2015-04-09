@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.data.types;
+package hu.tilos.radio.backend.mix;
 
 import hu.radio.tilos.model.type.MixCategory;
 import hu.radio.tilos.model.type.MixType;
