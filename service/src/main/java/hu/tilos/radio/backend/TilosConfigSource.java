@@ -21,21 +21,40 @@ public class TilosConfigSource {
 
     private Map<String, String> properties = new HashMap<>();
 
+    private Map<String, String> envAliases = new HashMap<>();
+
     public TilosConfigSource() {
+
+        envAliases.put("MONGO_HOST", "MONGODB_PORT_28017_TCP_ADDR");
+
         File configFile = new File("tilos.properties");
-        LOG.info("Reading configuration from " + configFile.getAbsolutePath());
+        LOG.info("Reading the configuration from " + configFile.getAbsolutePath());
+        for (String key : System.getenv().keySet()) {
+            LOG.debug("ENV: " + key + " " + System.getenv(key));
+        }
         if (configFile.exists()) {
             Properties p = new Properties();
             try {
-
                 p.load(new FileInputStream(configFile));
                 for (String key : p.stringPropertyNames()) {
-                    properties.put(key, p.getProperty(key));
+                    String envName = propertyToEnvName(key);
+                    if (System.getenv().containsKey(envName)) {
+                        properties.put(key, System.getenv(envName));
+                    } else if (envAliases.containsKey(envName) && System.getenv().containsKey(envAliases.get(envName))) {
+                        properties.put(key, System.getenv(envAliases.get(envName)));
+                    } else {
+                        properties.put(key, p.getProperty(key));
+                    }
+                    LOG.debug("PROP: " + key + "=" + properties.get(key));
                 }
             } catch (IOException e) {
                 LOG.error("Can't load file " + configFile.getAbsolutePath(), e);
             }
         }
+    }
+
+    public static String propertyToEnvName(String propertyName) {
+        return propertyName.replace('.', '_').toUpperCase();
     }
 
     public String getConfiguration(String key) {

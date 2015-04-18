@@ -23,6 +23,10 @@ public class MongoProducer {
     @Configuration(name = "mongo.db")
     private String dbName;
 
+    @Inject
+    @Configuration(name = "mongo.host")
+    private String host;
+
     public MongoProducer() {
 
     }
@@ -30,8 +34,8 @@ public class MongoProducer {
     @PostConstruct
     public void init() {
         try {
-            LOG.debug("Connecting to the mongodb");
-            MongoClient mongoClient = new MongoClient();
+            LOG.debug("Connecting to the mongodb " + host + " " + dbName);
+            MongoClient mongoClient = new MongoClient(host);
             mongoClient.setWriteConcern(WriteConcern.ACKNOWLEDGED);
             db = mongoClient.getDB(dbName);
         } catch (Exception ex) {
