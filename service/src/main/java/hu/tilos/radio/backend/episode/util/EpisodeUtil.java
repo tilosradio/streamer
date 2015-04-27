@@ -1,6 +1,7 @@
 package hu.tilos.radio.backend.episode.util;
 
 import hu.tilos.radio.backend.episode.EpisodeData;
+import hu.tilos.radio.backend.util.LocaleUtil;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -11,11 +12,11 @@ import java.util.List;
 @Named
 public class EpisodeUtil {
 
-    public static SimpleDateFormat YYYYMMDD = new SimpleDateFormat("yyyyMMdd");
+    public static SimpleDateFormat YYYYMMDD = new SimpleDateFormat("yyyyMMdd", LocaleUtil.TILOSLOCALE);
 
-    public static SimpleDateFormat HHMMSS = new SimpleDateFormat("HHmmss");
+    public static SimpleDateFormat HHMMSS = new SimpleDateFormat("HHmmss", LocaleUtil.TILOSLOCALE);
 
-    public static SimpleDateFormat YYYY_MM_DD = new SimpleDateFormat("yyyy'/'MM'/'dd");
+    public static SimpleDateFormat YYYY_MM_DD = new SimpleDateFormat("yyyy'/'MM'/'dd", LocaleUtil.TILOSLOCALE);
 
     @Inject
     protected PersistentEpisodeProvider persistentProvider;
@@ -28,7 +29,7 @@ public class EpisodeUtil {
 
     public List<EpisodeData> getEpisodeData(String showIdOrAlias, Date from, Date to) {
         List<EpisodeData> merged = merger.merge(persistentProvider.listEpisode(showIdOrAlias, from, to), scheduledProvider.listEpisode(showIdOrAlias, from, to));
-        for (EpisodeData episode : merged){
+        for (EpisodeData episode : merged) {
             linkGenerator(episode);
         }
         return merged;

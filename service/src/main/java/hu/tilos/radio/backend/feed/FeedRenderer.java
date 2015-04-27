@@ -2,6 +2,7 @@ package hu.tilos.radio.backend.feed;
 
 import hu.tilos.radio.backend.Configuration;
 import hu.tilos.radio.backend.episode.EpisodeData;
+import hu.tilos.radio.backend.util.LocaleUtil;
 import net.anzix.jaxrs.atom.*;
 
 import javax.inject.Inject;
@@ -20,13 +21,13 @@ import java.util.List;
  */
 public class FeedRenderer {
 
-    private static final SimpleDateFormat YYYY_DOT_MM_DOT_DD = new SimpleDateFormat("yyyy'.'MM'.'dd");
+    private static final SimpleDateFormat YYYY_DOT_MM_DOT_DD = new SimpleDateFormat("yyyy'.'MM'.'dd", LocaleUtil.TILOSLOCALE);
 
-    private static final SimpleDateFormat YYYY_PER_MM_PER_DD = new SimpleDateFormat("yyyy'/'MM'/'dd");
+    private static final SimpleDateFormat YYYY_PER_MM_PER_DD = new SimpleDateFormat("yyyy'/'MM'/'dd", LocaleUtil.TILOSLOCALE);
 
-    private static final SimpleDateFormat YYYYMMDD = new SimpleDateFormat("yyyyMMdd");
+    private static final SimpleDateFormat YYYYMMDD = new SimpleDateFormat("yyyyMMdd", LocaleUtil.TILOSLOCALE);
 
-    private static final SimpleDateFormat HHMMSS = new SimpleDateFormat("HHmmss");
+    private static final SimpleDateFormat HHMMSS = new SimpleDateFormat("HHmmss", LocaleUtil.TILOSLOCALE);
 
     @Inject
     @Configuration(name = "server.url")

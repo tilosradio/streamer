@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend.converters;
 
+import hu.tilos.radio.backend.util.LocaleUtil;
 import org.dozer.DozerConverter;
 
 import java.text.ParseException;
@@ -17,7 +18,7 @@ public class DateToTextConverter extends DozerConverter<Date, String> {
         if (source == null) {
             return "";
         }
-        return new SimpleDateFormat(getParameter()).format(source);
+        return new SimpleDateFormat(getParameter(), LocaleUtil.TILOSLOCALE).format(source);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class DateToTextConverter extends DozerConverter<Date, String> {
             if (source == null) {
                 return null;
             } else {
-                return new SimpleDateFormat(getParameter()).parse(source);
+                return new SimpleDateFormat(getParameter(), LocaleUtil.TILOSLOCALE).parse(source);
             }
         } catch (ParseException e) {
             throw new RuntimeException(e);

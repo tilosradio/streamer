@@ -6,6 +6,7 @@ import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.feed.FeedRenderer;
 import hu.tilos.radio.backend.util.Days;
+import hu.tilos.radio.backend.util.LocaleUtil;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -28,11 +29,11 @@ public class M3uController {
     @Inject
     private EpisodeUtil episodeUtil;
 
-    private static final SimpleDateFormat YYYY_MM_DD = new SimpleDateFormat("yyyy'.'MM'.'dd");
+    private static final SimpleDateFormat YYYY_MM_DD = new SimpleDateFormat("yyyy'.'MM'.'dd", LocaleUtil.TILOSLOCALE);
 
-    private static final SimpleDateFormat MM_DD = new SimpleDateFormat("MM'.'dd");
+    private static final SimpleDateFormat MM_DD = new SimpleDateFormat("MM'.'dd", LocaleUtil.TILOSLOCALE);
 
-    private static final SimpleDateFormat HH_MM = new SimpleDateFormat("HH':'mm");
+    private static final SimpleDateFormat HH_MM = new SimpleDateFormat("HH':'mm", LocaleUtil.TILOSLOCALE);
 
     @GET
     @Path("lastweek")
