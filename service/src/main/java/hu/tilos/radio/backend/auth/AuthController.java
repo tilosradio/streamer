@@ -140,7 +140,7 @@ public class AuthController {
             //send mail
             sendMail(user, token);
         } catch (Exception ex) {
-            throw new InternalErrorException("Nem sikerült az emailt kiküldeni a levelző szerveren keresztül.");
+            throw new InternalErrorException("Nem sikerült az emailt kiküldeni a levelző szerveren keresztül.", ex);
         }
 
         return Response.ok().entity(new OkResponse("A jelszóemlékeztető kiküldtük a megadott email címre.")).build();
