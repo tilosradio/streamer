@@ -140,16 +140,16 @@ public class AuthController {
             //send mail
             sendMail(user, token);
         } catch (Exception ex) {
-            throw new InternalErrorException("Nem sikerült az emailt kiküldeni a levelző szerveren keresztül.", ex);
+            throw new InternalErrorException("Nem sikerült az emailt kiküldeni a levelező szerveren keresztül.", ex);
         }
 
-        return Response.ok().entity(new OkResponse("A jelszóemlékeztető kiküldtük a megadott email címre.")).build();
+        return Response.ok().entity(new OkResponse("A jelszóemlékeztetőt kiküldtük a megadott e-mail címre.")).build();
     }
 
     private DBObject createUserAtFirstTime(String email) {
         DBObject author = db.getCollection("author").findOne(new BasicDBObject("email", email));
         if (author == null) {
-            throw new NotFoundException("Se felhasználó, se műsorkészítő nincs ilyen email címmel.");
+            throw new NotFoundException("Se felhasználó, se műsorkészítő nincs ilyen e-mail címmel.");
         }
         DBObject user = new BasicDBObject();
         user.put("username", author.get("alias"));
