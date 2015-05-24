@@ -1,29 +1,23 @@
 package hu.tilos.radio.backend.author;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBObject;
 import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Security;
-import hu.tilos.radio.backend.Session;
-import hu.tilos.radio.backend.data.UserInfo;
 import hu.tilos.radio.backend.data.input.AuthorToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.AuthorDetailed;
 import hu.tilos.radio.backend.data.types.AuthorListElement;
-import hu.tilos.radio.backend.data.types.UserDetailed;
-import hu.tilos.radio.backend.util.AvatarLocator;
 import org.bson.types.ObjectId;
-import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
-import java.util.ArrayList;
 import java.util.List;
-
-import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
 @Path("/api/v1/author")
 public class AuthorController {
@@ -31,16 +25,7 @@ public class AuthorController {
     private static Logger LOG = LoggerFactory.getLogger(AuthorController.class);
 
     @Inject
-    Session session;
-
-    @Inject
-    private DozerBeanMapper mapper;
-
-    @Inject
-    private DB db;
-
-    @Inject
-    AvatarLocator avatarLocator;
+    AuthorService authorService;
 
     @Produces("application/json")
     @Path("/")
@@ -48,14 +33,7 @@ public class AuthorController {
     @GET
     @Transactional
     public List<AuthorListElement> list() {
-
-        DBCursor selectedAuthors = db.getCollection("author").find();
-
-        List<AuthorListElement> mappedAuthors = new ArrayList<>();
-        for (DBObject author : selectedAuthors) {
-            mappedAuthors.add(mapper.map(author, AuthorListElement.class));
-        }
-        return mappedAuthors;
+        return authorService.list();
 
     }
 
@@ -65,19 +43,7 @@ public class AuthorController {
     @GET
     @Transactional
     public AuthorDetailed get(@PathParam("alias") String alias) {
-        DBObject one = findAuthor(alias);
-        AuthorDetailed author = mapper.map(one, AuthorDetailed.class);
-        avatarLocator.locateAvatar(author);
-        if (session.getCurrentUser() != null && (session.getCurrentUser().getRole() == Role.ADMIN || session.getCurrentUser().getRole() == Role.AUTHOR)) {
-            author.setEmail((String) one.get("email"));
-        }
-        return author;
-
-    }
-
-    private DBObject findAuthor(String alias) {
-        BasicDBObject query = aliasOrId(alias);
-        return db.getCollection("author").findOne(query);
+        return authorService.get(alias);
     }
 
 
@@ -90,13 +56,9 @@ public class AuthorController {
     @PUT
     @Transactional
     public UpdateResponse update(@PathParam("alias") String alias, AuthorToSave authorToSave) {
-        DBObject author = findAuthor(alias);
-        mapper.map(authorToSave, author);
-        db.getCollection("author").update(aliasOrId(alias), author);
-        return new UpdateResponse(true);
+        return authorService.update(alias, authorToSave);
 
     }
-
 
 
     /**
@@ -108,13 +70,8 @@ public class AuthorController {
     @POST
     @Transactional
     public CreateResponse create(AuthorToSave authorToSave) {
-        DBObject author = mapper.map(authorToSave, BasicDBObject.class);
-        db.getCollection("author").insert(author);
-        return new CreateResponse(((ObjectId) author.get("_id")).toHexString());
+        return authorService.create(authorToSave);
 
     }
 
-    public void setDb(DB db) {
-        this.db = db;
-    }
 }
