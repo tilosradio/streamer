@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.data.input;
+package hu.tilos.radio.backend.author;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

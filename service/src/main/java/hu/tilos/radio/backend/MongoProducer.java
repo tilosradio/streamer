@@ -7,13 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 
-@ApplicationScoped
-public class MongoProducer {
+
+public class MongoProducer implements Provider<DB> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MongoProducer.class);
 
@@ -51,5 +51,13 @@ public class MongoProducer {
 
     public void setDbName(String dbName) {
         this.dbName = dbName;
+    }
+
+    @Override
+    public DB get() {
+        if (db == null) {
+            init();
+        }
+        return db;
     }
 }

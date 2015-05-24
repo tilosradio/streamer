@@ -5,7 +5,6 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.controller.internal.ContributionController;
-import hu.tilos.radio.backend.data.input.ContributionToSave;
 import hu.tilos.radio.backend.data.input.ObjectReference;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;

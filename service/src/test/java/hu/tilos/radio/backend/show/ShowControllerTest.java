@@ -8,8 +8,7 @@ import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.*;
-import hu.tilos.radio.backend.data.UserInfo;
-import hu.tilos.radio.backend.data.input.ShowToSave;
+import hu.tilos.radio.backend.user.UserInfo;
 import hu.tilos.radio.backend.data.input.UrlToSave;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.episode.EpisodeData;
@@ -43,7 +42,7 @@ public class ShowControllerTest {
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMddHHmm");
 
     @Inject
-    ShowController controller;
+    ShowService controller;
 
     @Inject
     Session session;

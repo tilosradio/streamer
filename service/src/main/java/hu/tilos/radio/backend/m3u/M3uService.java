@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.controller;
+package hu.tilos.radio.backend.m3u;
 
 import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Security;
@@ -23,8 +23,7 @@ import java.util.List;
 /**
  * Generate various m3u feeds.
  */
-@Path("/api/v1/m3u")
-public class M3uController {
+public class M3uService {
 
     @Inject
     private EpisodeUtil episodeUtil;
@@ -35,11 +34,7 @@ public class M3uController {
 
     private static final SimpleDateFormat HH_MM = new SimpleDateFormat("HH':'mm", LocaleUtil.TILOSLOCALE);
 
-    @GET
-    @Path("lastweek")
-    @Produces("audio/x-mpegurl; charset=iso-8859-2")
-    @Security(role = Role.GUEST)
-    public Response lastWeek(@QueryParam("stream") String query) {
+    public String lastWeek(@QueryParam("stream") String query) {
         if (query == null) {
             query = "/tilos";
         }
@@ -62,10 +57,6 @@ public class M3uController {
         result.append("#EXTM3U\n");
         result.append("#EXTINF:-1, Tilos Rádió - élő adás (256kb/s) \n");
         result.append("http://stream.tilos.hu" + query + "\n");
-        result.append("#EXTINF:-1, Tilos Rádió - [CSAKASZAVAK] Szöveges archívum \n");
-        result.append("http://stream.tilos.hu/csakaszavak.ogg\n");
-        result.append("#EXTINF:-1, Tilos Rádió - [CSAKAZENE] Zenés archívum\n");
-        result.append("http://stream.tilos.hu/csakazene.ogg\n");
         for (EpisodeData episode : episodes) {
             String artist = episode.getShow().getName().replaceAll("-", ", ");
 
@@ -80,7 +71,7 @@ public class M3uController {
             result.append("#EXTINF:-1, " + artist + " - " + title + "\n");
             result.append(FeedRenderer.createDownloadURI(episode) + "\n");
         }
-        return Response.ok(result.toString()).build();
+        return result.toString();
     }
 
     public EpisodeUtil getEpisodeUtil() {

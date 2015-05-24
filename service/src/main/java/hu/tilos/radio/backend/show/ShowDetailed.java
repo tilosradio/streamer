@@ -2,8 +2,9 @@ package hu.tilos.radio.backend.show;
 
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.radio.tilos.model.type.ShowType;
+import hu.tilos.radio.backend.contribution.ShowContribution;
 import hu.tilos.radio.backend.data.types.SchedulingSimple;
-import hu.tilos.radio.backend.data.types.ShowContribution;
+
 import hu.tilos.radio.backend.data.types.ShowStats;
 import hu.tilos.radio.backend.data.types.UrlData;
 import hu.tilos.radio.backend.mix.MixSimple;

@@ -1,9 +1,14 @@
-package hu.tilos.radio.backend.data.types;
+package hu.tilos.radio.backend.author;
+
+import hu.tilos.radio.backend.contribution.Contribution;
+import hu.tilos.radio.backend.data.types.AuthorBasic;
+import hu.tilos.radio.backend.data.types.AuthorSimple;
+import hu.tilos.radio.backend.data.types.UrlData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuthorDetailed extends AuthorSimple implements AuthorBasic{
+public class AuthorDetailed extends AuthorSimple implements AuthorBasic {
 
     private String email;
 

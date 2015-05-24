@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>service</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <version>1.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <parent>
         <groupId>hu.tilos.radio</groupId>
@@ -18,7 +18,16 @@
         <tilos.jdbc.password></tilos.jdbc.password>
     </properties>
     <dependencies>
-
+        <dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-core</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>4.0</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -63,13 +72,6 @@
             <scope>provided</scope>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
@@ -105,17 +107,6 @@
             <version>5.5.1</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-            <version>0.7.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.modelmapper.extensions</groupId>
-            <artifactId>modelmapper-jooq</artifactId>
-            <version>0.7.2</version>
-        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -167,12 +158,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-common</artifactId>
-            <version>2.4.1</version>
-            <scope>test</scope>
-        </dependency>
 
 
         <dependency>

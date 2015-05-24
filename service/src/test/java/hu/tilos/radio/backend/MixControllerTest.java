@@ -5,10 +5,10 @@ import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import hu.radio.tilos.model.type.MixCategory;
 import hu.radio.tilos.model.type.MixType;
-import hu.tilos.radio.backend.controller.MixController;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.mix.MixData;
+import hu.tilos.radio.backend.mix.MixService;
 import hu.tilos.radio.backend.mix.MixSimple;
 import hu.tilos.radio.backend.show.ShowSimple;
 import org.hamcrest.CustomMatcher;
@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class MixControllerTest {
 
     @Inject
-    MixController controller;
+    MixService controller;
 
     @Inject
     FongoRule fongoRule;

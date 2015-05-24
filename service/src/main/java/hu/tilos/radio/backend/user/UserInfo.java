@@ -1,7 +1,8 @@
-package hu.tilos.radio.backend.data;
+package hu.tilos.radio.backend.user;
 
 import hu.radio.tilos.model.Role;
-import hu.tilos.radio.backend.data.types.AuthorWithContribution;
+import hu.tilos.radio.backend.author.AuthorWithContribution;
+
 
 import java.util.ArrayList;
 import java.util.List;

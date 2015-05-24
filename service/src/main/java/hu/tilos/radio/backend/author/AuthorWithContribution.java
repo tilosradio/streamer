@@ -1,4 +1,7 @@
-package hu.tilos.radio.backend.data.types;
+package hu.tilos.radio.backend.author;
+
+import hu.tilos.radio.backend.contribution.Contribution;
+import hu.tilos.radio.backend.data.types.AuthorSimple;
 
 import java.util.ArrayList;
 import java.util.List;

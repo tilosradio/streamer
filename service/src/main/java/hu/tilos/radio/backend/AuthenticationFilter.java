@@ -5,7 +5,7 @@ import com.mongodb.DB;
 import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.auth.AuthUtil;
 import hu.tilos.radio.backend.data.Token;
-import hu.tilos.radio.backend.data.UserInfo;
+import hu.tilos.radio.backend.user.UserInfo;
 import hu.tilos.radio.backend.util.JWTEncoder;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;

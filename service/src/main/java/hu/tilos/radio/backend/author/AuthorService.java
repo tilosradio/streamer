@@ -5,12 +5,9 @@ import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import hu.radio.tilos.model.Role;
-import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.Session;
-import hu.tilos.radio.backend.data.input.AuthorToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.data.types.AuthorDetailed;
 import hu.tilos.radio.backend.data.types.AuthorListElement;
 import hu.tilos.radio.backend.util.AvatarLocator;
 import org.bson.types.ObjectId;
@@ -19,8 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.*;
+import javax.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +25,6 @@ import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 public class AuthorService {
 
     private static Logger LOG = LoggerFactory.getLogger(AuthorService.class);
-
-    @Inject
-    Session session;
 
     @Inject
     private DozerBeanMapper mapper;
@@ -54,11 +47,11 @@ public class AuthorService {
 
     }
 
-    public AuthorDetailed get(@PathParam("alias") String alias) {
+    public AuthorDetailed get(@PathParam("alias") String alias, Session session) {
         DBObject one = findAuthor(alias);
         AuthorDetailed author = mapper.map(one, AuthorDetailed.class);
         avatarLocator.locateAvatar(author);
-        if (session.getCurrentUser() != null && (session.getCurrentUser().getRole() == Role.ADMIN || session.getCurrentUser().getRole() == Role.AUTHOR)) {
+        if (session != null && session.getCurrentUser() != null && (session.getCurrentUser().getRole() == Role.ADMIN || session.getCurrentUser().getRole() == Role.AUTHOR)) {
             author.setEmail((String) one.get("email"));
         }
         return author;
@@ -78,7 +71,6 @@ public class AuthorService {
         return new UpdateResponse(true);
 
     }
-
 
 
     public CreateResponse create(AuthorToSave authorToSave) {

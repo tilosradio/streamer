@@ -1,18 +1,13 @@
 package hu.tilos.radio.backend.show;
 
 import com.mongodb.*;
-import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.tilos.radio.backend.ObjectValidator;
-import hu.tilos.radio.backend.Security;
-import hu.tilos.radio.backend.Session;
+import hu.tilos.radio.backend.contribution.ShowContribution;
 import hu.tilos.radio.backend.converters.SchedulingTextUtil;
-import hu.tilos.radio.backend.data.input.ShowToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.data.types.*;
-import hu.tilos.radio.backend.data.types.ShowContribution;
-
+import hu.tilos.radio.backend.data.types.SchedulingSimple;
 
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
@@ -24,16 +19,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.*;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import java.util.*;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
-@Path("/api/v1/show")
-public class ShowController {
+public class ShowService {
 
-    private static Logger LOG = LoggerFactory.getLogger(ShowController.class);
+    private static Logger LOG = LoggerFactory.getLogger(ShowService.class);
 
     private final SchedulingTextUtil schedulingTextUtil = new SchedulingTextUtil();
 
@@ -44,9 +38,6 @@ public class ShowController {
     EpisodeUtil episodeUtil;
 
     @Inject
-    Session session;
-
-    @Inject
     AvatarLocator avatarLocator;
 
     @Inject
@@ -55,10 +46,6 @@ public class ShowController {
     @Inject
     private DB db;
 
-    @Produces("application/json")
-    @Path("/")
-    @Security(role = Role.GUEST)
-    @GET
     public List<ShowSimple> list(@QueryParam("status") String status) {
         BasicDBObject criteria = new BasicDBObject();
 
@@ -92,19 +79,6 @@ public class ShowController {
         }
     }
 
-    /**
-     * Detailed information about one radioshow.
-     * <p/>
-     * Integer based if also could be used as an alias.
-     *
-     * @param alias Alias of the radioshow (eg. 3-utas)
-     * @return
-     */
-    @Produces("application/json")
-    @Path("/{alias}")
-    @Security(role = Role.GUEST)
-    @GET
-    @Transactional
     public ShowDetailed get(@PathParam("alias") String alias) {
         DBObject one = db.getCollection("show").findOne(aliasOrId(alias));
         ShowDetailed detailed = mapper.map(one, ShowDetailed.class);
@@ -136,11 +110,6 @@ public class ShowController {
     }
 
 
-    @GET
-    @Path("/{show}/episodes")
-    @Security(role = Role.GUEST)
-    @Produces("application/json")
-    @Transactional
     public List<EpisodeData> listEpisodes(@PathParam("show") String showAlias, @QueryParam("start") long from, @QueryParam("end") long to) {
         Date fromDate = new Date();
         fromDate.setTime(from);
@@ -158,14 +127,6 @@ public class ShowController {
     }
 
 
-    /**
-     * @exclude
-     */
-    @Produces("application/json")
-    @Path("/{alias}")
-    @Security(permission = "/show/{alias}")
-    @PUT
-    @Transactional
     public UpdateResponse update(@PathParam("alias") String alias, ShowToSave showToSave) {
         validator.validate(showToSave);
         DBObject show = findShow(alias);
@@ -180,14 +141,6 @@ public class ShowController {
     }
 
 
-    /**
-     * @exclude
-     */
-    @Produces("application/json")
-    @Path("/")
-    @Security(role = Role.ADMIN)
-    @POST
-    @Transactional
     public CreateResponse create(ShowToSave objectToSave) {
         validator.validate(objectToSave);
         DBObject newObject = mapper.map(objectToSave, BasicDBObject.class);

@@ -1,29 +1,23 @@
-package hu.tilos.radio.backend.controller;
+package hu.tilos.radio.backend.mix;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
-import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.MixCategory;
-import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.mix.MixData;
-import hu.tilos.radio.backend.mix.MixSimple;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.*;
+import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.List;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
-@Path("/api/v1/mix")
-public class MixController {
+public class MixService {
 
     @Inject
     DozerBeanMapper mapper;
@@ -32,9 +26,6 @@ public class MixController {
     DB db;
 
 
-    @Produces("application/json")
-    @Security(role = Role.GUEST)
-    @GET
     public List<MixSimple> list(@QueryParam("show") String show, @QueryParam("category") String category) {
 
         BasicDBObject query = new BasicDBObject();
@@ -58,13 +49,7 @@ public class MixController {
 
     }
 
-    /**
-     * @exclude
-     */
-    @Produces("application/json")
-    @Security(role = Role.ADMIN)
-    @POST
-    @Transactional
+
     public CreateResponse create(MixData objectToSave) {
         DBObject newObject = mapper.map(objectToSave, BasicDBObject.class);
         db.getCollection("mix").insert(newObject);
@@ -72,30 +57,16 @@ public class MixController {
 
     }
 
-    /**
-     * @exclude
-     */
-    @Produces("application/json")
-    @Security(role = Role.ADMIN)
-    @Transactional
-    @PUT
-    @Path("/{id}")
-    public UpdateResponse update(@PathParam("id") String alias, MixData objectToSave) {
+
+    public UpdateResponse update(String alias, MixData objectToSave) {
         DBObject original = db.getCollection("mix").findOne(aliasOrId(alias));
         mapper.map(objectToSave, original);
         db.getCollection("mix").update(aliasOrId(alias), original);
         return new UpdateResponse(true);
     }
 
-    /**
-     * @exclude
-     */
-    @Produces("application/json")
-    @Security(role = Role.ADMIN)
-    @Transactional
-    @DELETE
-    @Path("/{id}")
-    public boolean delete(@PathParam("id") String id) {
+
+    public boolean delete(String id) {
         db.getCollection("mix").remove(aliasOrId(id));
         return true;
     }
@@ -105,11 +76,7 @@ public class MixController {
         this.db = db;
     }
 
-    @GET
-    @Path("/{id}")
-    @Security(role = Role.GUEST)
-    @Produces("application/json")
-    public MixData get(@PathParam("id") String i) {
+    public MixData get(String i) {
         MixData r = mapper.map(db.getCollection("mix").findOne(aliasOrId(i)), MixData.class);
         return r;
     }

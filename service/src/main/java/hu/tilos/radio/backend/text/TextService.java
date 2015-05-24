@@ -4,28 +4,22 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import hu.radio.tilos.model.Role;
-import hu.tilos.radio.backend.Security;
-import hu.tilos.radio.backend.data.input.TextToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.data.types.TextData;
-import hu.tilos.radio.backend.data.types.TextDataSimple;
 import hu.tilos.radio.backend.util.TextConverter;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.*;
+import javax.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
-@Path("/api/v1/text")
-public class TextController {
+
+public class TextService {
 
     @Inject
     private TextConverter textConverter;
@@ -36,12 +30,7 @@ public class TextController {
     @Inject
     private DozerBeanMapper mapper;
 
-    @GET
-    @Path("/{type}")
-    @Security(role = Role.GUEST)
-    @Produces("application/json")
-    @Transactional
-    public List<TextDataSimple> list(@PathParam("type") String type, @QueryParam("limit") Integer limit) {
+    public List<TextDataSimple> list(String type, Integer limit) {
         checkType(type);
         BasicDBObject query = new BasicDBObject("type", type);
         DBCursor pages = db.getCollection(type).find(query).sort(new BasicDBObject("created", -1));
@@ -55,12 +44,8 @@ public class TextController {
         return result;
     }
 
-    @GET
-    @Path("/{type}/{id}")
-    @Security(role = Role.GUEST)
-    @Produces("application/json")
-    @Transactional
-    public TextData get(@PathParam("id") String alias, @PathParam("type") String type) {
+
+    public TextData get(String alias, String type) {
         checkType(type);
         TextData page = mapper.map(db.getCollection(type).findOne(aliasOrId(alias)), TextData.class);
         page.setFormatted(textConverter.format(page.getFormat(), page.getContent()));
@@ -68,14 +53,6 @@ public class TextController {
     }
 
 
-    /**
-     * @exclude
-     */
-    @Produces("application/json")
-    @Path("/{type}/{id}")
-    @Security(role = Role.ADMIN)
-    @PUT
-    @Transactional
     public UpdateResponse update(@PathParam("type") String type, @PathParam("id") String alias, TextToSave objectToSave) {
         checkType(type);
         DBObject original = db.getCollection(type).findOne(aliasOrId(alias));
@@ -85,14 +62,7 @@ public class TextController {
         return new UpdateResponse(true);
     }
 
-    /**
-     * @exclude
-     */
-    @Produces("application/json")
-    @Path("/{type}")
-    @Security(role = Role.ADMIN)
-    @POST
-    @Transactional
+
     public CreateResponse create(@PathParam("type") String type, TextToSave objectToSave) {
         checkType(type);
         DBObject newObject = mapper.map(objectToSave, BasicDBObject.class);

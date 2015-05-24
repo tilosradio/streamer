@@ -8,8 +8,7 @@ import hu.tilos.radio.backend.data.input.EpisodeToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.show.ShowSimple;
-import hu.tilos.radio.backend.episode.EpisodeData;
-import hu.tilos.radio.backend.data.types.TextData;
+import hu.tilos.radio.backend.text.TextData;
 import org.dozer.DozerBeanMapper;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
@@ -31,7 +30,7 @@ import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 public class EpisodeControllerTest {
 
     @Inject
-    EpisodeController controller;
+    EpisodeService controller;
 
     @Inject
     DozerBeanMapper mapper;

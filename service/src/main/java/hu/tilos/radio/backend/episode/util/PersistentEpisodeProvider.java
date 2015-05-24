@@ -3,7 +3,7 @@ package hu.tilos.radio.backend.episode.util;
 
 import com.mongodb.*;
 import hu.tilos.radio.backend.data.types.BookmarkData;
-import hu.tilos.radio.backend.data.types.TextData;
+import hu.tilos.radio.backend.text.TextData;
 import hu.tilos.radio.backend.episode.EpisodeData;
 import org.dozer.DozerBeanMapper;
 

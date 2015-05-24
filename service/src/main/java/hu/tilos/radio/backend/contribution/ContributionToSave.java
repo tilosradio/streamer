@@ -1,4 +1,6 @@
-package hu.tilos.radio.backend.data.input;
+package hu.tilos.radio.backend.contribution;
+
+import hu.tilos.radio.backend.data.input.ObjectReference;
 
 public class ContributionToSave {
 

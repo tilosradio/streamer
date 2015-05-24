@@ -3,11 +3,8 @@ package hu.tilos.radio.backend.text;
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.DBObject;
 import hu.tilos.radio.backend.*;
-import hu.tilos.radio.backend.data.input.TextToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.data.types.TextData;
-import hu.tilos.radio.backend.data.types.TextDataSimple;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
@@ -28,7 +25,7 @@ import static org.junit.Assert.assertThat;
 public class TextControllerTest {
 
     @Inject
-    TextController controller;
+    TextService controller;
 
 
     @Inject

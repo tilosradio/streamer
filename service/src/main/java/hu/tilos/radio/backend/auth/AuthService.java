@@ -5,14 +5,14 @@ import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import hu.radio.tilos.model.Role;
-import hu.tilos.radio.backend.*;
+import hu.tilos.radio.backend.Configuration;
+import hu.tilos.radio.backend.Email;
+import hu.tilos.radio.backend.EmailSender;
+import hu.tilos.radio.backend.ObjectValidator;
 import hu.tilos.radio.backend.data.Token;
+import hu.tilos.radio.backend.data.error.AccessDeniedException;
 import hu.tilos.radio.backend.data.error.InternalErrorException;
 import hu.tilos.radio.backend.data.error.NotFoundException;
-import hu.tilos.radio.backend.data.input.PasswordReset;
-import hu.tilos.radio.backend.data.input.RegisterData;
-import hu.tilos.radio.backend.data.output.LoginData;
-import hu.tilos.radio.backend.data.response.ErrorResponse;
 import hu.tilos.radio.backend.data.response.OkResponse;
 import hu.tilos.radio.backend.data.types.UserDetailed;
 import hu.tilos.radio.backend.util.JWTEncoder;
@@ -22,29 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 
-/**
- * Generate atom feed for the shows.
- */
-@Path("/api/v1/auth")
-public class AuthController {
+public class AuthService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
-
-    @Inject
-    Session session;
+    private static final Logger LOG = LoggerFactory.getLogger(AuthService.class);
 
     @Inject
     AuthUtil authUtil;
@@ -74,18 +59,8 @@ public class AuthController {
     @Inject
     private EmailSender emailSender;
 
-    @Context
-    private HttpServletRequest servletRequest;
 
-    /**
-     * @exclude
-     */
-    @Produces("application/json")
-    @Security(role = Role.GUEST)
-    @Transactional
-    @POST
-    @Path("/password_reset")
-    public Response passwordReset(PasswordReset passwordReset) {
+    public OkResponse passwordReset(PasswordReset passwordReset) {
         if (null == passwordReset.getToken() || "".equals(passwordReset.getToken())) {
             return generateToken(passwordReset);
         } else {
@@ -93,7 +68,7 @@ public class AuthController {
         }
     }
 
-    private Response changePassword(PasswordReset passwordReset) {
+    private OkResponse changePassword(PasswordReset passwordReset) {
         validator.validate(passwordReset);
         BasicDBObject query = new BasicDBObject("email", passwordReset.getEmail());
         query.put("passwordChangeToken", passwordReset.getToken());
@@ -118,11 +93,11 @@ public class AuthController {
         db.getCollection("user").update(new BasicDBObject("username", user.getUsername()), userRaw);
 
 
-        return Response.ok().entity(new OkResponse("Password has been changed")).build();
+        return new OkResponse("Password has been changed");
 
     }
 
-    private Response generateToken(PasswordReset passwordReset) {
+    private OkResponse generateToken(PasswordReset passwordReset) {
 
         DBObject user = db.getCollection("user").findOne(new BasicDBObject("email", passwordReset.getEmail()));
         if (user == null) {
@@ -143,7 +118,7 @@ public class AuthController {
             throw new InternalErrorException("Nem sikerült az emailt kiküldeni a levelező szerveren keresztül.", ex);
         }
 
-        return Response.ok().entity(new OkResponse("A jelszóemlékeztetőt kiküldtük a megadott e-mail címre.")).build();
+        return new OkResponse("A jelszóemlékeztetőt kiküldtük a megadott e-mail címre.");
     }
 
     private DBObject createUserAtFirstTime(String email) {
@@ -180,14 +155,8 @@ public class AuthController {
         return body;
     }
 
-    /**
-     * @exclude
-     */
-    @Path("/login")
-    @Produces("application/json")
-    @Security(role = Role.GUEST)
-    @POST
-    public Response login(LoginData loginData) {
+
+    public Map<String, String> login(LoginData loginData) {
         String username = loginData.getUsername();
         String sudo = "";
         if (username.contains(":")) {
@@ -195,32 +164,30 @@ public class AuthController {
             username = parts[0];
             sudo = parts[1];
         }
-        try {
-            DBObject user = db.getCollection("user").findOne(new BasicDBObject("username", username));
-            if (user == null) {
-                return Response.status(Response.Status.FORBIDDEN).build();
-            }
-            if (authUtil.encode(loginData.getPassword(), (String) user.get("salt")).equals((String) user.get("password"))) {
-                try {
-                    if (!"".equals(sudo) && user.get("role_id").equals(Role.ADMIN.ordinal())) {
-                        user = db.getCollection("user").findOne(new BasicDBObject("username", sudo));
-                        if (user == null) {
-                            return Response.status(Response.Status.NOT_FOUND).build();
-                        }
-                    }
-                    Map<String, String> result = new HashMap<>();
-                    result.put("access_token", createToken((String) user.get("username"), Role.values()[(int) user.get("role_id")]));
-                    return Response.ok(result).build();
 
-                } catch (Exception e) {
-                    throw new RuntimeException("Can't encode the token", e);
-                }
-            } else {
-                return Response.status(Response.Status.FORBIDDEN).build();
-            }
-        } catch (NoResultException ex) {
-            return Response.status(Response.Status.FORBIDDEN).build();
+        DBObject user = db.getCollection("user").findOne(new BasicDBObject("username", username));
+        if (user == null) {
+            throw new AccessDeniedException("Access denied");
         }
+        if (authUtil.encode(loginData.getPassword(), (String) user.get("salt")).equals((String) user.get("password"))) {
+            try {
+                if (!"".equals(sudo) && user.get("role_id").equals(Role.ADMIN.ordinal())) {
+                    user = db.getCollection("user").findOne(new BasicDBObject("username", sudo));
+                    if (user == null) {
+                        throw new NotFoundException("User is missing");
+                    }
+                }
+                Map<String, String> result = new HashMap<>();
+                result.put("access_token", createToken((String) user.get("username"), Role.values()[(int) user.get("role_id")]));
+                return result;
+
+            } catch (Exception e) {
+                throw new RuntimeException("Can't encode the token", e);
+            }
+        } else {
+            throw new AccessDeniedException("Access denied");
+        }
+
     }
 
     private String createToken(String username, Role role) {
@@ -231,17 +198,9 @@ public class AuthController {
     }
 
 
-    /**
-     * @exclude
-     */
-    @Path("/register")
-    @Produces("application/json")
-    @Security(role = Role.GUEST)
-    @Transactional
-    @POST
-    public Response register(RegisterData registerData) {
+    public String register(RegisterData registerData) {
         if (!checkCaptcha(registerData.getCaptchaChallenge(), registerData.getCaptchaResponse())) {
-            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorResponse("A captcha megadása hibás")).build();
+            throw new AccessDeniedException("A captcha megadása hibás");
         }
 
         validator.validate(registerData);
@@ -262,7 +221,7 @@ public class AuthController {
 
         db.getCollection("user").insert(user);
 
-        return Response.ok(createToken(registerData.getUsername(), Role.USER)).build();
+        return createToken(registerData.getUsername(), Role.USER);
     }
 
     private boolean checkCaptcha(String challenge, String solution) {

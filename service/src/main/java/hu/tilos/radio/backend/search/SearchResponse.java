@@ -1,6 +1,4 @@
-package hu.tilos.radio.backend.data.output;
-
-import hu.tilos.radio.backend.data.output.SearchResponseElement;
+package hu.tilos.radio.backend.search;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;

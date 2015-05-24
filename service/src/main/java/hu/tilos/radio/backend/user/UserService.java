@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.controller;
+package hu.tilos.radio.backend.user;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -7,7 +7,6 @@ import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.auth.AuthUtil;
-import hu.tilos.radio.backend.data.UserInfo;
 import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
@@ -17,15 +16,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 
-/**
- * Generate atom feed for the shows.
- */
-@Path("/api/v1/user")
-public class UserController {
-
-
-    @Inject
-    Session session;
+public class UserService {
 
     @Inject
     DozerBeanMapper mapper;
@@ -38,7 +29,7 @@ public class UserController {
     @Security(role = Role.GUEST)
     @GET
     @Transactional
-    public UserInfo me() {
+    public UserInfo me(Session session) {
         DBObject userObject = db.getCollection("user").findOne(new BasicDBObject("username", session.getCurrentUser().getUsername()));
         UserInfo user = mapper.map(userObject, UserInfo.class);
         AuthUtil.calculatePermissions(user);

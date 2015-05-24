@@ -1,15 +1,12 @@
-package hu.tilos.radio.backend.data.types;
+package hu.tilos.radio.backend.contribution;
 
-public class AuthorReference implements AuthorBasic {
+public class ShowReference {
 
     private String id;
 
     private String name;
 
     private String alias;
-
-    private String avatar;
-
 
     public String getId() {
         return id;
@@ -33,13 +30,5 @@ public class AuthorReference implements AuthorBasic {
 
     public void setAlias(String alias) {
         this.alias = alias;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
     }
 }

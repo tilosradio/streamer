@@ -2,8 +2,9 @@ package hu.tilos.radio.backend.controller;
 
 import com.github.fakemongo.junit.FongoRule;
 import hu.tilos.radio.backend.*;
-import hu.tilos.radio.backend.data.output.SearchResponse;
-import hu.tilos.radio.backend.data.output.SearchResponseElement;
+import hu.tilos.radio.backend.search.SearchResponse;
+import hu.tilos.radio.backend.search.SearchResponseElement;
+import hu.tilos.radio.backend.search.SearchService;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
@@ -25,7 +26,7 @@ import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 public class SearchControllerTest {
 
     @Inject
-    SearchController controller;
+    SearchService controller;
 
     @Inject
     FongoRule fongoRule;

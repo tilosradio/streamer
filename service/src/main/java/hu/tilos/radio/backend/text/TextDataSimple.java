@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.data.types;
+package hu.tilos.radio.backend.text;
 
 import java.util.Date;
 

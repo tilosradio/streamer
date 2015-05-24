@@ -35,7 +35,7 @@
 
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.Contribution</class-b>
+        <class-b>hu.tilos.radio.backend.contribution.Contribution</class-b>
         <field>
             <a key="show">this</a>
             <b>show</b>
@@ -57,7 +57,7 @@
 
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.AuthorWithContribution</class-b>
+        <class-b>hu.tilos.radio.backend.author.AuthorWithContribution</class-b>
         <field>
             <a key="_id">this</a>
             <b>id</b>
@@ -66,7 +66,7 @@
 
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.AuthorDetailed</class-b>
+        <class-b>hu.tilos.radio.backend.author.AuthorDetailed</class-b>
         <field>
             <a key="_id">this</a>
             <b>id</b>
@@ -75,7 +75,7 @@
 
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.ShowReference</class-b>
+        <class-b>hu.tilos.radio.backend.contribution.ShowReference</class-b>
         <field custom-converter="hu.tilos.radio.backend.converters.ReferenceDecoder">
             <a key="ref">this</a>
             <b>id</b>
@@ -84,7 +84,7 @@
 
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.ShowContribution</class-b>
+        <class-b>hu.tilos.radio.backend.contribution.ShowContribution</class-b>
         <field>
             <a key="author">this</a>
             <b>author</b>
@@ -94,7 +94,7 @@
 
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.AuthorReference</class-b>
+        <class-b>hu.tilos.radio.backend.contribution.AuthorReference</class-b>
         <field custom-converter="hu.tilos.radio.backend.converters.ReferenceDecoder">
             <a key="ref">this</a>
             <b>id</b>
@@ -192,7 +192,7 @@
     </mapping>
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.UserInfo</class-b>
+        <class-b>hu.tilos.radio.backend.user.UserInfo</class-b>
         <field custom-converter="hu.tilos.radio.backend.converters.EnumDecoder">
             <a key="role_id">this</a>
             <b>role</b>
@@ -209,7 +209,7 @@
 
     <mapping map-null="false" type="one-way">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.TextData</class-b>
+        <class-b>hu.tilos.radio.backend.text.TextData</class-b>
         <field custom-converter-id="contentCleaner">
             <a key="content">this</a>
             <b>formatted</b>
@@ -226,7 +226,7 @@
 
     <mapping map-null="false" type="one-way">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.TextDataSimple</class-b>
+        <class-b>hu.tilos.radio.backend.text.TextDataSimple</class-b>
         <field>
             <a key="_id">this</a>
             <b>id</b>
@@ -279,7 +279,7 @@
 
 
     <mapping map-null="false">
-        <class-a>hu.tilos.radio.backend.data.input.ShowToSave</class-a>
+        <class-a>hu.tilos.radio.backend.show.ShowToSave</class-a>
         <class-b map-get-method="get" map-set-method="put">org.bson.BSONObject</class-b>
         <field custom-converter="hu.tilos.radio.backend.converters.EnumEncoder">
             <a>type</a>
@@ -303,7 +303,7 @@
         </field-exclude>
     </mapping>
     <mapping map-null="false" type="one-way">
-        <class-a>hu.tilos.radio.backend.data.types.TextData</class-a>
+        <class-a>hu.tilos.radio.backend.text.TextData</class-a>
         <class-b map-get-method="get" map-set-method="put">com.mongodb.BasicDBObject</class-b>
     </mapping>
     <mapping map-null="false" type="one-way">

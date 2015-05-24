@@ -1,6 +1,6 @@
 package hu.tilos.radio.backend;
 
-import hu.tilos.radio.backend.data.UserInfo;
+import hu.tilos.radio.backend.user.UserInfo;
 
 import javax.enterprise.context.RequestScoped;
 

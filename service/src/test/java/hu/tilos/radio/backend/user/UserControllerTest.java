@@ -2,8 +2,6 @@ package hu.tilos.radio.backend.user;
 
 import com.github.fakemongo.junit.FongoRule;
 import hu.tilos.radio.backend.*;
-import hu.tilos.radio.backend.controller.UserController;
-import hu.tilos.radio.backend.data.UserInfo;
 import org.dozer.DozerBeanMapper;
 import org.jglue.cdiunit.ActivatedAlternatives;
 import org.jglue.cdiunit.AdditionalClasses;
@@ -31,7 +29,7 @@ public class UserControllerTest {
     Session session;
 
     @Inject
-    UserController controller;
+    UserService controller;
 
     @Inject
     DozerBeanMapper mapper;
@@ -51,7 +49,7 @@ public class UserControllerTest {
 
 
         //when
-        UserInfo me = controller.me();
+        UserInfo me = controller.me(session);
 
         //then
         assertThat(me.getUsername(), equalTo("bela"));

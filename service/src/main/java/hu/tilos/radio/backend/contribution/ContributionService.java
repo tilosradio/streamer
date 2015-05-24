@@ -1,24 +1,19 @@
-package hu.tilos.radio.backend.controller.internal;
+package hu.tilos.radio.backend.contribution;
 
 import com.mongodb.*;
-import hu.radio.tilos.model.Role;
-import hu.tilos.radio.backend.Security;
-import hu.tilos.radio.backend.contribution.ContributionToSave;
+import hu.tilos.radio.backend.data.response.OkResponse;
 import org.bson.types.ObjectId;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.QueryParam;
 
-@Path("api/int/contribution")
-public class ContributionController {
+
+public class ContributionService {
 
     @Inject
     DB db;
 
-    @Produces("application/json")
-    @Security(role = Role.ADMIN)
-    @DELETE
-    public void delete(@QueryParam("author") String authorId, @QueryParam("show") String showId) {
+    public OkResponse delete(@QueryParam("author") String authorId, @QueryParam("show") String showId) {
         BasicDBObject authorQuery = new BasicDBObject("_id", new ObjectId(authorId));
         DBObject author = db.getCollection("author").findOne(authorQuery);
 
@@ -29,6 +24,7 @@ public class ContributionController {
         db.getCollection("author").update(authorQuery, author);
         deleteFromCollection((BasicDBList) show.get("contributors"), "author", author.get("_id"));
         db.getCollection("show").update(showQuery, show);
+        return new OkResponse("deleted");
     }
 
     private void deleteFromCollection(BasicDBList collection, String key, Object id) {
@@ -47,10 +43,7 @@ public class ContributionController {
 
     }
 
-    @Produces("application/json")
-    @Security(role = Role.ADMIN)
-    @POST
-    public void save(ContributionToSave contributionToSave) {
+    public String save(ContributionToSave contributionToSave) {
         BasicDBObject authorQuery = new BasicDBObject("_id", new ObjectId(contributionToSave.getAuthor().getId()));
         DBObject author = db.getCollection("author").findOne(authorQuery);
 
@@ -59,6 +52,7 @@ public class ContributionController {
 
         addContributionToAuthor(contributionToSave, authorQuery, author, show);
         addContributorToShow(contributionToSave, showQuery, author, show);
+        return "ok";
 
     }
 

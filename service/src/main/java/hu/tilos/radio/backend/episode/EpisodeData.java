@@ -2,7 +2,7 @@ package hu.tilos.radio.backend.episode;
 
 
 
-import hu.tilos.radio.backend.data.types.TextData;
+import hu.tilos.radio.backend.text.TextData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.show.ShowSimple;
 import hu.tilos.radio.backend.tag.TagData;

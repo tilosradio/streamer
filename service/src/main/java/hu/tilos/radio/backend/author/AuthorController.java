@@ -1,16 +1,10 @@
 package hu.tilos.radio.backend.author;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBObject;
 import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Security;
-import hu.tilos.radio.backend.data.input.AuthorToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.data.types.AuthorDetailed;
 import hu.tilos.radio.backend.data.types.AuthorListElement;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +37,7 @@ public class AuthorController {
     @GET
     @Transactional
     public AuthorDetailed get(@PathParam("alias") String alias) {
-        return authorService.get(alias);
+        return authorService.get(alias, null);
     }
 
 

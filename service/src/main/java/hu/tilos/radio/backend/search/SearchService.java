@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.controller;
+package hu.tilos.radio.backend.search;
 
 
 import com.mongodb.DB;
@@ -6,8 +6,6 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Security;
-import hu.tilos.radio.backend.data.output.SearchResponse;
-import hu.tilos.radio.backend.data.output.SearchResponseElement;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
@@ -45,10 +43,10 @@ import java.util.Date;
 
 import static org.apache.lucene.util.Version.LUCENE_48;
 
-@Path("api/v1/search")
-public class SearchController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SearchController.class);
+public class SearchService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SearchService.class);
 
     @Inject
     private DB db;
@@ -111,17 +109,6 @@ public class SearchController {
     }
 
 
-    /**
-     * @param search
-     * @return
-     * @throws IOException
-     * @throws ParseException
-     * @exclude
-     */
-    @Path(value = "query")
-    @GET
-    @Produces("application/json")
-    @Security(role = Role.GUEST)
     public SearchResponse search(@QueryParam("q") String search) throws IOException, ParseException {
 
         MultiFieldQueryParser queryParser = new MultiFieldQueryParser(

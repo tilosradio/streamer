@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.data.input;
+package hu.tilos.radio.backend.auth;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

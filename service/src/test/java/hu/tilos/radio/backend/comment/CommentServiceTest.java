@@ -3,7 +3,7 @@ package hu.tilos.radio.backend.comment;
 import com.github.fakemongo.junit.FongoRule;
 import hu.tilos.radio.backend.DozerFactory;
 import hu.tilos.radio.backend.Session;
-import hu.tilos.radio.backend.data.UserInfo;
+import hu.tilos.radio.backend.user.UserInfo;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;

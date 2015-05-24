@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.data.output;
+package hu.tilos.radio.backend.auth;
 
 public class LoginData {
     private String username;

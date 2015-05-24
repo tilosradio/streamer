@@ -4,16 +4,12 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import hu.radio.tilos.model.Role;
-import hu.tilos.radio.backend.Security;
-import hu.tilos.radio.backend.Session;
-import hu.tilos.radio.backend.tag.TagUtil;
 import hu.tilos.radio.backend.data.input.EpisodeToSave;
 import hu.tilos.radio.backend.data.response.CreateResponse;
-import hu.tilos.radio.backend.data.response.ErrorResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.tag.TagData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
+import hu.tilos.radio.backend.tag.TagData;
+import hu.tilos.radio.backend.tag.TagUtil;
 import hu.tilos.radio.backend.util.TextConverter;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
@@ -21,26 +17,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import java.util.*;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
-@Path("/api/v1/episode")
-public class EpisodeController {
+public class EpisodeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EpisodeController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EpisodeService.class);
 
     @Inject
     DozerBeanMapper modelMapper;
 
     @Inject
     EpisodeUtil episodeUtil;
-
-    @Inject
-    Session session;
 
     @Inject
     TagUtil tagUtil;
@@ -51,10 +42,6 @@ public class EpisodeController {
     @Inject
     TextConverter converter;
 
-    @GET
-    @Path("/{id}")
-    @Security(role = Role.GUEST)
-    @Produces("application/json")
     public EpisodeData get(@PathParam("id") String id) {
         DBObject episode = db.getCollection("episode").findOne(aliasOrId(id));
         EpisodeData r = modelMapper.map(episode, EpisodeData.class);
@@ -74,19 +61,15 @@ public class EpisodeController {
         return r;
     }
 
-    @GET
-    @Path("/")
-    @Security(role = Role.GUEST)
-    @Produces("application/json")
-    @Transactional
-    public Response listEpisodes(@QueryParam("start") long from, @QueryParam("end") long to) {
+
+    public List<EpisodeData> listEpisodes(@QueryParam("start") long from, @QueryParam("end") long to) {
         Date fromDate = new Date();
         fromDate.setTime(from);
         Date toDate = new Date();
         toDate.setTime(to);
 
         if (to - from > 1000 * 60 * 60 * 168) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponse("Period is too big")).build();
+            throw new IllegalArgumentException("Period is too big");
         }
         List<EpisodeData> episodeData = episodeUtil.getEpisodeData(null, fromDate, toDate);
         Collections.sort(episodeData, new Comparator<EpisodeData>() {
@@ -95,14 +78,11 @@ public class EpisodeController {
                 return e1.getPlannedFrom().compareTo(e2.getPlannedFrom());
             }
         });
-        return Response.ok(episodeData).build();
+        return episodeData;
 
     }
 
-    @GET
-    @Path("/next")
-    @Security(role = Role.GUEST)
-    @Produces("application/json")
+
     public List<EpisodeData> next() {
         Date start = new Date();
         Date end = new Date();
@@ -123,10 +103,6 @@ public class EpisodeController {
     }
 
 
-    @GET
-    @Path("/last")
-    @Security(role = Role.GUEST)
-    @Produces("application/json")
     public List<EpisodeData> last() {
         Date start = new Date();
         start.setTime(start.getTime() - (long) 30 * 24 * 60 * 60 * 1000);
@@ -147,11 +123,6 @@ public class EpisodeController {
     }
 
 
-    @GET
-    @Path("/{show}/{year}/{month}/{day}")
-    @Security(role = Role.GUEST)
-    @Produces("application/json")
-    @Transactional
     public EpisodeData getByDate(@PathParam("show") String showAlias, @PathParam("year") int year, @PathParam("month") int month, @PathParam("day") int day) {
         BasicDBObject show = (BasicDBObject) db.getCollection("show").findOne(aliasOrId(showAlias));
         String showId = show.get("_id").toString();
@@ -165,13 +136,6 @@ public class EpisodeController {
     }
 
 
-    /**
-     * @exclude
-     */
-    @Produces("application/json")
-    @Security(role = Role.AUTHOR)
-    @POST
-    @Transactional
     public CreateResponse create(EpisodeToSave entity) {
 
 
@@ -199,14 +163,7 @@ public class EpisodeController {
         return new CreateResponse(((ObjectId) newMongoOBject.get("_id")).toHexString());
     }
 
-    /**
-     * @exclude
-     */
-    @Produces("application/json")
-    @Security(role = Role.AUTHOR)
-    @Transactional
-    @PUT
-    @Path("/{id}")
+
     public UpdateResponse update(@PathParam("id") String alias, EpisodeToSave objectToSave) {
 
         if (objectToSave.getText() != null) {

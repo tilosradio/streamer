@@ -9,16 +9,15 @@ import org.dozer.DozerBeanMapper;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
 
-@ApplicationScoped
-public class DozerFactory {
+public class DozerFactory implements Provider<DozerBeanMapper> {
 
     private static org.slf4j.Logger LOG = LoggerFactory.getLogger(DozerFactory.class);
 
@@ -82,5 +81,13 @@ public class DozerFactory {
         }
         return result;
 
+    }
+
+    @Override
+    public DozerBeanMapper get() {
+        if (mapper == null) {
+            init();
+        }
+        return mapper;
     }
 }
