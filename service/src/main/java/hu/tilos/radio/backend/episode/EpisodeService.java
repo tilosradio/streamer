@@ -42,7 +42,7 @@ public class EpisodeService {
     @Inject
     TextConverter converter;
 
-    public EpisodeData get(@PathParam("id") String id) {
+    public EpisodeData get(String id) {
         DBObject episode = db.getCollection("episode").findOne(aliasOrId(id));
         EpisodeData r = modelMapper.map(episode, EpisodeData.class);
         enrichEpisode(r);

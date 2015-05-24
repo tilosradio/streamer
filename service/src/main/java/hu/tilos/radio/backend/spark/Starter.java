@@ -82,7 +82,7 @@ public class Starter {
             @Override
             protected void configure() {
                 bind(DB.class).toProvider(MongoProducer.class);
-                bind(DozerBeanMapper.class).toProvider(DozerFactory.class);
+                bind(DozerBeanMapper.class).toProvider(DozerFactory.class).asEagerSingleton();
                 bind(Validator.class).toProvider(hu.tilos.radio.backend.ValidatorProducer.class);
                 bindListener(Matchers.any(), new GuiceConfigurationListener());
 
@@ -149,14 +149,15 @@ public class Starter {
         get("/api/v1/tag", (req, res) ->
                 tagService.list(intParam(req, "limit")), new JsonTransformer());
 
-        get("/api/v1/episode/:id", (req, res) ->
-                episodeService.get(req.params("id")), new JsonTransformer());
+
         get("/api/v1/episode", (req, res) ->
                 episodeService.listEpisodes(longParam(req, "start"), longParam(req, "end")), new JsonTransformer());
         get("/api/v1/episode/next", (req, res) ->
                 episodeService.next(), new JsonTransformer());
         get("/api/v1/episode/last", (req, res) ->
                 episodeService.last(), new JsonTransformer());
+        get("/api/v1/episode/:id", (req, res) ->
+                episodeService.get(req.params("id")), new JsonTransformer());
         get("/api/v1/episode//:show/:year/:month/:day", (req, res) ->
                 episodeService.getByDate(req.params("show"), intParam(req, "year"), intParam(req, "month"), intParam(req, "day")), new JsonTransformer());
         post("/api/v1/episode",
