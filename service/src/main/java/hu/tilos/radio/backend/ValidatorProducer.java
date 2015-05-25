@@ -6,8 +6,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-
-
 public class ValidatorProducer implements Provider<Validator> {
 
     private final Validator validator;
@@ -17,7 +15,6 @@ public class ValidatorProducer implements Provider<Validator> {
         validator = factory.getValidator();
 
     }
-
 
     @Override
     public Validator get() {

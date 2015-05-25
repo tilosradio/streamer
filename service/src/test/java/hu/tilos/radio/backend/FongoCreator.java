@@ -3,6 +3,7 @@ package hu.tilos.radio.backend;
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.typesafe.config.ConfigFactory;
 
 import java.net.UnknownHostException;
 
@@ -17,7 +18,8 @@ public class FongoCreator {
             fongoRule = new FongoRule();
         } else {
             try {
-                fongoRule = new FongoRule("unit", true, new MongoClient("localhost"));
+                String host = ConfigFactory.load().getString("mongo.host");
+                fongoRule = new FongoRule("unit", true, new MongoClient(host));
             } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }
@@ -34,7 +36,7 @@ public class FongoCreator {
             init();
         }
         if (embedded) {
-            return fongoRule.getDB();
+            return fongoRule.getFongo().getDB("test");
         } else {
             return fongoRule.getDB("unit");
         }
