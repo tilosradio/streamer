@@ -1,28 +1,23 @@
 package hu.tilos.radio.backend.streamer;
 
-import hu.tilos.radio.backend.Configuration;
+
 import hu.tilos.radio.backend.Mp3File;
 import hu.tilos.radio.backend.ResourceCollection;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-@Named
+
 public class LocalBackend implements Backend {
 
-    @Inject
-    @Configuration(name = "archive.root")
     private String root;
 
     /**
      * Limit in Kbyte/sec.
      */
-    @Inject
-    @Configuration(name = "throttle.limit")
     private int throttleLimit = 0;
 
     public LocalBackend(String root) {

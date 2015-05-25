@@ -9,7 +9,6 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,7 +19,6 @@ public class StatToMongo implements StatPersistence {
 
     private double SECOND_TO_BYTE = 38.28125 * 836;
 
-    @Inject
     DB db;
 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
