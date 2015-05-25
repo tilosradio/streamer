@@ -1,7 +1,8 @@
-FROM tilos/wildfly
+FROM tilos/java
 RUN mkdir -p /host/
 RUN mkdir -p /etc/service/streamer
-ADD docker/run /etc/service/streamer/
-ADD resteasy-atom/target/atom-provider.jar /opt/jboss/wildfly/standalone/deployments/
-ADD service/target/service.war /opt/jboss/wildfly/standalone/deployments/
+RUN mkdir -p /etc/service/backend
+ADD docker/streamer /etc/service/streamer/run
+ADD docker/service /etc/service/backend/run
 ADD streamer/target/streamer.jar /host/
+ADD service/target/target/service-jar-with-dependencies.jar /host/

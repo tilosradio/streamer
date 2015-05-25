@@ -1,0 +1,3 @@
+#!/bin/bash
+cd /host
+java -jar service-jar-with-dependencies.jar -Dconifig.file=/host/tilos.properties >> /var/log/backend-service.log

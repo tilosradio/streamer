@@ -23,7 +23,6 @@ public class ConfigurationInjector<T> implements MembersInjector<T> {
     @Override
     public void injectMembers(Object o) {
         try {
-            System.out.println(config.root().render());
             if (field.getType().equals(String.class)) {
                 String name = field.getAnnotation(Configuration.class).name();
                 String configValue = config.getString(name);
