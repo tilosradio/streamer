@@ -39,7 +39,7 @@ public class MongoProducer implements Provider<DB> {
             mongoClient.setWriteConcern(WriteConcern.ACKNOWLEDGED);
             db = mongoClient.getDB(dbName);
         } catch (Exception ex) {
-            throw new AssertionError("Can't connect to the mongodb");
+            throw new AssertionError("Can't connect to the mongodb: " + host +"/" +dbName);
         }
     }
 
