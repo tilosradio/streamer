@@ -1,24 +1,18 @@
-package hu.tilos.radio.backend;
+package hu.tilos.radio.backend.mix;
 
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import hu.radio.tilos.model.type.MixCategory;
 import hu.radio.tilos.model.type.MixType;
+import hu.tilos.radio.backend.GuiceRunner;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.mix.MixData;
-import hu.tilos.radio.backend.mix.MixService;
-import hu.tilos.radio.backend.mix.MixSimple;
 import hu.tilos.radio.backend.show.ShowSimple;
 import org.hamcrest.CustomMatcher;
-import org.jglue.cdiunit.ActivatedAlternatives;
-import org.jglue.cdiunit.AdditionalClasses;
-import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -29,10 +23,11 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class, ConfigurationProducer.class})
-@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
-public class MixControllerTest {
+public class MixServiceTest {
+
+
+    @Rule
+    public GuiceRunner guice = new GuiceRunner(this);
 
     @Inject
     MixService controller;

@@ -1,8 +1,5 @@
 package hu.tilos.radio.backend.data.types;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class AuthorSimple {
 
     private String id;

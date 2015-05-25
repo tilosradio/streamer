@@ -2,7 +2,6 @@ package hu.tilos.radio.backend.converters;
 
 import com.mongodb.DBRef;
 import org.dozer.CustomConverter;
-import org.dozer.DozerBeanMapper;
 
 public class ReferenceDecoder implements CustomConverter {
 

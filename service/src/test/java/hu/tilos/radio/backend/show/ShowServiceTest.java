@@ -7,20 +7,16 @@ import com.mongodb.util.JSON;
 import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.radio.tilos.model.type.ShowType;
-import hu.tilos.radio.backend.*;
-import hu.tilos.radio.backend.user.UserInfo;
+import hu.tilos.radio.backend.GuiceRunner;
+import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.data.input.UrlToSave;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.episode.EpisodeData;
+import hu.tilos.radio.backend.user.UserInfo;
 import org.dozer.DozerBeanMapper;
-import org.jglue.cdiunit.ActivatedAlternatives;
-import org.jglue.cdiunit.AdditionalClasses;
-import org.jglue.cdiunit.CdiRunner;
-import org.jglue.cdiunit.InRequestScope;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.inject.Inject;
@@ -34,12 +30,12 @@ import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-@RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class, ValidatorProducer.class})
-@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
-public class ShowControllerTest {
+public class ShowServiceTest {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMddHHmm");
+
+    @Rule
+    public GuiceRunner guice = new GuiceRunner(this);
 
     @Inject
     ShowService controller;
@@ -148,7 +144,6 @@ public class ShowControllerTest {
     }
 
     @Test
-    @InRequestScope
     public void update() throws Exception {
         //given
         String showId = loadTo(fongoRule, "show", "show-update-original.json");

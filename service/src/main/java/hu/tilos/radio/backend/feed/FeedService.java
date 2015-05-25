@@ -5,12 +5,12 @@ import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.Configuration;
 import hu.tilos.radio.backend.Security;
-
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.show.ShowSimple;
 import net.anzix.jaxrs.atom.Feed;
 import net.anzix.jaxrs.atom.Link;
+import net.anzix.jaxrs.atom.MediaType;
 import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
@@ -18,8 +18,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -29,8 +27,7 @@ import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 /**
  * Generate atom feed for the shows.
  */
-@Path("/feed")
-public class FeedController {
+public class FeedService {
 
 
     @Inject
@@ -38,7 +35,6 @@ public class FeedController {
 
     @Inject
     private DB db;
-
 
     @Inject
     private FeedRenderer feedRenderer;
@@ -54,7 +50,7 @@ public class FeedController {
     @Path("/weekly")
     @Security(role = Role.GUEST)
     @Produces("application/atom+xml")
-    public Response weeklyFeed() {
+    public Feed  weeklyFeed() {
         return weeklyFeed(null);
     }
 
@@ -63,7 +59,7 @@ public class FeedController {
     @Path("/weekly/{type}")
     @Security(role = Role.GUEST)
     @Produces("application/atom+xml")
-    public Response weeklyFeed(@PathParam("type") String type) {
+    public Feed weeklyFeed(@PathParam("type") String type) {
         Date now = new Date();
         Date weekAgo = new Date();
         weekAgo.setTime(now.getTime() - (long) 604800000L);
@@ -88,7 +84,7 @@ public class FeedController {
         feedLink.setType(new MediaType("application", "atom+xml"));
         feedLink.setHref(uri(serverUrl + "/feed/weekly"));
 
-        return Response.ok().entity(feed).build();
+        return feed;
     }
 
     private List<EpisodeData> filter(List<EpisodeData> episodeData, String type) {
@@ -114,19 +110,15 @@ public class FeedController {
     }
 
 
-    @GET
-    @Path("/show/itunes/{alias}")
-    @Security(role = Role.GUEST)
+
     @Produces("application/atom+xml")
-    public Response itunesFeed(@PathParam("alias") String alias) {
+    public Feed itunesFeed(@PathParam("alias") String alias) {
         return feed(alias, null);
     }
 
-    @GET
-    @Path("/show/{alias}{year:(/.*)?}")
-    @Security(role = Role.GUEST)
+
     @Produces("application/atom+xml")
-    public Response feed(@PathParam("alias") String alias, @PathParam("year") String year) {
+    public Feed feed(@PathParam("alias") String alias, @PathParam("year") String year) {
         //{year: (/.*)?
         //,
         if (year == null) {
@@ -176,7 +168,7 @@ public class FeedController {
         feed.getLinks().add(feedLink);
         feed.setId(uri("http://tilos.hu/show/" + show.getAlias() + yearPostfix));
 
-        return Response.ok().entity(feed).build();
+        return feed;
 
 
     }

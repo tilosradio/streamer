@@ -1,7 +1,6 @@
 package net.anzix.jaxrs.atom;
 
 
-import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -30,8 +29,4 @@ public class RelativeLink extends Link {
         this.setType(mediaType);
     }
 
-    public RelativeLink(String rel, URI relativeLink, String mediaType) {
-        this(rel, relativeLink);
-        this.setType(MediaType.valueOf(mediaType));
-    }
 }

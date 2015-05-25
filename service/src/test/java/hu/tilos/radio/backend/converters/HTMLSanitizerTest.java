@@ -3,8 +3,6 @@ package hu.tilos.radio.backend.converters;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class HTMLSanitizerTest {
 
     @Test

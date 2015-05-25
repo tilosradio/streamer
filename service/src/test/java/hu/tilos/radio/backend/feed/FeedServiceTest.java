@@ -1,14 +1,10 @@
 package hu.tilos.radio.backend.feed;
 
 import com.github.fakemongo.junit.FongoRule;
-import hu.tilos.radio.backend.*;
+import hu.tilos.radio.backend.GuiceRunner;
 import net.anzix.jaxrs.atom.Feed;
-import org.jglue.cdiunit.ActivatedAlternatives;
-import org.jglue.cdiunit.AdditionalClasses;
-import org.jglue.cdiunit.CdiRunner;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import javax.xml.bind.JAXBContext;
@@ -16,13 +12,14 @@ import javax.xml.bind.Marshaller;
 
 import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 
-@RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class, ConfigurationProducer.class})
-@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
-public class FeedControllerTest {
+
+public class FeedServiceTest {
+
+    @Rule
+    public GuiceRunner guice = new GuiceRunner(this);
 
     @Inject
-    FeedController feedController;
+    FeedService feedController;
 
     @Inject
     FongoRule fongoRule;
@@ -41,7 +38,7 @@ public class FeedControllerTest {
 
 
         //when
-        Feed feed = (Feed) feedController.feed("3utas", null).getEntity();
+        Feed feed = (Feed) feedController.feed("3utas", null);
 
         //then
         JAXBContext jaxbc = JAXBContext.newInstance(Feed.class);

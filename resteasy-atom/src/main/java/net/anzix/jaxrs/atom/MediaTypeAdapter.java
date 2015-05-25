@@ -1,6 +1,6 @@
 package net.anzix.jaxrs.atom;
 
-import javax.ws.rs.core.MediaType;
+
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
@@ -12,7 +12,8 @@ public class MediaTypeAdapter extends XmlAdapter<String, MediaType>
    public MediaType unmarshal(String s) throws Exception
    {
       if (s == null) return null;
-      return MediaType.valueOf(s);
+      //todo
+      return new MediaType("TODO","TODO");
    }
 
    public String marshal(MediaType mediaType) throws Exception

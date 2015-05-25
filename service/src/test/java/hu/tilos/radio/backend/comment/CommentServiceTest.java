@@ -2,6 +2,7 @@ package hu.tilos.radio.backend.comment;
 
 import com.github.fakemongo.junit.FongoRule;
 import hu.tilos.radio.backend.DozerFactory;
+import hu.tilos.radio.backend.GuiceRunner;
 import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.user.UserInfo;
 import org.hamcrest.Matchers;
@@ -20,6 +21,9 @@ public class CommentServiceTest {
 
 
     FongoRule fongoRule = new FongoRule();
+
+    @Rule
+    public GuiceRunner guice = new GuiceRunner(this);
 
     @Rule
     public FongoRule fongoRule() {

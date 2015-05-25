@@ -18,8 +18,9 @@ import hu.tilos.radio.backend.author.AuthorService;
 import hu.tilos.radio.backend.author.AuthorToSave;
 import hu.tilos.radio.backend.contribution.ContributionService;
 import hu.tilos.radio.backend.contribution.ContributionToSave;
-import hu.tilos.radio.backend.data.input.EpisodeToSave;
 import hu.tilos.radio.backend.episode.EpisodeService;
+import hu.tilos.radio.backend.episode.EpisodeToSave;
+import hu.tilos.radio.backend.feed.FeedService;
 import hu.tilos.radio.backend.m3u.M3uService;
 import hu.tilos.radio.backend.mix.MixData;
 import hu.tilos.radio.backend.mix.MixService;
@@ -72,6 +73,9 @@ public class Starter {
 
     @Inject
     SearchService searchService;
+
+    @Inject
+    FeedService feedService;
 
     private Gson gson = new Gson();
 
@@ -182,12 +186,29 @@ public class Starter {
         delete("/api/int/contribution", authorized(Role.ADMIN, (req, res, session) ->
                 contributionService.delete(req.params("author"), req.params("show"))), new JsonTransformer());
 
-        get("api/v1/m3u/lastweek", (req, res) -> {
+        get("/api/v1/m3u/lastweek", (req, res) -> {
             res.header("Content-Type", "audio/x-mpegurl; charset=iso-8859-2");
             return m3uService.lastWeek(req.queryParams("stream"));
         });
 
-        get("api/v1/search/query", (req, res) -> searchService.search(req.queryParams("q")));
+        get("/api/v1/search/query", (req, res) -> searchService.search(req.queryParams("q")));
+
+        get("/feed/weekly", (req, res) -> {
+            res.header("application", "atom+xml");
+            return feedService.weeklyFeed();
+        }, new FeedTransformer());
+        get("/feed/weekly/:type", (req, res) -> {
+            res.header("application", "atom+xml");
+            return feedService.weeklyFeed(req.params("type"));
+        }, new FeedTransformer());
+        get("/feed/show/itunes/:alias", (req, res) -> {
+            res.header("application", "atom+xml");
+            return feedService.feed(req.params("alias"), null);
+        }, new FeedTransformer());
+        get("/feed/show/:alias/:year", (req, res) -> {
+            res.header("application", "atom+xml");
+            return feedService.feed(req.params("alias"), req.params("year"));
+        }, new FeedTransformer());
 
 
     }

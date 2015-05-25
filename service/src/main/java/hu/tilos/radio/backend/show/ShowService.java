@@ -8,7 +8,6 @@ import hu.tilos.radio.backend.converters.SchedulingTextUtil;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.SchedulingSimple;
-
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.mix.MixSimple;

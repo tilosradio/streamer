@@ -1,11 +1,10 @@
 package hu.tilos.radio.backend.episode;
 
 
-
-import hu.tilos.radio.backend.text.TextData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.show.ShowSimple;
 import hu.tilos.radio.backend.tag.TagData;
+import hu.tilos.radio.backend.text.TextData;
 
 import java.util.Date;
 import java.util.HashSet;

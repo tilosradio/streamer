@@ -1,6 +1,6 @@
 package hu.tilos.radio.backend.show;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import hu.radio.tilos.model.type.ShowStatus;
 import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.data.input.SchedulingToSave;
@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class ShowToSave {
 
     @NotNull

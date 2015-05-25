@@ -1,8 +1,6 @@
 package hu.tilos.radio.backend.data.input;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class ObjectReference {
 
     private String id;

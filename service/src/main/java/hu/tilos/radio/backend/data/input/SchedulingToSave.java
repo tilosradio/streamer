@@ -1,10 +1,8 @@
 package hu.tilos.radio.backend.data.input;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Date;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class SchedulingToSave {
 
     private int weekType;

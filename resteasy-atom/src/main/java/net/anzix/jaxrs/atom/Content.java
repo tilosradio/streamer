@@ -3,7 +3,6 @@ package net.anzix.jaxrs.atom;
 
 import org.w3c.dom.Element;
 
-import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -113,7 +112,7 @@ public class Content extends CommonAttributes {
             if (type.equals("html")) mediaType = MediaType.TEXT_HTML_TYPE;
             else if (type.equals("text")) mediaType = MediaType.TEXT_PLAIN_TYPE;
             else if (type.equals("xhtml")) mediaType = MediaType.APPLICATION_XHTML_XML_TYPE;
-            else mediaType = MediaType.valueOf(type);
+            else mediaType = new MediaType("TODO","TODO");
         }
         return mediaType;
     }

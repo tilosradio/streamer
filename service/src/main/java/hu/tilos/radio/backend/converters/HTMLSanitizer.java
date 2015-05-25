@@ -1,23 +1,16 @@
 package hu.tilos.radio.backend.converters;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import java.util.regex.Pattern;
-
-import org.owasp.html.Handler;
-import org.owasp.html.HtmlPolicyBuilder;
-import org.owasp.html.HtmlSanitizer;
-import org.owasp.html.HtmlStreamRenderer;
-import org.owasp.html.PolicyFactory;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
+import org.owasp.html.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.regex.Pattern;
 
 public class HTMLSanitizer {
 

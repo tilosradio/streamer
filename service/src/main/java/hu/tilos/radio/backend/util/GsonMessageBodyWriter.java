@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 @Produces(MediaType.APPLICATION_JSON)
 public class GsonMessageBodyWriter implements MessageBodyWriter {

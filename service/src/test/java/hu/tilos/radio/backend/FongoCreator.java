@@ -4,9 +4,6 @@ import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Produces;
 import java.net.UnknownHostException;
 
 public class FongoCreator {
@@ -15,7 +12,6 @@ public class FongoCreator {
 
     private boolean embedded = false;
 
-    @PostConstruct
     public void init() {
         if (embedded) {
             fongoRule = new FongoRule();
@@ -28,13 +24,11 @@ public class FongoCreator {
         }
     }
 
-    @Produces
+
     public FongoRule createRule() {
         return fongoRule;
     }
 
-    @Produces
-    @Alternative
     public DB createDB() {
         if (fongoRule == null) {
             init();

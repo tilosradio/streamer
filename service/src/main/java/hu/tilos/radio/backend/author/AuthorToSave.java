@@ -1,10 +1,10 @@
 package hu.tilos.radio.backend.author;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 import javax.validation.constraints.NotNull;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class AuthorToSave {
 
     @NotNull

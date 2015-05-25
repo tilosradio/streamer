@@ -1,11 +1,10 @@
 package hu.tilos.radio.backend.text;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.validation.constraints.NotNull;
 
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class TextToSave {
 
 

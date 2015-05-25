@@ -2,24 +2,21 @@ package hu.tilos.radio.backend.controller;
 
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.DBObject;
-import hu.tilos.radio.backend.*;
-import org.jglue.cdiunit.ActivatedAlternatives;
-import org.jglue.cdiunit.AdditionalClasses;
-import org.jglue.cdiunit.CdiRunner;
+import hu.tilos.radio.backend.GuiceRunner;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
 import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 
-@RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class, FongoCreator.class, ConfigurationProducer.class})
-@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
+
 public class DataFixControllerTest {
 
+    @Rule
+    public GuiceRunner guice = new GuiceRunner(this);
+    
     @Inject
     DataFixController controller;
 

@@ -1,8 +1,7 @@
 package hu.tilos.radio.backend.data.input;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class UrlToSave {
     private String address;
 

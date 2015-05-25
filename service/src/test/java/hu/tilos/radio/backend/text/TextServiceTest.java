@@ -2,15 +2,11 @@ package hu.tilos.radio.backend.text;
 
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.DBObject;
-import hu.tilos.radio.backend.*;
+import hu.tilos.radio.backend.GuiceRunner;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import org.jglue.cdiunit.ActivatedAlternatives;
-import org.jglue.cdiunit.AdditionalClasses;
-import org.jglue.cdiunit.CdiRunner;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -19,14 +15,13 @@ import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-@RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class})
-@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
-public class TextControllerTest {
+public class TextServiceTest {
+
+    @Rule
+    public GuiceRunner guice = new GuiceRunner(this);
 
     @Inject
     TextService controller;
-
 
     @Inject
     FongoRule fongoRule;

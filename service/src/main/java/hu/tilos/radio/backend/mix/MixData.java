@@ -2,7 +2,6 @@ package hu.tilos.radio.backend.mix;
 
 import hu.radio.tilos.model.type.MixCategory;
 import hu.radio.tilos.model.type.MixType;
-import hu.tilos.radio.backend.data.EntitySelector;
 import hu.tilos.radio.backend.show.ShowSimple;
 
 public class MixData {

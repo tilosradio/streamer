@@ -1,6 +1,5 @@
 package net.anzix.jaxrs.atom;
 
-import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -77,12 +76,6 @@ public class Link extends CommonAttributes
       this.type = type;
    }
 
-   public Link(String rel, String href, String type)
-   {
-      this.rel = rel;
-      this.href = URI.create(href);
-      this.type = MediaType.valueOf(type);
-   }
 
    @XmlAttribute(required = true)
    public URI getHref()

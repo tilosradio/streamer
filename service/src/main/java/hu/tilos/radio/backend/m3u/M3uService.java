@@ -1,7 +1,5 @@
 package hu.tilos.radio.backend.m3u;
 
-import hu.radio.tilos.model.Role;
-import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.feed.FeedRenderer;
@@ -9,11 +7,7 @@ import hu.tilos.radio.backend.util.Days;
 import hu.tilos.radio.backend.util.LocaleUtil;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;

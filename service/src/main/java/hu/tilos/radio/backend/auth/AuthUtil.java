@@ -3,7 +3,6 @@ package hu.tilos.radio.backend.auth;
 import hu.tilos.radio.backend.contribution.Contribution;
 import hu.tilos.radio.backend.user.UserInfo;
 
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;

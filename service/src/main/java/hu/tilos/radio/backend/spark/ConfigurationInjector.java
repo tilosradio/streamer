@@ -24,13 +24,13 @@ public class ConfigurationInjector<T> implements MembersInjector<T> {
                 } else if (name.equals("mongo.host")) {
                     field.set(o, "localhost");
                 } else if (name.equals("jwt.secret")) {
-                    field.set(o, "gaphico2theR6UtieN5nuwi1ooph3aiy");
+                    field.set(o, "xxx");
                 } else if (name.equals("upload.dir")) {
                     field.set(o, "/tmp");
                 } else if (name.equals("recaptcha.privatekey")) {
                     field.set(o, "recaptcha.privatekey");
                 } else if (name.equals("server.url")) {
-                    field.set(o, "server.url");
+                    field.set(o, "http://tilos.hu");
 
                 } else {
                     throw new IllegalArgumentException(name);

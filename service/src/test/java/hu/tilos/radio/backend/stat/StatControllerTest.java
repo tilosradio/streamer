@@ -1,17 +1,13 @@
 package hu.tilos.radio.backend.stat;
 
 import com.github.fakemongo.junit.FongoRule;
-import hu.tilos.radio.backend.*;
+import hu.tilos.radio.backend.GuiceRunner;
 import hu.tilos.radio.backend.controller.StatController;
 import hu.tilos.radio.backend.data.output.ListenerStat;
 import hu.tilos.radio.backend.data.output.StatData;
-import org.jglue.cdiunit.ActivatedAlternatives;
-import org.jglue.cdiunit.AdditionalClasses;
-import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.text.ParseException;
@@ -21,11 +17,11 @@ import java.util.List;
 
 import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 
-@RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class})
-@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
+
 public class StatControllerTest {
 
+    @Rule
+    public GuiceRunner guice = new GuiceRunner(this);
 
     @Inject
     StatController controller;

@@ -3,20 +3,16 @@ package hu.tilos.radio.backend.episode;
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import hu.tilos.radio.backend.*;
-import hu.tilos.radio.backend.data.input.EpisodeToSave;
+import hu.tilos.radio.backend.GuiceRunner;
+import hu.tilos.radio.backend.TestUtil;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.show.ShowSimple;
 import hu.tilos.radio.backend.text.TextData;
 import org.dozer.DozerBeanMapper;
-import org.jglue.cdiunit.ActivatedAlternatives;
-import org.jglue.cdiunit.AdditionalClasses;
-import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
@@ -24,10 +20,11 @@ import java.text.SimpleDateFormat;
 import static hu.tilos.radio.backend.MongoTestUtil.loadFrom;
 import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 
-@RunWith(CdiRunner.class)
-@AdditionalClasses({MongoProducer.class, DozerFactory.class, ConfigurationProducer.class})
-@ActivatedAlternatives({FongoCreator.class, TestConfigProvider.class})
-public class EpisodeControllerTest {
+
+public class EpisodeServiceTest {
+
+    @Rule
+    public GuiceRunner guice = new GuiceRunner(this);
 
     @Inject
     EpisodeService controller;

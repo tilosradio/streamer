@@ -6,7 +6,6 @@ import hu.tilos.radio.backend.util.LocaleUtil;
 import net.anzix.jaxrs.atom.*;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;

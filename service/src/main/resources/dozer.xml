@@ -307,7 +307,7 @@
         <class-b map-get-method="get" map-set-method="put">com.mongodb.BasicDBObject</class-b>
     </mapping>
     <mapping map-null="false" type="one-way">
-        <class-a>hu.tilos.radio.backend.data.input.EpisodeToSave</class-a>
+        <class-a>hu.tilos.radio.backend.episode.EpisodeToSave</class-a>
         <class-b map-get-method="get" map-set-method="put">org.bson.BSONObject</class-b>
         <field custom-converter-id="childEncoder">
             <a>text</a>

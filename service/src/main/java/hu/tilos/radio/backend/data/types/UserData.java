@@ -1,8 +1,6 @@
 package hu.tilos.radio.backend.data.types;
 
 
-import hu.tilos.radio.backend.data.types.RoleData;
-
 public class UserData {
 
     private int id;
