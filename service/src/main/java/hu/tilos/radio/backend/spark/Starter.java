@@ -100,6 +100,7 @@ public class Starter {
             System.out.println(request.uri());
         });
 
+        port(8080);
         get("/api/v1/author", (req, res) -> authorService.list(), new JsonTransformer());
         get("/api/v1/author/:alias", (req, res) -> authorService.get(req.params("alias"), null), new JsonTransformer());
         post("/api/v1/author", authorized(Role.ADMIN, (req, res, session) -> authorService.create(gson.fromJson(req.body(), AuthorToSave.class))), new JsonTransformer());
