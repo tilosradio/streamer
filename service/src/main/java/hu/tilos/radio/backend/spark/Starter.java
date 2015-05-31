@@ -216,19 +216,19 @@ public class Starter {
         get("/api/v1/search/query", (req, res) -> searchService.search(req.queryParams("q")));
 
         get("/feed/weekly", (req, res) -> {
-            res.header("application", "atom+xml");
+            res.type("application/atom+xml");
             return feedService.weeklyFeed();
         }, new FeedTransformer());
         get("/feed/weekly/:type", (req, res) -> {
-            res.header("application", "atom+xml");
+            res.type("application/atom+xml");
             return feedService.weeklyFeed(req.params("type"));
         }, new FeedTransformer());
         get("/feed/show/itunes/:alias", (req, res) -> {
-            res.header("application", "atom+xml");
+            res.type("application/atom+xml");
             return feedService.feed(req.params("alias"), null);
         }, new FeedTransformer());
         get("/feed/show/:alias/:year", (req, res) -> {
-            res.header("application", "atom+xml");
+            res.type("application/atom+xml");
             return feedService.feed(req.params("alias"), req.params("year"));
         }, new FeedTransformer());
 
