@@ -38,6 +38,8 @@ public class EpisodeData {
      */
     private boolean persistent = false;
 
+    private String url;
+
     public Set<TagData> getTags() {
         return tags;
     }
@@ -60,6 +62,15 @@ public class EpisodeData {
 
     public void setPlannedFrom(Date plannedFrom) {
         this.plannedFrom = plannedFrom;
+        updateUrl();
+    }
+
+    private void updateUrl() {
+        if (plannedFrom !=null && getShow()!=null) {
+            url = "/episode/" + getShow().getAlias() + "/" + EpisodeUtil.YYYY_MM_DD.format(plannedFrom);
+        } else {
+            url = "";
+        }
     }
 
     public Date getPlannedTo() {
@@ -92,6 +103,7 @@ public class EpisodeData {
 
     public void setShow(ShowSimple show) {
         this.show = show;
+        updateUrl();
     }
 
     public boolean isPersistent() {
@@ -119,9 +131,10 @@ public class EpisodeData {
     }
 
     public String getUrl() {
-        return "/episode/" + getShow().getAlias() + "/" + EpisodeUtil.YYYY_MM_DD.format(getPlannedFrom());
+        return url;
     }
-    public void setUrl(String dummy){
 
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
