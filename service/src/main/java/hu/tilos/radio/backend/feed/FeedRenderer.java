@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Utility to create Feed object from Episode list.
@@ -31,6 +32,13 @@ public class FeedRenderer {
     @Inject
     @Configuration(name = "server.url")
     private String serverUrl;
+
+    public FeedRenderer() {
+        YYYY_DOT_MM_DOT_DD.setTimeZone(TimeZone.getTimeZone("CET"));
+        YYYY_PER_MM_PER_DD.setTimeZone(TimeZone.getTimeZone("CET"));
+        YYYYMMDD.setTimeZone(TimeZone.getTimeZone("CET"));
+        HHMMSS.setTimeZone(TimeZone.getTimeZone("CET"));
+    }
 
     public static String createDownloadURI(EpisodeData episode) {
         return "http://tilos.hu/mp3/tilos-" +

@@ -6,8 +6,10 @@ import hu.tilos.radio.backend.util.LocaleUtil;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Named
 public class EpisodeUtil {
@@ -26,6 +28,12 @@ public class EpisodeUtil {
 
     @Inject
     private Merger merger = new Merger();
+
+    public EpisodeUtil() {
+        YYYYMMDD.setTimeZone(TimeZone.getTimeZone("CET"));
+        HHMMSS.setTimeZone(TimeZone.getTimeZone("CET"));
+        YYYY_MM_DD.setTimeZone(TimeZone.getTimeZone("CET"));
+    }
 
     public List<EpisodeData> getEpisodeData(String showIdOrAlias, Date from, Date to) {
         List<EpisodeData> merged = merger.merge(persistentProvider.listEpisode(showIdOrAlias, from, to), scheduledProvider.listEpisode(showIdOrAlias, from, to));
