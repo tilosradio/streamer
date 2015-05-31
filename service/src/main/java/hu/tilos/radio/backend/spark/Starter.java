@@ -33,10 +33,13 @@ import hu.tilos.radio.backend.text.TextToSave;
 import hu.tilos.radio.backend.user.UserService;
 import org.dozer.DozerBeanMapper;
 import spark.Request;
+import spark.Response;
 import spark.Route;
 
 import javax.validation.Validator;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.util.Date;
 
 import static spark.Spark.*;
@@ -121,7 +124,7 @@ public class Starter {
 
 
         JsonTransformer jsonResponse = new JsonTransformer(gson);
-        
+
         get("/api/v1/author", (req, res) -> authorService.list(), jsonResponse);
         get("/api/v1/author/:alias", (req, res) -> authorService.get(req.params("alias"), null), jsonResponse);
         post("/api/v1/author", authorized(Role.ADMIN, (req, res, session) -> authorService.create(gson.fromJson(req.body(), AuthorToSave.class))), jsonResponse);
@@ -209,8 +212,7 @@ public class Starter {
                 contributionService.delete(req.params("author"), req.params("show"))), jsonResponse);
 
         get("/api/v1/m3u/lastweek", (req, res) -> {
-            res.type("audio/x-mpegurl; charset=iso-8859-2");
-            return m3uService.lastWeek(req.queryParams("stream"));
+            return asM3u(res, m3uService.lastWeek(req.queryParams("stream")));
         });
 
         get("/api/v1/search/query", (req, res) -> searchService.search(req.queryParams("q")));
@@ -233,6 +235,14 @@ public class Starter {
         }, new FeedTransformer());
 
 
+    }
+
+    private Object asM3u(Response res, String output) throws Exception {
+        res.type("audio/x-mpegurl; charset=iso-8859-2");
+        try (OutputStreamWriter writer = new OutputStreamWriter(res.raw().getOutputStream(), Charset.forName("ISO-8859-2"))) {
+            writer.write(output);
+        }
+        return null;
     }
 
     private Integer intParam(Request req, String name) {
