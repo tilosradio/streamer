@@ -1,6 +1,6 @@
 package hu.tilos.radio.backend.spark;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -36,6 +36,8 @@ import spark.Request;
 import spark.Route;
 
 import javax.validation.Validator;
+import java.lang.reflect.Type;
+import java.util.Date;
 
 import static spark.Spark.*;
 
@@ -77,7 +79,7 @@ public class Starter {
     @Inject
     FeedService feedService;
 
-    private Gson gson = new Gson();
+    private Gson gson;
 
     static Injector injector;
 
@@ -96,6 +98,20 @@ public class Starter {
     }
 
     private void run() {
+        gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
+                    @Override
+                    public JsonElement serialize(Date src, Type type, JsonSerializationContext jsonSerializationContext) {
+                        return src == null ? null : new JsonPrimitive(src.getTime());
+                    }
+                })
+                .registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+                    @Override
+                    public Date deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+                        return json == null ? null : new Date(json.getAsLong());
+                    }
+                })
+                .create();
 
         port(8080);
 
@@ -104,91 +120,93 @@ public class Starter {
         });
 
 
-        get("/api/v1/author", (req, res) -> authorService.list(), new JsonTransformer());
-        get("/api/v1/author/:alias", (req, res) -> authorService.get(req.params("alias"), null), new JsonTransformer());
-        post("/api/v1/author", authorized(Role.ADMIN, (req, res, session) -> authorService.create(gson.fromJson(req.body(), AuthorToSave.class))), new JsonTransformer());
+        JsonTransformer jsonResponse = new JsonTransformer(gson);
+        
+        get("/api/v1/author", (req, res) -> authorService.list(), jsonResponse);
+        get("/api/v1/author/:alias", (req, res) -> authorService.get(req.params("alias"), null), jsonResponse);
+        post("/api/v1/author", authorized(Role.ADMIN, (req, res, session) -> authorService.create(gson.fromJson(req.body(), AuthorToSave.class))), jsonResponse);
         put("/api/v1/author/:alias",
                 authorized("/author/{alias}", (req, res, session) ->
-                        authorService.update(req.params("alias"), gson.fromJson(req.body(), AuthorToSave.class))), new JsonTransformer());
+                        authorService.update(req.params("alias"), gson.fromJson(req.body(), AuthorToSave.class))), jsonResponse);
 
         get("/api/v1/show", (req, res) ->
-                showService.list(req.queryParams("status")), new JsonTransformer());
+                showService.list(req.queryParams("status")), jsonResponse);
         get("/api/v1/show/:alias", (req, res) ->
-                showService.get(req.params("alias")), new JsonTransformer());
+                showService.get(req.params("alias")), jsonResponse);
         get("/api/v1/show/:alias/episodes", (req, res) ->
                 showService.listEpisodes(req.params("alias"),
                         Long.valueOf(req.queryParams("start")),
                         Long.valueOf(req.queryParams("end"))
-                ), new JsonTransformer());
+                ), jsonResponse);
         post("/api/v1/show",
                 authorized(Role.ADMIN, (req, res, session) ->
-                        showService.create(gson.fromJson(req.body(), ShowToSave.class))), new JsonTransformer());
+                        showService.create(gson.fromJson(req.body(), ShowToSave.class))), jsonResponse);
         put("/api/v1/show/:alias",
                 authorized("/show/{alias}", (req, res, session) ->
-                        showService.update(req.params("alias"), gson.fromJson(req.body(), ShowToSave.class))), new JsonTransformer());
+                        showService.update(req.params("alias"), gson.fromJson(req.body(), ShowToSave.class))), jsonResponse);
 
         get("/api/v1/mix", (req, res) ->
-                mixService.list(req.queryParams("show"), req.queryParams("category")), new JsonTransformer());
+                mixService.list(req.queryParams("show"), req.queryParams("category")), jsonResponse);
         get("/api/v1/mix/:id", (req, res) ->
-                mixService.get(req.params("id")), new JsonTransformer());
+                mixService.get(req.params("id")), jsonResponse);
         post("/api/v1/mix",
                 authorized(Role.ADMIN, (req, res, session) ->
-                        mixService.create(gson.fromJson(req.body(), MixData.class))), new JsonTransformer());
+                        mixService.create(gson.fromJson(req.body(), MixData.class))), jsonResponse);
         put("/api/v1/mix/:alias",
                 authorized(Role.ADMIN, (req, res, session) ->
-                        mixService.update(req.params("alias"), gson.fromJson(req.body(), MixData.class))), new JsonTransformer());
+                        mixService.update(req.params("alias"), gson.fromJson(req.body(), MixData.class))), jsonResponse);
         delete("/api/v1/mix/:alias",
                 authorized(Role.ADMIN, (req, res, session) ->
-                        mixService.delete(req.params("alias"))), new JsonTransformer());
+                        mixService.delete(req.params("alias"))), jsonResponse);
 
         get("/api/v1/text/:type", (req, res) ->
-                textService.list(req.params("type"), intParam(req, "limit")), new JsonTransformer());
+                textService.list(req.params("type"), intParam(req, "limit")), jsonResponse);
         get("/api/v1/text/:type/:id", (req, res) ->
-                textService.get(req.params("id"), req.params("type")), new JsonTransformer());
+                textService.get(req.params("id"), req.params("type")), jsonResponse);
         post("/api/v1/text/:type",
                 authorized(Role.ADMIN, (req, res, session) ->
-                        textService.create(req.params("type"), gson.fromJson(req.body(), TextToSave.class))), new JsonTransformer());
+                        textService.create(req.params("type"), gson.fromJson(req.body(), TextToSave.class))), jsonResponse);
         put("/api/v1/text/:type/:id",
                 authorized(Role.ADMIN, (req, res, session) ->
-                        textService.update(req.params("type"), req.params("id"), gson.fromJson(req.body(), TextToSave.class))), new JsonTransformer());
+                        textService.update(req.params("type"), req.params("id"), gson.fromJson(req.body(), TextToSave.class))), jsonResponse);
 
         get("/api/v1/tag/:tag", (req, res) ->
-                tagService.get(req.params("tag")), new JsonTransformer());
+                tagService.get(req.params("tag")), jsonResponse);
         get("/api/v1/tag", (req, res) ->
-                tagService.list(intParam(req, "limit")), new JsonTransformer());
+                tagService.list(intParam(req, "limit")), jsonResponse);
 
 
         get("/api/v1/episode", (req, res) ->
-                episodeService.listEpisodes(longParam(req, "start"), longParam(req, "end")), new JsonTransformer());
+                episodeService.listEpisodes(longParam(req, "start"), longParam(req, "end")), jsonResponse);
         get("/api/v1/episode/next", (req, res) ->
-                episodeService.next(), new JsonTransformer());
+                episodeService.next(), jsonResponse);
         get("/api/v1/episode/last", (req, res) ->
-                episodeService.last(), new JsonTransformer());
+                episodeService.last(), jsonResponse);
         get("/api/v1/episode/:id", (req, res) ->
-                episodeService.get(req.params("id")), new JsonTransformer());
+                episodeService.get(req.params("id")), jsonResponse);
         get("/api/v1/episode//:show/:year/:month/:day", (req, res) ->
-                episodeService.getByDate(req.params("show"), intParam(req, "year"), intParam(req, "month"), intParam(req, "day")), new JsonTransformer());
+                episodeService.getByDate(req.params("show"), intParam(req, "year"), intParam(req, "month"), intParam(req, "day")), jsonResponse);
         post("/api/v1/episode",
                 authorized(Role.ADMIN, (req, res, session) ->
-                        episodeService.create(gson.fromJson(req.body(), EpisodeToSave.class))), new JsonTransformer());
+                        episodeService.create(gson.fromJson(req.body(), EpisodeToSave.class))), jsonResponse);
         put("/api/v1/episode/:id",
                 authorized(Role.ADMIN, (req, res, session) ->
-                        episodeService.update(req.params("id"), gson.fromJson(req.body(), EpisodeToSave.class))), new JsonTransformer());
+                        episodeService.update(req.params("id"), gson.fromJson(req.body(), EpisodeToSave.class))), jsonResponse);
 
         post("/api/v1/auth/password_reset",
-                (req, res) -> authService.passwordReset(gson.fromJson(req.body(), PasswordReset.class)), new JsonTransformer());
+                (req, res) -> authService.passwordReset(gson.fromJson(req.body(), PasswordReset.class)), jsonResponse);
         post("/api/v1/auth/login",
-                (req, res) -> authService.login(gson.fromJson(req.body(), LoginData.class)), new JsonTransformer());
+                (req, res) -> authService.login(gson.fromJson(req.body(), LoginData.class)), jsonResponse);
         post("/api/v1/auth/register",
-                (req, res) -> authService.register(gson.fromJson(req.body(), RegisterData.class)), new JsonTransformer());
+                (req, res) -> authService.register(gson.fromJson(req.body(), RegisterData.class)), jsonResponse);
 
         get("/api/v1/user/me", authorized(Role.USER, (req, res, session) ->
-                userService.me(session)), new JsonTransformer());
+                userService.me(session)), jsonResponse);
 
         post("/api/int/contribution", authorized(Role.ADMIN, (req, res, session) ->
-                contributionService.save(gson.fromJson(req.body(), ContributionToSave.class))), new JsonTransformer());
+                contributionService.save(gson.fromJson(req.body(), ContributionToSave.class))), jsonResponse);
         delete("/api/int/contribution", authorized(Role.ADMIN, (req, res, session) ->
-                contributionService.delete(req.params("author"), req.params("show"))), new JsonTransformer());
+                contributionService.delete(req.params("author"), req.params("show"))), jsonResponse);
 
         get("/api/v1/m3u/lastweek", (req, res) -> {
             res.header("Content-Type", "audio/x-mpegurl; charset=iso-8859-2");
