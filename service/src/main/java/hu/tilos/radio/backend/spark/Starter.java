@@ -209,7 +209,7 @@ public class Starter {
                 contributionService.delete(req.params("author"), req.params("show"))), jsonResponse);
 
         get("/api/v1/m3u/lastweek", (req, res) -> {
-            res.header("Content-Type", "audio/x-mpegurl; charset=iso-8859-2");
+            res.type("audio/x-mpegurl; charset=iso-8859-2");
             return m3uService.lastWeek(req.queryParams("stream"));
         });
 
