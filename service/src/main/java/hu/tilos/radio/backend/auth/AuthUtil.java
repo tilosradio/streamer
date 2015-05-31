@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend.auth;
 
+import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.contribution.Contribution;
 import hu.tilos.radio.backend.user.UserInfo;
 
@@ -40,6 +41,9 @@ public class AuthUtil {
 
                 }
             }
+        }
+        if (userInfo.getRole().equals(Role.ADMIN)) {
+            userInfo.getPermissions().add(".*");
         }
 
     }
