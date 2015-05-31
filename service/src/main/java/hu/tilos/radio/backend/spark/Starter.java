@@ -187,8 +187,12 @@ public class Starter {
                 episodeService.last(), jsonResponse);
         get("/api/v1/episode/:id", (req, res) ->
                 episodeService.get(req.params("id")), jsonResponse);
-        get("/api/v1/episode//:show/:year/:month/:day", (req, res) ->
-                episodeService.getByDate(req.params("show"), intParam(req, "year"), intParam(req, "month"), intParam(req, "day")), jsonResponse);
+        get("/api/v1/episode/:show/:year/:month/:day", (req, res) ->
+                episodeService.getByDate(req.params("show"),
+                        Integer.parseInt(req.params("year")),
+                        Integer.parseInt(req.params("month")),
+                        Integer.parseInt(req.params("day"))),
+                        jsonResponse);
         post("/api/v1/episode",
                 authorized(Role.ADMIN, (req, res, session) ->
                         episodeService.create(gson.fromJson(req.body(), EpisodeToSave.class))), jsonResponse);
