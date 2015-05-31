@@ -2,6 +2,7 @@ package hu.tilos.radio.backend.feed;
 
 import hu.tilos.radio.backend.Configuration;
 import hu.tilos.radio.backend.episode.EpisodeData;
+import hu.tilos.radio.backend.episode.util.DateFormatUtil;
 import hu.tilos.radio.backend.util.LocaleUtil;
 import net.anzix.jaxrs.atom.*;
 
@@ -21,24 +22,18 @@ import java.util.TimeZone;
  */
 public class FeedRenderer {
 
-    private static final SimpleDateFormat YYYY_DOT_MM_DOT_DD = new SimpleDateFormat("yyyy'.'MM'.'dd", LocaleUtil.TILOSLOCALE);
+    private static final SimpleDateFormat YYYY_DOT_MM_DOT_DD = DateFormatUtil.create("yyyy'.'MM'.'dd");
 
-    private static final SimpleDateFormat YYYY_PER_MM_PER_DD = new SimpleDateFormat("yyyy'/'MM'/'dd", LocaleUtil.TILOSLOCALE);
+    private static final SimpleDateFormat YYYY_PER_MM_PER_DD = DateFormatUtil.create("yyyy'/'MM'/'dd");
 
-    private static final SimpleDateFormat YYYYMMDD = new SimpleDateFormat("yyyyMMdd", LocaleUtil.TILOSLOCALE);
+    private static final SimpleDateFormat YYYYMMDD = DateFormatUtil.create("yyyyMMdd");
 
-    private static final SimpleDateFormat HHMMSS = new SimpleDateFormat("HHmmss", LocaleUtil.TILOSLOCALE);
+    private static final SimpleDateFormat HHMMSS = DateFormatUtil.create("HHmmss");
 
     @Inject
     @Configuration(name = "server.url")
     private String serverUrl;
 
-    public FeedRenderer() {
-        YYYY_DOT_MM_DOT_DD.setTimeZone(TimeZone.getTimeZone("CET"));
-        YYYY_PER_MM_PER_DD.setTimeZone(TimeZone.getTimeZone("CET"));
-        YYYYMMDD.setTimeZone(TimeZone.getTimeZone("CET"));
-        HHMMSS.setTimeZone(TimeZone.getTimeZone("CET"));
-    }
 
     public static String createDownloadURI(EpisodeData episode) {
         return "http://tilos.hu/mp3/tilos-" +

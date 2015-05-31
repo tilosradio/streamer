@@ -14,11 +14,11 @@ import java.util.TimeZone;
 @Named
 public class EpisodeUtil {
 
-    public static SimpleDateFormat YYYYMMDD = new SimpleDateFormat("yyyyMMdd", LocaleUtil.TILOSLOCALE);
+    public static SimpleDateFormat YYYYMMDD = DateFormatUtil.create("yyyyMMdd");
 
-    public static SimpleDateFormat HHMMSS = new SimpleDateFormat("HHmmss", LocaleUtil.TILOSLOCALE);
+    public static SimpleDateFormat HHMMSS = DateFormatUtil.create("HHmmss");
 
-    public static SimpleDateFormat YYYY_MM_DD = new SimpleDateFormat("yyyy'/'MM'/'dd", LocaleUtil.TILOSLOCALE);
+    public static SimpleDateFormat YYYY_MM_DD = DateFormatUtil.create("yyyy'/'MM'/'dd");
 
     @Inject
     protected PersistentEpisodeProvider persistentProvider;
@@ -28,12 +28,6 @@ public class EpisodeUtil {
 
     @Inject
     private Merger merger = new Merger();
-
-    public EpisodeUtil() {
-        YYYYMMDD.setTimeZone(TimeZone.getTimeZone("CET"));
-        HHMMSS.setTimeZone(TimeZone.getTimeZone("CET"));
-        YYYY_MM_DD.setTimeZone(TimeZone.getTimeZone("CET"));
-    }
 
     public List<EpisodeData> getEpisodeData(String showIdOrAlias, Date from, Date to) {
         List<EpisodeData> merged = merger.merge(persistentProvider.listEpisode(showIdOrAlias, from, to), scheduledProvider.listEpisode(showIdOrAlias, from, to));
