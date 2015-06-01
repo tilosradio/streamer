@@ -121,6 +121,7 @@ public class Starter {
         before((request, response) -> {
             System.out.println(request.uri());
         });
+        before((request, response) -> response.type("application/json"));
 
 
         JsonTransformer jsonResponse = new JsonTransformer(gson);
@@ -188,11 +189,11 @@ public class Starter {
         get("/api/v1/episode/:id", (req, res) ->
                 episodeService.get(req.params("id")), jsonResponse);
         get("/api/v1/episode/:show/:year/:month/:day", (req, res) ->
-                episodeService.getByDate(req.params("show"),
-                        Integer.parseInt(req.params("year")),
-                        Integer.parseInt(req.params("month")),
-                        Integer.parseInt(req.params("day"))),
-                        jsonResponse);
+                        episodeService.getByDate(req.params("show"),
+                                Integer.parseInt(req.params("year")),
+                                Integer.parseInt(req.params("month")),
+                                Integer.parseInt(req.params("day"))),
+                jsonResponse);
         post("/api/v1/episode",
                 authorized(Role.ADMIN, (req, res, session) ->
                         episodeService.create(gson.fromJson(req.body(), EpisodeToSave.class))), jsonResponse);
@@ -230,6 +231,10 @@ public class Starter {
             return feedService.weeklyFeed(req.params("type"));
         }, new FeedTransformer());
         get("/feed/show/itunes/:alias", (req, res) -> {
+            res.type("application/atom+xml");
+            return feedService.feed(req.params("alias"), null);
+        }, new FeedTransformer());
+        get("/feed/show/:alias", (req, res) -> {
             res.type("application/atom+xml");
             return feedService.feed(req.params("alias"), null);
         }, new FeedTransformer());
