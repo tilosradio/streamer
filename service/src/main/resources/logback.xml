@@ -10,20 +10,11 @@
   </appender>
   
   <appender name="LOGFILE" class="ch.qos.logback.core.FileAppender">
-    <file>${JBOSS_HOME}/tilos.log</file>
+    <file>/tmp/tilos.log</file>
     <append>true</append>
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>    
-  </appender>
-
-  <appender name="LOGFILE-ACCESS" class="ch.qos.logback.core.FileAppender">
-    <file>${JBOSS_HOME}/tilos-access.log</file>
-    <append>true</append>
-    <encoder>
-      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-    </encoder>
-    
   </appender>
 
   <appender name="ASYNCX" class="ch.qos.logback.classic.AsyncAppender">
@@ -35,7 +26,4 @@
     <appender-ref ref="STDOUT"/>
   </root>
 
-  <logger name="hu.tilos.radio.backend.LoggingFilter" leve="DEBUG">
-     <appender-ref ref="LOGFILE-ACCESS"/>
-  </logger>
 </configuration>
