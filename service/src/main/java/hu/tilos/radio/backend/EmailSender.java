@@ -1,24 +1,50 @@
 package hu.tilos.radio.backend;
 
-//import javax.annotation.Resource;
-//import javax.mail.Address;
-//import javax.mail.Message;
-//import javax.mail.Transport;
-//import javax.mail.internet.InternetAddress;
-//import javax.mail.internet.MimeMessage;
+
+import com.microtripit.mandrillapp.lutung.MandrillApi;
+import com.microtripit.mandrillapp.lutung.view.MandrillMessage;
+import com.microtripit.mandrillapp.lutung.view.MandrillMessageStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EmailSender {
 
+    private static Logger LOG = LoggerFactory.getLogger(EmailSender.class);
+
+    @Inject
+    @Configuration(name = "mandrill.key")
+    private String key;
+
+    public EmailSender() {
+    }
 
     public void send(Email email) {
         try {
-//            Message message = new MimeMessage(mailSessin);
-//            message.setFrom(new InternetAddress(email.getFrom()));
-//            Address toAddress = new InternetAddress(email.getTo());
-//            message.addRecipient(Message.RecipientType.TO, toAddress);
-//            message.setSubject(email.getSubject());
-//            message.setContent(email.getBody(), "text/plain");
-//            Transport.send(message);
+            MandrillApi api = new MandrillApi(key);
+            MandrillMessage message = new MandrillMessage();
+            message.setSubject(email.getSubject());
+            message.setText(email.getBody());
+
+            MandrillMessage.Recipient recipient = new MandrillMessage.Recipient();
+            recipient.setEmail(email.getTo());
+            List<MandrillMessage.Recipient> recipients = new ArrayList<>();
+            recipients.add(recipient);
+            message.setTo(recipients);
+            message.setFromEmail("noreply@tilos.hu");
+            message.setFromName("Tilos szervergép");
+
+            message.setPreserveRecipients(false);
+            MandrillMessageStatus[] statuses = api.messages().send(message, false);
+            for (MandrillMessageStatus status : statuses) {
+                if (!"send".equals(status)) {
+                }
+                LOG.debug(status.getStatus());
+                LOG.debug(status.getRejectReason());
+            }
         } catch (Exception e) {
             throw new RuntimeException("Can't send email", e);
         }
