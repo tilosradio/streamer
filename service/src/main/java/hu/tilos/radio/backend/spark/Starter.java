@@ -211,6 +211,9 @@ public class Starter {
         get("/api/v1/user/me", authorized(Role.USER, (req, res, session) ->
                 userService.me(session)), jsonResponse);
 
+        get("/api/int/user", authorized(Role.ADMIN, (req, res, session) ->
+                userService.list()), jsonResponse);
+
         post("/api/int/contribution", authorized(Role.ADMIN, (req, res, session) ->
                 contributionService.save(gson.fromJson(req.body(), ContributionToSave.class))), jsonResponse);
         delete("/api/int/contribution", authorized(Role.ADMIN, (req, res, session) ->
