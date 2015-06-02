@@ -93,7 +93,7 @@ public class Authorized implements Route {
             }
         }
 
-        return route.handle(request, response, null);
+        return route.handle(request, response, session);
     }
 
     private String resolvePath(String permission, Request request) {
