@@ -40,7 +40,7 @@ public class EmailSender {
             message.setPreserveRecipients(false);
             MandrillMessageStatus[] statuses = api.messages().send(message, false);
             for (MandrillMessageStatus status : statuses) {
-                if (!"send".equals(status)) {
+                if (!"sent".equals(status)) {
                     throw new RuntimeException("Can't send the email: " + status.getRejectReason());
                 }
                 LOG.debug(status.getStatus());
