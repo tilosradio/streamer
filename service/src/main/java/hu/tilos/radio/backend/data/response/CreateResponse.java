@@ -4,14 +4,14 @@ public class CreateResponse {
 
     private boolean success;
 
-    private String ref;
+    private String id;
 
     public CreateResponse(boolean success) {
         this.success = success;
     }
 
     public CreateResponse(String id) {
-        this.ref = id;
+        this.id = id;
         success = true;
     }
 
@@ -24,10 +24,10 @@ public class CreateResponse {
     }
 
     public String getId() {
-        return ref;
+        return id;
     }
 
     public void setId(String ref) {
-        this.ref = ref;
+        this.id = ref;
     }
 }
