@@ -195,10 +195,10 @@ public class Starter {
                                 Integer.parseInt(req.params("day"))),
                 jsonResponse);
         post("/api/v1/episode",
-                authorized(Role.ADMIN, (req, res, session) ->
+                authorized(Role.AUTHOR, (req, res, session) ->
                         episodeService.create(gson.fromJson(req.body(), EpisodeToSave.class))), jsonResponse);
         put("/api/v1/episode/:id",
-                authorized(Role.ADMIN, (req, res, session) ->
+                authorized(Role.AUTHOR, (req, res, session) ->
                         episodeService.update(req.params("id"), gson.fromJson(req.body(), EpisodeToSave.class))), jsonResponse);
 
         post("/api/v1/auth/password_reset",
