@@ -18,6 +18,8 @@ import hu.tilos.radio.backend.author.AuthorService;
 import hu.tilos.radio.backend.author.AuthorToSave;
 import hu.tilos.radio.backend.contribution.ContributionService;
 import hu.tilos.radio.backend.contribution.ContributionToSave;
+import hu.tilos.radio.backend.data.error.NotFoundException;
+import hu.tilos.radio.backend.data.response.ErrorResponse;
 import hu.tilos.radio.backend.episode.EpisodeService;
 import hu.tilos.radio.backend.episode.EpisodeToSave;
 import hu.tilos.radio.backend.feed.FeedService;
@@ -27,6 +29,7 @@ import hu.tilos.radio.backend.mix.MixService;
 import hu.tilos.radio.backend.search.SearchService;
 import hu.tilos.radio.backend.show.ShowService;
 import hu.tilos.radio.backend.show.ShowToSave;
+import hu.tilos.radio.backend.status.Radio;
 import hu.tilos.radio.backend.tag.TagService;
 import hu.tilos.radio.backend.text.TextService;
 import hu.tilos.radio.backend.text.TextToSave;
@@ -82,6 +85,9 @@ public class Starter {
     @Inject
     FeedService feedService;
 
+    @Inject
+    Radio statusService;
+
     private Gson gson;
 
     static Injector injector;
@@ -116,12 +122,19 @@ public class Starter {
                 })
                 .create();
 
+
         port(8080);
 
         before((request, response) -> {
             System.out.println(request.uri());
         });
         before((request, response) -> response.type("application/json"));
+
+
+        exception(NotFoundException.class, (e, request, response) -> {
+            response.status(404);
+            response.body(gson.toJson(new ErrorResponse(e.getMessage())));
+        });
 
 
         JsonTransformer jsonResponse = new JsonTransformer(gson);
@@ -224,6 +237,8 @@ public class Starter {
         });
 
         get("/api/v1/search/query", (req, res) -> searchService.search(req.queryParams("q")));
+
+        get("/api/v1/status/radio", (req, res) -> statusService.getLiveSources());
 
         get("/feed/weekly", (req, res) -> {
             res.type("application/atom+xml");

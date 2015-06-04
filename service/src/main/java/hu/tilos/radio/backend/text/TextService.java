@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import hu.tilos.radio.backend.data.error.NotFoundException;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.util.TextConverter;
@@ -47,7 +48,11 @@ public class TextService {
 
     public TextData get(String alias, String type) {
         checkType(type);
-        TextData page = mapper.map(db.getCollection(type).findOne(aliasOrId(alias)), TextData.class);
+        DBObject pageObject = db.getCollection(type).findOne(aliasOrId(alias));
+        if (pageObject == null) {
+            throw new NotFoundException("No such object");
+        }
+        TextData page = mapper.map(pageObject, TextData.class);
         page.setFormatted(textConverter.format(page.getFormat(), page.getContent()));
         return page;
     }

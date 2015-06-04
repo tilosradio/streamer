@@ -1,12 +1,8 @@
 package hu.tilos.radio.backend.text;
 
-
 import javax.validation.constraints.NotNull;
 
-
-
 public class TextToSave {
-
 
     @NotNull
     private String title;
