@@ -37,6 +37,7 @@ import hu.tilos.radio.backend.user.UserService;
 import org.dozer.DozerBeanMapper;
 import spark.Request;
 import spark.Response;
+import spark.ResponseTransformer;
 import spark.Route;
 
 import javax.validation.Validator;
@@ -44,6 +45,7 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.List;
 
 import static spark.Spark.*;
 
@@ -239,6 +241,18 @@ public class Starter {
         get("/api/v1/search/query", (req, res) -> searchService.search(req.queryParams("q")));
 
         get("/api/v1/status/radio", (req, res) -> statusService.getLiveSources());
+
+        get("/api/v1/status/radio.txt", (req, res) -> statusService.getLiveSources(), new ResponseTransformer() {
+            @Override
+            public String render(Object model) throws Exception {
+                StringBuilder result = new StringBuilder();
+                List<String> list = (List<String>) model;
+                for (String line : list) {
+                    result.append(line + "\n");
+                }
+                return result.toString();
+            }
+        });
 
         get("/feed/weekly", (req, res) -> {
             res.type("application/atom+xml");
