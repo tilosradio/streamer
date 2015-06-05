@@ -5,10 +5,10 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class RadioTest extends TestCase {
+public class StatusServiceTest extends TestCase {
     @Test
     public void test(){
-        List<String> liveSources = new Radio().getLiveSources();
+        List<String> liveSources = new StatusService().getLiveSources();
 
         System.out.println(liveSources);
     }

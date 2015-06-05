@@ -9,7 +9,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class Radio {
+public class StatusService {
 
     private Gson gson = new GsonBuilder().create();
 
@@ -22,7 +22,9 @@ public class Radio {
                     .map(source -> source.substring(source.lastIndexOf('/') + 1))
                     .filter(t -> !t.contains("digital"))
                     .filter(t -> !t.contains("tordas"))
-                    .filter(t -> !t.contains("tilos_"))
+                    .filter(t -> !t.contains("tilos_128"))
+                    .filter(t -> !t.contains("tilos_32"))
+                    .filter(t -> !t.contains("tilos_analog"))
                     .filter(t -> !t.equals("tilos"))
                     .collect(toList());
             return streams;

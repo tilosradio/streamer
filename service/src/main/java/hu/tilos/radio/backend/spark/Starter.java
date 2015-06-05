@@ -29,7 +29,7 @@ import hu.tilos.radio.backend.mix.MixService;
 import hu.tilos.radio.backend.search.SearchService;
 import hu.tilos.radio.backend.show.ShowService;
 import hu.tilos.radio.backend.show.ShowToSave;
-import hu.tilos.radio.backend.status.Radio;
+import hu.tilos.radio.backend.status.StatusService;
 import hu.tilos.radio.backend.tag.TagService;
 import hu.tilos.radio.backend.text.TextService;
 import hu.tilos.radio.backend.text.TextToSave;
@@ -88,7 +88,7 @@ public class Starter {
     FeedService feedService;
 
     @Inject
-    Radio statusService;
+    StatusService statusService;
 
     private Gson gson;
 
