@@ -30,9 +30,9 @@ import java.util.Scanner;
 
 
 @Path("/api/int/oauth")
-public class OAuthController {
+public class OauthService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OAuthController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OauthService.class);
 
     @Inject
     Session session;
@@ -63,16 +63,14 @@ public class OAuthController {
     @Transactional
     @POST
     @Path("/facebook")
-    public Response facebook(FacebookRequest request) {
+    public Map<String, String> facebook(FacebookRequest request) {
         try {
 
             String accessToken = getAccessToken(request.code);
 
             DBObject userResponse = saveOrGetUser(accessToken);
 
-            Map result = createToken(userResponse);
-
-            return Response.ok(result).build();
+            return createToken(userResponse);
 
 
         } catch (IOException e) {
@@ -81,7 +79,7 @@ public class OAuthController {
 
     }
 
-    private Map createToken(DBObject userResponse) {
+    private Map<String,String> createToken(DBObject userResponse) {
         Map result = new HashMap<>();
         Token jwtToken = new Token();
         jwtToken.setUsername((String) userResponse.get("username"));

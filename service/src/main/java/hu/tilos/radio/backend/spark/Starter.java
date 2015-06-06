@@ -16,8 +16,13 @@ import hu.tilos.radio.backend.auth.PasswordReset;
 import hu.tilos.radio.backend.auth.RegisterData;
 import hu.tilos.radio.backend.author.AuthorService;
 import hu.tilos.radio.backend.author.AuthorToSave;
+import hu.tilos.radio.backend.comment.CommentService;
+import hu.tilos.radio.backend.comment.CommentToSave;
+import hu.tilos.radio.backend.comment.CommentType;
 import hu.tilos.radio.backend.contribution.ContributionService;
 import hu.tilos.radio.backend.contribution.ContributionToSave;
+import hu.tilos.radio.backend.controller.internal.OauthService;
+import hu.tilos.radio.backend.data.error.AccessDeniedException;
 import hu.tilos.radio.backend.data.error.NotFoundException;
 import hu.tilos.radio.backend.data.response.ErrorResponse;
 import hu.tilos.radio.backend.episode.EpisodeService;
@@ -90,6 +95,12 @@ public class Starter {
     @Inject
     StatusService statusService;
 
+    @Inject
+    CommentService commentService;
+
+    @Inject
+    OauthService oauthService;
+
     private Gson gson;
 
     static Injector injector;
@@ -136,6 +147,16 @@ public class Starter {
         exception(NotFoundException.class, (e, request, response) -> {
             response.status(404);
             response.body(gson.toJson(new ErrorResponse(e.getMessage())));
+        });
+
+        exception(AccessDeniedException.class, (e, request, response) -> {
+            response.status(403);
+            response.body(gson.toJson(new ErrorResponse("Hibás user név vagy jelszó")));
+        });
+
+        exception(NullPointerException.class, (e, request, response) -> {
+            response.status(500);
+            response.body(gson.toJson(new ErrorResponse("Alkalmazás hiba történt, kérlek írj a webmester@tilos.hu címre.")));
         });
 
 
@@ -193,6 +214,29 @@ public class Starter {
                 tagService.get(req.params("tag")), jsonResponse);
         get("/api/v1/tag", (req, res) ->
                 tagService.list(intParam(req, "limit")), jsonResponse);
+
+        get("/api/v1/comment", (req, res) -> commentService.listAll(req.queryParams("status")), jsonResponse);
+
+
+        post("/api/v1/comment/:id/approve", authorized(Role.AUTHOR,
+                (req, res, session) -> commentService.approve(req.params("id")))
+                ,jsonResponse);
+
+        delete("/api/v1/comment/:id/approve", authorized(Role.AUTHOR,
+                (req, res, session) -> commentService.approve(req.params("id")))
+                , jsonResponse);
+
+        get("/api/v1/:type/:id/comment", authorized(Role.GUEST,
+                (req, res, session) -> commentService.list(CommentType.valueOf(req.params("type")), req.params("id"), session)), jsonResponse);
+
+        post("/api/v1/:type/:id/comment", authorized(Role.USER,
+                (req, res, session) -> commentService.create(
+                        CommentType.valueOf(req.params("type")),
+                        req.params("id"),
+                        gson.fromJson(req.body(), CommentToSave.class),
+                        session))
+                , jsonResponse);
+
 
 
         get("/api/v1/episode", (req, res) ->
@@ -276,6 +320,7 @@ public class Starter {
         }, new FeedTransformer());
 
 
+        post("/api/int/oauth/facebook", (req, res) -> oauthService.facebook(gson.fromJson(req.body(), OauthService.FacebookRequest.class)), jsonResponse);
     }
 
     private Object asM3u(Response res, String output) throws Exception {
