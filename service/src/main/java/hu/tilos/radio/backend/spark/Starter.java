@@ -159,6 +159,11 @@ public class Starter {
             response.body(gson.toJson(new ErrorResponse("Alkalmazás hiba történt, kérlek írj a webmester@tilos.hu címre.")));
         });
 
+        exception(IllegalArgumentException.class, (e, request, response) -> {
+            response.status(400);
+            response.body(gson.toJson(new ErrorResponse(e.getMessage())));
+        });
+
 
         JsonTransformer jsonResponse = new JsonTransformer(gson);
 
