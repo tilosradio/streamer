@@ -6,6 +6,16 @@ public class IceSource {
 
     private String listenurl;
 
+    private String server_description;
+
+    public String getServer_description() {
+        return server_description;
+    }
+
+    public void setServer_description(String server_description) {
+        this.server_description = server_description;
+    }
+
     public String getListenurl() {
         return listenurl;
     }

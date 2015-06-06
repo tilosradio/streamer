@@ -18,12 +18,14 @@ public class StatusService {
             IcecastResult icecastResult = gson.fromJson(urlReader, IcecastResult.class);
 
             List<String> streams = icecastResult.getIcestats().getSource().stream()
+                    .filter(t -> !t.getServer_description().contains("#NOA"))
                     .map(source -> source.getListenurl())
                     .map(source -> source.substring(source.lastIndexOf('/') + 1))
                     .filter(t -> !t.contains("digital"))
                     .filter(t -> !t.contains("tordas"))
                     .filter(t -> !t.contains("tilos_128"))
                     .filter(t -> !t.contains("tilos_32"))
+                    .filter(t -> !t.contains("szoke"))
                     .filter(t -> !t.contains("tilos_analog"))
                     .filter(t -> !t.equals("tilos"))
                     .collect(toList());
