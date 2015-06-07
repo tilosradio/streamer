@@ -43,7 +43,7 @@ public class Merger {
         while (it.hasNext()) {
             EpisodeData curr = it.next();
             if (prev != null) {
-                if (curr.getPlannedFrom().getTime() < prev.getPlannedTo().getTime()) {
+                if (prev.getPlannedTo() != null && curr.getPlannedFrom() != null && curr.getPlannedFrom().getTime() < prev.getPlannedTo().getTime()) {
                     if (prev.isExtra()) {
                         if (curr.getPlannedTo().getTime() <= prev.getPlannedTo().getTime()) {
                             it.remove();
