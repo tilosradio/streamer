@@ -1,7 +1,8 @@
-package hu.tilos.radio.backend.episode;
+package hu.tilos.radio.backend.episode.util;
 
 import com.github.fakemongo.junit.FongoRule;
 import hu.tilos.radio.backend.GuiceRunner;
+import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.episode.util.ScheduledEpisodeProvider;
 import org.junit.Assert;
 import org.junit.Rule;

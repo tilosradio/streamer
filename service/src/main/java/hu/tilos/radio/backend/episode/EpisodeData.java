@@ -31,6 +31,8 @@ public class EpisodeData {
 
     private String m3uUrl;
 
+    private boolean extra;
+
     private Set<TagData> tags = new HashSet<>();
 
     /**
@@ -66,7 +68,7 @@ public class EpisodeData {
     }
 
     private void updateUrl() {
-        if (plannedFrom !=null && getShow()!=null) {
+        if (plannedFrom != null && getShow() != null) {
             url = "/episode/" + getShow().getAlias() + "/" + EpisodeUtil.YYYY_MM_DD.format(plannedFrom);
         } else {
             url = "";
@@ -136,5 +138,23 @@ public class EpisodeData {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public boolean isExtra() {
+        return extra;
+    }
+
+    public void setExtra(boolean extra) {
+        this.extra = extra;
+    }
+
+    @Override
+    public String toString() {
+        return "EpisodeData{" +
+                "plannedFrom=" + plannedFrom +
+                ", plannedTo=" + plannedTo +
+                ", show=" + (show != null ? show.getName() : "null") +
+                ", text=" + (text != null ? text.getTitle() : "null") +
+                '}';
     }
 }

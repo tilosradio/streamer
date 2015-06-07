@@ -6,27 +6,62 @@ import java.util.*;
 
 public class Merger {
 
-    public List<EpisodeData> merge(List<EpisodeData> first, List<EpisodeData> second) {
+    public List<EpisodeData> merge(List<EpisodeData>... episodeLists) {
         List<EpisodeData> result = new ArrayList<>();
-        result.addAll(first);
-        result.addAll(second);
+        for (List<EpisodeData> episodeList : episodeLists) {
+            result.addAll(episodeList);
+        }
+
         Collections.sort(result, new Comparator<EpisodeData>() {
             @Override
             public int compare(EpisodeData o1, EpisodeData o2) {
                 int val = o1.getPlannedFrom().compareTo(o2.getPlannedFrom());
                 if (val != 0) return val;
-                if (o1.isPersistent() != o2.isPersistent()) {
-                    if (o1.isPersistent()) {
-                        return -1;
-                    } else {
-                        return 1;
-                    }
+                if (o1.isExtra()) {
+                    return -1;
                 }
-
+                if (o2.isExtra()) {
+                    return 1;
+                }
+                if (o1.isPersistent()) {
+                    return -1;
+                }
+                if (o2.isPersistent()) {
+                    return 1;
+                }
                 return 0;
             }
         });
+        adjustTimes(result);
+        removeDuplicates(result);
+        return result;
+    }
 
+    public void adjustTimes(List<EpisodeData> result) {
+        EpisodeData prev = null;
+        Iterator<EpisodeData> it = result.iterator();
+        while (it.hasNext()) {
+            EpisodeData curr = it.next();
+            if (prev != null) {
+                if (curr.getPlannedFrom().getTime() < prev.getPlannedTo().getTime()) {
+                    if (prev.isExtra()) {
+                        if (curr.getPlannedTo().getTime() <= prev.getPlannedTo().getTime()) {
+                            it.remove();
+                            //no prev=curr please
+                            continue;
+                        } else {
+                            curr.setPlannedFrom(prev.getPlannedTo());
+                        }
+                    } else if (curr.isExtra()) {
+                        prev.setPlannedTo(curr.getPlannedFrom());
+                    }
+                }
+            }
+            prev = curr;
+        }
+    }
+
+    private void removeDuplicates(List<EpisodeData> result) {
         EpisodeData prev = null;
         Iterator<EpisodeData> it = result.iterator();
         while (it.hasNext()) {
@@ -36,7 +71,6 @@ public class Merger {
             }
             prev = curr;
         }
-        return result;
     }
 
     /**

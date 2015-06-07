@@ -1,15 +1,13 @@
 package hu.tilos.radio.backend.episode.util;
 
 import hu.tilos.radio.backend.episode.EpisodeData;
-import hu.tilos.radio.backend.util.LocaleUtil;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 @Named
 public class EpisodeUtil {
@@ -27,30 +25,36 @@ public class EpisodeUtil {
     private ScheduledEpisodeProvider scheduledProvider;
 
     @Inject
+    private ExtraEpisodeProvider extraProvider;
+
+    @Inject
     private Merger merger = new Merger();
 
     public List<EpisodeData> getEpisodeData(String showIdOrAlias, Date from, Date to) {
-        List<EpisodeData> merged = merger.merge(persistentProvider.listEpisode(showIdOrAlias, from, to), scheduledProvider.listEpisode(showIdOrAlias, from, to));
+        List<EpisodeData> merged = merger.merge(
+                persistentProvider.listEpisode(showIdOrAlias, from, to),
+                scheduledProvider.listEpisode(showIdOrAlias, from, to),
+                extraProvider.listEpisode(from, to)
+        );
         for (EpisodeData episode : merged) {
             linkGenerator(episode);
         }
+        merged = filterToShow(showIdOrAlias, merged);
         return merged;
     }
 
-    public PersistentEpisodeProvider getPersistentProvider() {
-        return persistentProvider;
-    }
-
-    public void setPersistentProvider(PersistentEpisodeProvider persistentProvider) {
-        this.persistentProvider = persistentProvider;
-    }
-
-    public ScheduledEpisodeProvider getScheduledProvider() {
-        return scheduledProvider;
-    }
-
-    public void setScheduledProvider(ScheduledEpisodeProvider scheduledProvider) {
-        this.scheduledProvider = scheduledProvider;
+    private List<EpisodeData> filterToShow(String showIdOrAlias, List<EpisodeData> original) {
+        if (showIdOrAlias != null) {
+            return original.stream().filter(episodeData ->
+                            episodeData.getShow() != null &&
+                                    (
+                                            showIdOrAlias.equals(episodeData.getShow().getAlias())
+                                                    || showIdOrAlias.equals(episodeData.getShow().getId())
+                                    )
+            ).collect(Collectors.toList());
+        } else {
+            return original;
+        }
     }
 
     public static EpisodeData linkGenerator(EpisodeData episode) {

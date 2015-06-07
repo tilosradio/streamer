@@ -19,6 +19,13 @@ public class TextData {
 
     private String formatted;
 
+    public TextData() {
+    }
+
+    public TextData(String title) {
+        this.title = title;
+    }
+
     public String getFormatted() {
         return formatted;
     }
