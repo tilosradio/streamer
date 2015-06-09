@@ -44,5 +44,21 @@
             </root>
         </then>
     </if>
+    <if condition='p("tilos.env").contains("prod")'>
+        <then>
+            <appender name="LE" class="com.logentries.logback.LogentriesAppender">
+                <Debug>False</Debug>
+                <Token>${logentries.token}</Token>
+                <Ssl>False</Ssl>
+                <facility>USER</facility>
+                <layout>
+                    <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                </layout>
+            </appender>
+            <root>
+                <appender-ref ref="LE"/>
+            </root>
+        </then>
+    </if>
 
 </configuration>
