@@ -40,6 +40,8 @@ import hu.tilos.radio.backend.text.TextService;
 import hu.tilos.radio.backend.text.TextToSave;
 import hu.tilos.radio.backend.user.UserService;
 import org.dozer.DozerBeanMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
@@ -55,6 +57,8 @@ import java.util.List;
 import static spark.Spark.*;
 
 public class Starter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Starter.class);
 
     @Inject
     AuthorService authorService;
@@ -139,10 +143,9 @@ public class Starter {
         port(8080);
 
         before((request, response) -> {
-            System.out.println(request.uri());
+            LOG.info(request.uri());
         });
         before((request, response) -> response.type("application/json"));
-
 
         exception(NotFoundException.class, (e, request, response) -> {
             response.status(404);
