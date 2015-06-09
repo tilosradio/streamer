@@ -124,6 +124,8 @@ public class Starter {
     }
 
     private void run() {
+        LOG.info("Starting new deployment");
+        
         gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
                     @Override
