@@ -264,6 +264,8 @@ public class Starter {
                 episodeService.next(), jsonResponse);
         get("/api/v1/episode/last", (req, res) ->
                 episodeService.last(), jsonResponse);
+        get("/api/v1/episode/lastWeek", (req, res) ->
+                episodeService.lastWeek(), jsonResponse);
         get("/api/v1/episode/:id", (req, res) ->
                 episodeService.get(req.params("id")), jsonResponse);
         get("/api/v1/episode/:show/:year/:month/:day", (req, res) ->

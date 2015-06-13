@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
@@ -90,6 +91,7 @@ public class EpisodeService {
         BasicDBObject query = new BasicDBObject();
         query.put("plannedFrom", new BasicDBObject("$lt", end));
         query.put("plannedTo", new BasicDBObject("$gt", start));
+        query.put("text.content", new BasicDBObject("$exists", true));
 
         DBCursor episodes = db.getCollection("episode").find(query).sort(new BasicDBObject("plannedFrom", 1)).limit(5);
         List<EpisodeData> result = new ArrayList<>();
@@ -101,6 +103,24 @@ public class EpisodeService {
         return result;
     }
 
+
+    public List<EpisodeData> lastWeek() {
+        Date now = new Date();
+        Date weekAgo = new Date();
+        weekAgo.setTime(now.getTime() - (long) 604800000L);
+
+        List<EpisodeData> episodes = episodeUtil.getEpisodeData(null, weekAgo, now);
+
+        Collections.sort(episodes, new Comparator<EpisodeData>() {
+            @Override
+            public int compare(EpisodeData episodeData, EpisodeData episodeData2) {
+                return episodeData2.getPlannedFrom().compareTo(episodeData.getPlannedFrom());
+            }
+        });
+
+        return episodes.stream().filter(episode -> episode.getText() != null && episode.getText().getTitle() != null && episode.getText().getTitle().length() > 1)
+                .collect(Collectors.toList());
+    }
 
     public List<EpisodeData> last() {
         Date start = new Date();

@@ -92,6 +92,8 @@ public class EpisodeUtil {
                         text.setTitle(bookmark.getTitle());
                         episodeData.setText(text);
                         episodeData.setOriginal(false);
+                        episodeData.setRealFrom(bookmark.getFrom());
+                        episodeData.setRealTo(bookmark.getTo());
                     }
                     return episodeData;
                 }
