@@ -4,21 +4,6 @@
   "plannedTo": {"$date": "2014-04-04T10:00:00.000Z"},
   "realTo": {"$date": "2014-04-04T10:00:00.000Z"},
   "realFrom": {"$date": "2014-04-04T08:00:00.000Z"},
-  "bookmarks": [
-    {
-      "from": {"$date": "2014-04-04T08:12:00.000Z"},
-      "to": {"$date": "2014-04-04T08:22:00.000Z"},
-      "title": "Remek interjú a három fejű sárkánnyal",
-      "created": {"$date": "2014-05-04T08:22:00.000Z"},
-      "creator" : {
-        "nick": "bela",
-        "ref": {
-          "$ref": "user",
-          "$id": "<REF1>"
-        }
-      }
-    }
-  ],
   "show": {
     "name": "3. utas",
     "alias": "3utas",

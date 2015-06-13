@@ -49,9 +49,7 @@ public class BookmarkService {
         creator.put("username", session.getCurrentUser().getUsername());
         bookmark.put("creator", creator);
 
-        BasicDBObject push = new BasicDBObject("$push", new BasicDBObject("bookmarks", bookmark));
-
-        db.getCollection("episode").update(episodeSelector, push);
+        db.getCollection("bookmark").insert(bookmark);
         return new CreateResponse(true);
     }
 }

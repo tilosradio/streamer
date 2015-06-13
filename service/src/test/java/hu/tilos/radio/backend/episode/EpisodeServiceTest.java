@@ -75,6 +75,7 @@ public class EpisodeServiceTest {
         //given
         String showId = loadTo(fongoRule, "show", "show-3utas.json");
         String userId = loadTo(fongoRule, "user", "user-noauthor.json");
+        loadTo(fongoRule, "bookmark", "bookmark1.json", userId);
         loadTo(fongoRule, "episode", "episode-withbookmark.json", userId, showId);
 
         //when

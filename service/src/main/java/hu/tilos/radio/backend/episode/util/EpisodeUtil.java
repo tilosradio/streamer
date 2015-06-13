@@ -10,8 +10,10 @@ import hu.tilos.radio.backend.text.TextData;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Named
@@ -47,10 +49,48 @@ public class EpisodeUtil {
         for (EpisodeData episode : merged) {
             linkGenerator(episode);
         }
+        fillTheBookmarks(from, to, merged);
         merged = filterToShow(showIdOrAlias, merged);
-        merged = episodeTextFromBookmark(merged);
         persistEpisodeFromThePast(merged);
+        merged = episodeTextFromBookmark(merged);
         return merged;
+    }
+
+    private void fillTheBookmarks(Date from, Date to, List<EpisodeData> merged) {
+        BasicDBObject query = new BasicDBObject();
+        query.put("from", new BasicDBObject("$lt", to));
+        query.put("to", new BasicDBObject("$gt", from));
+        List<BookmarkData> bookmarks = db.getCollection("bookmark").find(query).toArray().stream().map(dbOject -> {
+            BookmarkData d = new BookmarkData();
+            d.setFrom((Date) dbOject.get("from"));
+            d.setTo((Date) dbOject.get("to"));
+            d.setTitle((String) dbOject.get("title"));
+            return d;
+        }).collect(Collectors.toList());
+
+        bookmarks.stream().forEach(bookmark -> addBookmarkTo(bookmark, merged));
+
+    }
+
+    private void addBookmarkTo(BookmarkData bookmark, List<EpisodeData> merged) {
+        Optional<EpisodeData> episode = merged.stream().max(new Comparator<EpisodeData>() {
+            @Override
+            public int compare(EpisodeData e1, EpisodeData e2) {
+                return getIntersection(e1, bookmark).compareTo(getIntersection(e2, bookmark));
+            }
+        });
+        if (episode.isPresent()) {
+            episode.get().getBookmarks().add(bookmark);
+        }
+
+    }
+
+    private Long getIntersection(EpisodeData episodeData, BookmarkData bookmark) {
+        if (episodeData.getRealTo().after(bookmark.getFrom()) && bookmark.getTo().after(episodeData.getRealFrom())) {
+            return (Math.min(episodeData.getRealTo().getTime(), bookmark.getTo().getTime()) - Math.max(episodeData.getRealFrom().getTime(), bookmark.getFrom().getTime())) / 1000;
+        } else {
+            return Long.valueOf(0);
+        }
     }
 
 
