@@ -55,5 +55,27 @@ public class CommentServiceTest {
         assertThat(list.get(0).getComment(), equalTo("mi ez a fos zene"));
     }
 
+    @Test
+    public void listWithoutUser() {
+        //given
+        loadTo(fongoRule, "comment", "comment-list-comment1.json");
+
+        Session session = new Session();
+        DozerFactory factory = new DozerFactory();
+        factory.init();
+
+        controller = new CommentService();
+        controller.db = fongoRule.getDB();
+        controller.modelMapper = factory.mapperFactory();
+
+        //when
+        List<CommentData> list = controller.list(CommentType.EPISODE, "1", session);
+
+        //then
+        assertThat(list.size(), equalTo(1));
+        assertThat(list.get(0).getAuthor(), Matchers.notNullValue());
+        assertThat(list.get(0).getComment(), equalTo("mi ez a fos zene"));
+    }
+
 
 }

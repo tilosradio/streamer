@@ -34,11 +34,14 @@ public class CommentService {
         query.put("type", type.ordinal());
         query.put("identifier", id);
 
-        BasicDBList or = new BasicDBList();
-        or.add(new BasicDBObject("status", CommentStatus.ACCEPTED.ordinal()));
-        or.add(new BasicDBObject("author.ref", new DBRef(db, "user", session.getCurrentUser().getId())));
-
-        query.put("$or", or);
+        if (session != null && session.getCurrentUser() != null) {
+            BasicDBList or = new BasicDBList();
+            or.add(new BasicDBObject("status", CommentStatus.ACCEPTED.ordinal()));
+            or.add(new BasicDBObject("author.ref", new DBRef(db, "user", session.getCurrentUser().getId())));
+            query.put("$or", or);
+        } else {
+            query.put("status", CommentStatus.ACCEPTED.ordinal());
+        }
 
         DBCursor comments = db.getCollection("comment").find(query);
 
