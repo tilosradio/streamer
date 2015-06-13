@@ -20,6 +20,13 @@ public class UserInfo {
 
     private List<String> permissions = new ArrayList<>();
 
+    public UserInfo() {
+    }
+
+    public UserInfo(String id, String username) {
+        this.id = id;
+        this.username = username;
+    }
 
     public void setId(String id) {
         this.id = id;

@@ -4,7 +4,9 @@ import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import hu.tilos.radio.backend.GuiceRunner;
+import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.episode.util.DateFormatUtil;
+import hu.tilos.radio.backend.user.UserInfo;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.dozer.DozerBeanMapper;
@@ -38,6 +40,7 @@ public class BookmarkServiceTest{
     public void testGet() throws Exception {
         //given
         String episodeId = loadTo(fongoRule, "episode", "episode-episode2.json");
+        String userId = loadTo(fongoRule, "user", "user-1.json");
 
         BookmarkToSave bts = new BookmarkToSave();
         bts.setFrom(DateFormatUtil.YYYY_MM_DD_HHMM.parse("2014-10-12 10:00"));
@@ -46,7 +49,7 @@ public class BookmarkServiceTest{
         bts.setTitle("asd");
 
         //when
-        service.create(session, episodeId, bts);
+        service.create(new Session(new UserInfo(userId, "asd")), episodeId, bts);
 
         //then
         DBObject episode = fongoRule.getDB().getCollection("episode").findOne(new BasicDBObject("_id", new ObjectId(episodeId)));

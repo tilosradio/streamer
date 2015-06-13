@@ -9,6 +9,12 @@ import javax.enterprise.context.RequestScoped;
  */
 @RequestScoped
 public class Session {
+    public Session() {
+    }
+
+    public Session(UserInfo currentUser) {
+        this.currentUser = currentUser;
+    }
 
     private UserInfo currentUser;
 
