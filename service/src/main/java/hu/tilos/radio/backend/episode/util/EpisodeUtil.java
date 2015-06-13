@@ -69,8 +69,8 @@ public class EpisodeUtil {
         newMongoOBject.put("created", new Date());
         newMongoOBject.put("plannedFrom", episode.getPlannedFrom());
         newMongoOBject.put("plannedTo", episode.getPlannedTo());
-        newMongoOBject.put("realFrom", episode.getPlannedFrom());
-        newMongoOBject.put("realTo", episode.getPlannedTo());
+        newMongoOBject.put("realFrom", episode.getRealFrom());
+        newMongoOBject.put("realTo", episode.getRealTo()));
 
         BasicDBObject show = new BasicDBObject();
         show.put("alias", episode.getShow().getAlias());
