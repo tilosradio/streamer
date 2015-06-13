@@ -284,7 +284,7 @@
 
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.episode.BookmarkData</class-b>
+        <class-b>hu.tilos.radio.backend.bookmark.BookmarkData</class-b>
 
     </mapping>
 

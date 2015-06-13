@@ -50,6 +50,7 @@ public class EpisodeUtilTest {
         Assert.assertNotNull(episodes.get(1).getShow());
         Assert.assertNotNull(episodes.get(1).getText());
         Assert.assertEquals("Jo musor", episodes.get(1).getText().getTitle());
+        Assert.assertEquals(6, fongoRule.getDB().getCollection("episode").find().count());
 
 
     }

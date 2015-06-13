@@ -17,17 +17,22 @@ public class Merger {
             public int compare(EpisodeData o1, EpisodeData o2) {
                 int val = o1.getPlannedFrom().compareTo(o2.getPlannedFrom());
                 if (val != 0) return val;
-                if (o1.isExtra()) {
-                    return -1;
+
+                if (o1.isExtra() != o2.isExtra()) {
+                    if (o1.isExtra()) {
+                        return -1;
+                    } else if (o2.isExtra()) {
+                        return 1;
+                    }
                 }
-                if (o2.isExtra()) {
-                    return 1;
-                }
-                if (o1.isPersistent()) {
-                    return -1;
-                }
-                if (o2.isPersistent()) {
-                    return 1;
+
+                if (o1.isPersistent() != o2.isPersistent()) {
+                    if (o1.isPersistent()) {
+                        return -1;
+                    }
+                    if (o2.isPersistent()) {
+                        return 1;
+                    }
                 }
                 return 0;
             }

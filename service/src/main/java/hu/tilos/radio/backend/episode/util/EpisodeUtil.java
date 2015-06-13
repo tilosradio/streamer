@@ -1,6 +1,9 @@
 package hu.tilos.radio.backend.episode.util;
 
-import hu.tilos.radio.backend.episode.BookmarkData;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBRef;
+import hu.tilos.radio.backend.bookmark.BookmarkData;
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.text.TextData;
 
@@ -32,6 +35,9 @@ public class EpisodeUtil {
     @Inject
     private Merger merger = new Merger();
 
+    @Inject
+    DB db;
+
     public List<EpisodeData> getEpisodeData(String showIdOrAlias, Date from, Date to) {
         List<EpisodeData> merged = merger.merge(
                 persistentProvider.listEpisode(showIdOrAlias, from, to),
@@ -43,7 +49,39 @@ public class EpisodeUtil {
         }
         merged = filterToShow(showIdOrAlias, merged);
         merged = episodeTextFromBookmark(merged);
+        persistEpisodeFromThePast(merged);
         return merged;
+    }
+
+
+    private boolean persistEpisodeFromThePast(List<EpisodeData> merged) {
+        boolean persisted = false;
+        for (EpisodeData episode : merged) {
+            if (!episode.isPersistent() && episode.getPlannedFrom().getTime() < new Date().getTime()) {
+                generateEpisode(episode);
+            }
+        }
+        return persisted;
+    }
+
+    private void generateEpisode(EpisodeData episode) {
+        BasicDBObject newMongoOBject = new BasicDBObject();
+        newMongoOBject.put("created", new Date());
+        newMongoOBject.put("plannedFrom", episode.getPlannedFrom());
+        newMongoOBject.put("plannedTo", episode.getPlannedTo());
+        newMongoOBject.put("realFrom", episode.getPlannedFrom());
+        newMongoOBject.put("realTo", episode.getPlannedTo());
+
+        BasicDBObject show = new BasicDBObject();
+        show.put("alias", episode.getShow().getAlias());
+        show.put("name", episode.getShow().getName());
+        show.put("ref", new DBRef(db, "show", episode.getShow().getId()));
+
+        episode.setPersistent(true);
+
+        newMongoOBject.put("show", show);
+
+        db.getCollection("episode").insert(newMongoOBject);
     }
 
     private List<EpisodeData> episodeTextFromBookmark(List<EpisodeData> original) {
@@ -53,6 +91,7 @@ public class EpisodeUtil {
                         BookmarkData bookmark = episodeData.getBookmarks().iterator().next();
                         text.setTitle(bookmark.getTitle());
                         episodeData.setText(text);
+                        episodeData.setOriginal(false);
                     }
                     return episodeData;
                 }

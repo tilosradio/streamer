@@ -16,6 +16,8 @@ import hu.tilos.radio.backend.auth.PasswordReset;
 import hu.tilos.radio.backend.auth.RegisterData;
 import hu.tilos.radio.backend.author.AuthorService;
 import hu.tilos.radio.backend.author.AuthorToSave;
+import hu.tilos.radio.backend.bookmark.BookmarkService;
+import hu.tilos.radio.backend.bookmark.BookmarkToSave;
 import hu.tilos.radio.backend.comment.CommentService;
 import hu.tilos.radio.backend.comment.CommentToSave;
 import hu.tilos.radio.backend.comment.CommentType;
@@ -105,6 +107,9 @@ public class Starter {
     @Inject
     OauthService oauthService;
 
+    @Inject
+    BookmarkService bookmarkService;
+
     private Gson gson;
 
     static Injector injector;
@@ -160,11 +165,13 @@ public class Starter {
         });
 
         exception(NullPointerException.class, (e, request, response) -> {
+            LOG.error("Error", e);
             response.status(500);
             response.body(gson.toJson(new ErrorResponse("Alkalmazás hiba történt, kérlek írj a webmester@tilos.hu címre.")));
         });
 
         exception(IllegalArgumentException.class, (e, request, response) -> {
+            LOG.error("Illegal argument", e);
             response.status(400);
             response.body(gson.toJson(new ErrorResponse(e.getMessage())));
         });
@@ -230,7 +237,7 @@ public class Starter {
 
         post("/api/v1/comment/:id/approve", authorized(Role.AUTHOR,
                 (req, res, session) -> commentService.approve(req.params("id")))
-                ,jsonResponse);
+                , jsonResponse);
 
         delete("/api/v1/comment/:id/approve", authorized(Role.AUTHOR,
                 (req, res, session) -> commentService.approve(req.params("id")))
@@ -248,6 +255,8 @@ public class Starter {
                 , jsonResponse);
 
 
+        post("/api/v1/episode/:id/bookmark", authorized(Role.ADMIN, (req, res, session) ->
+                bookmarkService.create(session, req.params("id"), gson.fromJson(req.body(), BookmarkToSave.class))), jsonResponse);
 
         get("/api/v1/episode", (req, res) ->
                 episodeService.listEpisodes(longParam(req, "start"), longParam(req, "end")), jsonResponse);

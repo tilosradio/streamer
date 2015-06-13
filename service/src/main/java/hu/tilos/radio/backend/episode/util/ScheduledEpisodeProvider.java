@@ -1,9 +1,11 @@
 package hu.tilos.radio.backend.episode.util;
 
 import com.mongodb.*;
+import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.types.SchedulingSimple;
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.show.ShowSimple;
+import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
@@ -52,10 +54,10 @@ public class ScheduledEpisodeProvider {
             }
 
         }
-
         return result;
 
     }
+
 
     private List<EpisodeData> calculateEpisodes(SchedulingSimple s, ShowSimple show, Date from, Date to) {
 

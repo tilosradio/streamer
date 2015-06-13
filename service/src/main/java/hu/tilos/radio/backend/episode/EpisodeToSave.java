@@ -10,7 +10,7 @@ import java.util.List;
 
 public class EpisodeToSave {
 
-    List<TagData> tags;
+    private List<TagData> tags;
 
     private Date plannedFrom;
 

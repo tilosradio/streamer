@@ -1,12 +1,12 @@
 package hu.tilos.radio.backend.episode;
 
 
+import hu.tilos.radio.backend.bookmark.BookmarkData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.show.ShowSimple;
 import hu.tilos.radio.backend.tag.TagData;
 import hu.tilos.radio.backend.text.TextData;
 
-import java.awt.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,6 +33,8 @@ public class EpisodeData {
     private String m3uUrl;
 
     private boolean extra;
+
+    private boolean original = true;
 
     private Set<TagData> tags = new HashSet<>();
 
@@ -167,5 +169,13 @@ public class EpisodeData {
 
     public void setBookmarks(Set<BookmarkData> bookmarks) {
         this.bookmarks = bookmarks;
+    }
+
+    public boolean isOriginal() {
+        return original;
+    }
+
+    public void setOriginal(boolean original) {
+        this.original = original;
     }
 }

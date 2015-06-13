@@ -7,6 +7,8 @@ import java.util.TimeZone;
 
 public class DateFormatUtil {
 
+    public static final SimpleDateFormat YYYY_MM_DD_HHMM = create("yyyy-MM-dd HH:mm");
+
     public static SimpleDateFormat create(String pattern) {
         SimpleDateFormat format = new SimpleDateFormat(pattern, LocaleUtil.TILOSLOCALE);
         format.setTimeZone(TimeZone.getTimeZone("CET"));

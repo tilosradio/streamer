@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.episode;
+package hu.tilos.radio.backend.bookmark;
 
 import hu.tilos.radio.backend.data.types.UserLink;
 
