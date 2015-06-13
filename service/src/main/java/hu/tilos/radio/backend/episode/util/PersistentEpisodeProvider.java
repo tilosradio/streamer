@@ -2,7 +2,6 @@ package hu.tilos.radio.backend.episode.util;
 
 
 import com.mongodb.*;
-import hu.tilos.radio.backend.data.types.BookmarkData;
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.text.TextData;
 import org.dozer.DozerBeanMapper;
@@ -46,13 +45,6 @@ public class PersistentEpisodeProvider {
             EpisodeData d = mapper.map(e, EpisodeData.class);
             d.setPersistent(true);
 
-//TODO
-//            if (d.getPlannedTo() == d.getRealTo() || d.getText() == null) {
-//                Query bookmarkQuery = entityManager.createQuery("SELECT b FROM Bookmark b WHERE b.episode.id = :id").setParameter("id", d.getId());
-//                List<Bookmark> bookmarks = bookmarkQuery.getResultList();
-//                Bookmark bookmark = chooseTheBestBookmark(bookmarks);
-//                useBookmarkForEpisodeText(d, bookmark);
-//            }
             if (d.getPlannedTo() == d.getRealTo()) {
                 //todo
                 Date nd = new Date();
@@ -66,25 +58,7 @@ public class PersistentEpisodeProvider {
 
     }
 
-    private void useBookmarkForEpisodeText(EpisodeData episodeData, BookmarkData bookmark) {
-        if (bookmark != null) {
-            TextData textData = new TextData();
-            textData.setTitle(bookmark.getTitle());
-            episodeData.setText(textData);
-        }
-    }
 
-    private BookmarkData chooseTheBestBookmark(List<BookmarkData> bookmarks) {
-        if (bookmarks.size() == 0) {
-            return null;
-        }
-        for (BookmarkData bookmark : bookmarks) {
-            if (bookmark.isSelected()) {
-                return bookmark;
-            }
-        }
-        return null;
-    }
 
 
     public void setDb(DB db) {

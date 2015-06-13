@@ -71,6 +71,22 @@ public class EpisodeServiceTest {
     }
 
     @Test
+    public void testGetByDateWithBookmarks() throws Exception {
+        //given
+        String showId = loadTo(fongoRule, "show", "show-3utas.json");
+        String userId = loadTo(fongoRule, "user", "user-noauthor.json");
+        loadTo(fongoRule, "episode", "episode-withbookmark.json", userId, showId);
+
+        //when
+        EpisodeData episode = controller.getByDate("3utas", 2014, 04, 04);
+
+        //then
+        Assert.assertEquals(1, episode.getBookmarks().size());
+        Assert.assertEquals("Remek interjú a három fejű sárkánnyal", episode.getText().getTitle());
+    }
+
+
+    @Test
     public void testCreateEpisode() throws Exception {
         //given
         String showId = loadTo(fongoRule, "show", "show-3utas.json");

@@ -6,6 +6,7 @@ import hu.tilos.radio.backend.show.ShowSimple;
 import hu.tilos.radio.backend.tag.TagData;
 import hu.tilos.radio.backend.text.TextData;
 
+import java.awt.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,6 +35,8 @@ public class EpisodeData {
     private boolean extra;
 
     private Set<TagData> tags = new HashSet<>();
+
+    private Set<BookmarkData> bookmarks = new HashSet<>();
 
     /**
      * false if generated from scheduling true if comes from real record.
@@ -156,5 +159,13 @@ public class EpisodeData {
                 ", show=" + (show != null ? show.getName() : "null") +
                 ", text=" + (text != null ? text.getTitle() : "null") +
                 '}';
+    }
+
+    public Set<BookmarkData> getBookmarks() {
+        return bookmarks;
+    }
+
+    public void setBookmarks(Set<BookmarkData> bookmarks) {
+        this.bookmarks = bookmarks;
     }
 }

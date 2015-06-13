@@ -8,12 +8,13 @@
     {
       "from": {"$date": "2014-04-04T08:12:00.000Z"},
       "to": {"$date": "2014-04-04T08:22:00.000Z"},
-      "description": "Remek interjú a három fejű sárkánnyal",
-      "author" : {
+      "title": "Remek interjú a három fejű sárkánnyal",
+      "created": {"$date": "2014-05-04T08:22:00.000Z"},
+      "creator" : {
         "nick": "bela",
         "ref": {
           "$ref": "user",
-          "$id": "<REF2>"
+          "$id": "<REF1>"
         }
       }
     }
@@ -23,7 +24,7 @@
     "alias": "3utas",
     "ref": {
       "$ref": "show",
-      "$id": "<REF1>"
+      "$id": "<REF2>"
     }
   }
 }

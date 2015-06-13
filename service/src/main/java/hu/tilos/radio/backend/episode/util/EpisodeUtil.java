@@ -1,6 +1,8 @@
 package hu.tilos.radio.backend.episode.util;
 
+import hu.tilos.radio.backend.episode.BookmarkData;
 import hu.tilos.radio.backend.episode.EpisodeData;
+import hu.tilos.radio.backend.text.TextData;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,7 +42,21 @@ public class EpisodeUtil {
             linkGenerator(episode);
         }
         merged = filterToShow(showIdOrAlias, merged);
+        merged = episodeTextFromBookmark(merged);
         return merged;
+    }
+
+    private List<EpisodeData> episodeTextFromBookmark(List<EpisodeData> original) {
+        return original.stream().map(episodeData -> {
+                    if (episodeData.getText() == null && episodeData.getBookmarks().size() > 0) {
+                        TextData text = new TextData();
+                        BookmarkData bookmark = episodeData.getBookmarks().iterator().next();
+                        text.setTitle(bookmark.getTitle());
+                        episodeData.setText(text);
+                    }
+                    return episodeData;
+                }
+        ).collect(Collectors.toList());
     }
 
     private List<EpisodeData> filterToShow(String showIdOrAlias, List<EpisodeData> original) {

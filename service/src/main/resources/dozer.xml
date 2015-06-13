@@ -275,8 +275,18 @@
             <a key="_id">this</a>
             <b>id</b>
         </field>
+        <field>
+            <a key="bookmarks">this</a>
+            <b>bookmarks</b>
+        </field>
     </mapping>
 
+
+    <mapping map-null="false">
+        <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
+        <class-b>hu.tilos.radio.backend.episode.BookmarkData</class-b>
+
+    </mapping>
 
     <mapping map-null="false">
         <class-a>hu.tilos.radio.backend.show.ShowToSave</class-a>

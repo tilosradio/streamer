@@ -127,7 +127,6 @@ public class EpisodeService {
         String showId = show.get("_id").toString();
         List<EpisodeData> episodeData = episodeUtil.getEpisodeData(showId, new Date(year - 1900, month - 1, day), new Date(year - 1900, month - 1, day, 23, 59, 59));
         if (episodeData.size() == 0) {
-            //todo, error handling
             throw new IllegalArgumentException("Can't find the appropriate episode");
         } else {
             return enrichEpisode(episodeData.get(0));
