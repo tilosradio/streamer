@@ -46,13 +46,14 @@ public class EpisodeUtil {
                 scheduledProvider.listEpisode(showIdOrAlias, from, to),
                 extraProvider.listEpisode(from, to)
         );
-        for (EpisodeData episode : merged) {
-            linkGenerator(episode);
-        }
+
         fillTheBookmarks(from, to, merged);
         merged = filterToShow(showIdOrAlias, merged);
         persistEpisodeFromThePast(merged);
         merged = episodeTextFromBookmark(merged);
+        for (EpisodeData episode : merged) {
+            linkGenerator(episode);
+        }
         return merged;
     }
 
