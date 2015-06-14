@@ -74,14 +74,14 @@ public class EpisodeUtil {
     }
 
     private void addBookmarkTo(BookmarkData bookmark, List<EpisodeData> merged) {
-        Optional<EpisodeData> episode = merged.stream().max(new Comparator<EpisodeData>() {
-            @Override
-            public int compare(EpisodeData e1, EpisodeData e2) {
-                return getIntersection(e1, bookmark).compareTo(getIntersection(e2, bookmark));
-            }
-        });
+        Optional<EpisodeData> episode = merged.stream().max((e1, e2) -> getIntersection(e1, bookmark).compareTo(getIntersection(e2, bookmark)));
         if (episode.isPresent()) {
-            episode.get().getBookmarks().add(bookmark);
+            EpisodeData bestEpisode = episode.get();
+            long intersection = getIntersection(bestEpisode, bookmark);
+            long bookmarkDuration = bookmark.getTo().getTime() - bookmark.getFrom().getTime();
+            if (intersection * 2 > bookmarkDuration) {
+                bestEpisode.getBookmarks().add(bookmark);
+            }
         }
 
     }
