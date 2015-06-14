@@ -78,7 +78,7 @@ public class EpisodeUtil {
         if (episode.isPresent()) {
             EpisodeData bestEpisode = episode.get();
             long intersection = getIntersection(bestEpisode, bookmark);
-            long bookmarkDuration = bookmark.getTo().getTime() - bookmark.getFrom().getTime();
+            long bookmarkDuration = (bookmark.getTo().getTime() - bookmark.getFrom().getTime()) / 1000;
             if (intersection * 2 > bookmarkDuration) {
                 bestEpisode.getBookmarks().add(bookmark);
             }
