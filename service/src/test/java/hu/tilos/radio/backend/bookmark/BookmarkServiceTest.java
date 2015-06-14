@@ -2,6 +2,7 @@ package hu.tilos.radio.backend.bookmark;
 
 import com.github.fakemongo.junit.FongoRule;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import hu.tilos.radio.backend.GuiceRunner;
 import hu.tilos.radio.backend.Session;
@@ -52,8 +53,7 @@ public class BookmarkServiceTest{
         service.create(new Session(new UserInfo(userId, "asd")), episodeId, bts);
 
         //then
-        DBObject episode = fongoRule.getDB().getCollection("episode").findOne(new BasicDBObject("_id", new ObjectId(episodeId)));
-        Assert.assertNotNull(episode);
-        Assert.assertNotNull(episode.get("bookmarks"));
+        DBCursor bookmark = fongoRule.getDB().getCollection("bookmark").find();
+        Assert.assertEquals(1, bookmark.size());
     }
 }
