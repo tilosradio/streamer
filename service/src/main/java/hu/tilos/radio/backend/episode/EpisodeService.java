@@ -6,6 +6,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
+import hu.tilos.radio.backend.episode.util.DateFormatUtil;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.tag.TagData;
 import hu.tilos.radio.backend.tag.TagUtil;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -143,13 +145,20 @@ public class EpisodeService {
 
 
     public EpisodeData getByDate(@PathParam("show") String showAlias, @PathParam("year") int year, @PathParam("month") int month, @PathParam("day") int day) {
-        BasicDBObject show = (BasicDBObject) db.getCollection("show").findOne(aliasOrId(showAlias));
-        String showId = show.get("_id").toString();
-        List<EpisodeData> episodeData = episodeUtil.getEpisodeData(showId, new Date(year - 1900, month - 1, day), new Date(year - 1900, month - 1, day, 23, 59, 59));
-        if (episodeData.size() == 0) {
-            throw new IllegalArgumentException("Can't find the appropriate episode");
-        } else {
-            return enrichEpisode(episodeData.get(0));
+        try {
+            BasicDBObject show = (BasicDBObject) db.getCollection("show").findOne(aliasOrId(showAlias));
+            String showId = show.get("_id").toString();
+            String fromDate = String.format("%04d-%02d-%02d 00:00:00", year, month, day);
+            String toDate = String.format("%04d-%02d-%02d 23:59:59", year, month, day);
+            List<EpisodeData> episodeData = episodeUtil.getEpisodeData(showId, DateFormatUtil.YYYY_MM_DD_HHMM.parse(fromDate), DateFormatUtil.YYYY_MM_DD_HHMM.parse(toDate));
+            ;
+            if (episodeData.size() == 0) {
+                throw new IllegalArgumentException("Can't find the appropriate episode");
+            } else {
+                return enrichEpisode(episodeData.get(0));
+            }
+        } catch (ParseException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
