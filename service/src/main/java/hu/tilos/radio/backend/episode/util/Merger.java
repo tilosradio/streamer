@@ -37,8 +37,9 @@ public class Merger {
                 return 0;
             }
         });
-        adjustTimes(result);
         removeDuplicates(result);
+        adjustTimes(result);
+
         return result;
     }
 
@@ -71,7 +72,7 @@ public class Merger {
         Iterator<EpisodeData> it = result.iterator();
         while (it.hasNext()) {
             EpisodeData curr = it.next();
-            if (prev != null && equalData(prev.getPlannedFrom(), curr.getPlannedFrom())) {
+            if (prev != null && equalData(prev.getPlannedFrom(), curr.getPlannedFrom()) && equalData(prev.getPlannedTo(), curr.getPlannedTo())) {
                 it.remove();
             }
             prev = curr;
