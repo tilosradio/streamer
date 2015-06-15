@@ -25,11 +25,14 @@ public class MergerTest {
         EpisodeData d = new EpisodeData();
         d.setPersistent(true);
         d.setPlannedFrom(date(100000));
+        d.setPlannedTo(date(100010));
         a.add(d);
 
         d = new EpisodeData();
         d.setPersistent(true);
         d.setPlannedFrom(date(200000));
+        d.setPlannedTo(date(200010));
+
         a.add(d);
 
 
@@ -37,11 +40,13 @@ public class MergerTest {
         d = new EpisodeData();
         d.setPersistent(false);
         d.setPlannedFrom(date(100000));
+        d.setPlannedTo(date(100010));
         b.add(d);
 
         d = new EpisodeData();
         d.setPersistent(false);
         d.setPlannedFrom(date(300000));
+        d.setPlannedTo(date(300010));
         b.add(d);
 
 
