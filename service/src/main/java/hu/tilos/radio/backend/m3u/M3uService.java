@@ -1,6 +1,7 @@
 package hu.tilos.radio.backend.m3u;
 
 import hu.tilos.radio.backend.episode.EpisodeData;
+import hu.tilos.radio.backend.episode.util.DateFormatUtil;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.feed.FeedRenderer;
 import hu.tilos.radio.backend.util.Days;
@@ -22,11 +23,6 @@ public class M3uService {
     @Inject
     private EpisodeUtil episodeUtil;
 
-    private static final SimpleDateFormat YYYY_MM_DD = new SimpleDateFormat("yyyy'.'MM'.'dd", LocaleUtil.TILOSLOCALE);
-
-    private static final SimpleDateFormat MM_DD = new SimpleDateFormat("MM'.'dd", LocaleUtil.TILOSLOCALE);
-
-    private static final SimpleDateFormat HH_MM = new SimpleDateFormat("HH':'mm", LocaleUtil.TILOSLOCALE);
 
     public String lastWeek(@QueryParam("stream") String query) {
         if (query == null) {
@@ -56,7 +52,7 @@ public class M3uService {
 
             Date start = episode.getPlannedFrom();
 
-            String title = "[" + MM_DD.format(start) + " - " + Days.values()[start.getDay()].getHungarian() + " " + HH_MM.format(start) + "]";
+            String title = "[" +  DateFormatUtil.HH_MM.format(start) + " - " + Days.values()[start.getDay()].getHungarian() + " " + DateFormatUtil.HH_MM.format(start) + "]";
             if (episode.getText() != null) {
                 title += " " + episode.getText().getTitle();
             } else {
