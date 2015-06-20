@@ -2,18 +2,21 @@ package hu.tilos.radio.backend.episode.util;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBObject;
 import com.mongodb.DBRef;
+import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.bookmark.BookmarkData;
 import hu.tilos.radio.backend.episode.EpisodeData;
+import hu.tilos.radio.backend.show.ShowSimple;
 import hu.tilos.radio.backend.text.TextData;
+import hu.tilos.radio.backend.util.ShowCache;
+import org.bson.types.ObjectId;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Named
@@ -38,7 +41,12 @@ public class EpisodeUtil {
     private Merger merger = new Merger();
 
     @Inject
+    ShowCache showCache;
+
+    @Inject
     DB db;
+
+
 
     public List<EpisodeData> getEpisodeData(String showIdOrAlias, Date from, Date to) {
         List<EpisodeData> merged = merger.merge(
@@ -53,8 +61,13 @@ public class EpisodeUtil {
         merged = episodeTextFromBookmark(merged);
         for (EpisodeData episode : merged) {
             linkGenerator(episode);
+            showDetails(episode);
         }
         return merged;
+    }
+
+    private void showDetails(EpisodeData episode) {
+       episode.setShow(showCache.getShowSimple(episode.getShow().getId()));
     }
 
     private void fillTheBookmarks(Date from, Date to, List<EpisodeData> merged) {

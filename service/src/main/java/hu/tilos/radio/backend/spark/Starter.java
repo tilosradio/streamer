@@ -8,6 +8,7 @@ import com.google.inject.Injector;
 import com.google.inject.matcher.Matchers;
 import com.mongodb.DB;
 import hu.radio.tilos.model.Role;
+import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.DozerFactory;
 import hu.tilos.radio.backend.MongoProducer;
 import hu.tilos.radio.backend.auth.AuthService;
@@ -142,6 +143,12 @@ public class Starter {
                     @Override
                     public Date deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
                         return json == null ? null : new Date(json.getAsLong());
+                    }
+                }).registerTypeAdapter(ShowType.class, new JsonSerializer<ShowType>() {
+
+                    @Override
+                    public JsonElement serialize(ShowType showType, Type type, JsonSerializationContext jsonSerializationContext) {
+                        return new JsonPrimitive(showType.name());
                     }
                 })
                 .create();

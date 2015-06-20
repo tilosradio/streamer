@@ -279,6 +279,10 @@
             <a key="bookmarks">this</a>
             <b>bookmarks</b>
         </field>
+        <field>
+            <a key="show">this</a>
+            <b>show</b>
+        </field>
     </mapping>
 
 

@@ -10,6 +10,7 @@ import hu.tilos.radio.backend.episode.util.DateFormatUtil;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.tag.TagData;
 import hu.tilos.radio.backend.tag.TagUtil;
+import hu.tilos.radio.backend.util.ShowCache;
 import hu.tilos.radio.backend.util.TextConverter;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
@@ -43,6 +44,9 @@ public class EpisodeService {
 
     @Inject
     TextConverter converter;
+
+    @Inject
+    ShowCache showCache;
 
     public EpisodeData get(String id) {
         DBObject episode = db.getCollection("episode").findOne(aliasOrId(id));
@@ -99,6 +103,7 @@ public class EpisodeService {
         List<EpisodeData> result = new ArrayList<>();
         for (DBObject episode : episodes) {
             EpisodeData episodeData = modelMapper.map(episode, EpisodeData.class);
+            episodeData.setShow(showCache.getShowSimple(episodeData.getShow().getId()));
             enrichEpisode(episodeData);
             result.add(episodeData);
         }
@@ -120,8 +125,9 @@ public class EpisodeService {
             }
         });
 
-        return episodes.stream().filter(episode -> episode.getText() != null && episode.getText().getTitle() != null && episode.getText().getTitle().length() > 1)
+        List<EpisodeData> result = episodes.stream().filter(episode -> episode.getText() != null && episode.getText().getTitle() != null && episode.getText().getTitle().length() > 1)
                 .collect(Collectors.toList());
+        return result;
     }
 
     public List<EpisodeData> last() {

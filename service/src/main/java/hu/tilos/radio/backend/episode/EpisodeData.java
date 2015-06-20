@@ -178,4 +178,5 @@ public class EpisodeData {
     public void setOriginal(boolean original) {
         this.original = original;
     }
+
 }
