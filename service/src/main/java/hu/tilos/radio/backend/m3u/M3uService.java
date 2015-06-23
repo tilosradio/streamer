@@ -45,7 +45,7 @@ public class M3uService {
 
         StringBuilder result = new StringBuilder();
         result.append("#EXTM3U\n");
-        result.append("#EXTINF:-1, Tilos Rádió - élő adás (256kb/s) \n");
+        result.append("#EXTINF:-1, Tilos Rádió - élő adás\n");
         result.append("http://stream.tilos.hu" + query + "\n");
         for (EpisodeData episode : episodes) {
             String artist = episode.getShow().getName().replaceAll("-", ", ");
