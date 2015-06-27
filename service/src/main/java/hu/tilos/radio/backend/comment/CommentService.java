@@ -1,6 +1,7 @@
 package hu.tilos.radio.backend.comment;
 
 import com.mongodb.*;
+import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
@@ -98,7 +99,7 @@ public class CommentService {
         comment.put("type", type.ordinal());
         comment.put("identifier", id);
         comment.put("created", new Date());
-        comment.put("status", CommentStatus.NEW.ordinal());
+
         if (data.getParentId() != null) {
             comment.put("parent", data.getParentId());
         }
@@ -107,6 +108,11 @@ public class CommentService {
         author.put("username", session.getCurrentUser().getUsername());
         author.put("ref", new DBRef(db, "user", session.getCurrentUser().getId()));
 
+        if (session.getCurrentUser().getRole().ordinal() >= Role.AUTHOR.ordinal()) {
+            comment.put("status", CommentStatus.ACCEPTED.ordinal());
+        } else {
+            comment.put("status", CommentStatus.NEW.ordinal());
+        }
         comment.put("author", author);
 
         db.getCollection("comment").insert(comment);
