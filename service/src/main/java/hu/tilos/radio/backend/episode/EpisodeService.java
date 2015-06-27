@@ -58,6 +58,7 @@ public class EpisodeService {
 
     private EpisodeData enrichEpisode(EpisodeData r) {
         episodeUtil.linkGenerator(r);
+        r.setShow(showCache.getShowSimple(r.getShow().getId()));
         if (r.getText() != null) {
             if (r.getText().getFormat() == null) {
                 r.getText().setFormat("legacy");
@@ -123,7 +124,6 @@ public class EpisodeService {
         List<EpisodeData> result = new ArrayList<>();
         for (DBObject episode : episodes) {
             EpisodeData episodeData = modelMapper.map(episode, EpisodeData.class);
-            episodeData.setShow(showCache.getShowSimple(episodeData.getShow().getId()));
             enrichEpisode(episodeData);
             result.add(episodeData);
         }
