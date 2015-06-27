@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,25 @@ public class EpisodeService {
 
     }
 
+    public EpisodeData now() {
+        OffsetDateTime start = OffsetDateTime.now().minusHours(3);
+        OffsetDateTime end = OffsetDateTime.now().plusHours(4);
+
+
+        List<EpisodeData> episodeData = episodeUtil.getEpisodeData(null, Date.from(start.toInstant()), Date.from(end.toInstant()));
+
+        Date now = new Date();
+        EpisodeData result = null;
+        for (int i = 0; i < episodeData.size(); i++) {
+            EpisodeData episode = episodeData.get(i);
+            if (episode.getPlannedFrom().compareTo(now) < 0) {
+                result = episode;
+            }
+        };
+
+        return result;
+
+    }
 
     public List<EpisodeData> next() {
         Date start = new Date();

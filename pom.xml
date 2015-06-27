@@ -11,6 +11,7 @@
         <module>prerender</module>
         <module>service</module>
         <module>streamer</module>
+        <module>icecast-stat</module>
         <!--module>smoketest</module-->
         <module>resteasy-atom</module>
     </modules>

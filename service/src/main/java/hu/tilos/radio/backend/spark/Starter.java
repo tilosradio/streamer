@@ -273,6 +273,8 @@ public class Starter {
                 episodeService.last(), jsonResponse);
         get("/api/v1/episode/lastWeek", (req, res) ->
                 episodeService.lastWeek(), jsonResponse);
+        get("/api/v1/episode/now", (req, res) ->
+                episodeService.now(), jsonResponse);
         get("/api/v1/episode/:id", (req, res) ->
                 episodeService.get(req.params("id")), jsonResponse);
         get("/api/v1/episode/:show/:year/:month/:day", (req, res) ->
