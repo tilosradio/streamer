@@ -306,7 +306,7 @@ public class Starter {
         post("/api/int/contribution", authorized(Role.ADMIN, (req, res, session) ->
                 contributionService.save(gson.fromJson(req.body(), ContributionToSave.class))), jsonResponse);
         delete("/api/int/contribution", authorized(Role.ADMIN, (req, res, session) ->
-                contributionService.delete(req.params("author"), req.params("show"))), jsonResponse);
+                contributionService.delete(req.queryParams("author"), req.queryParams("show"))), jsonResponse);
 
         get("/api/v1/m3u/lastweek", (req, res) -> {
             return asM3u(res, m3uService.lastWeek(req.queryParams("stream")));
