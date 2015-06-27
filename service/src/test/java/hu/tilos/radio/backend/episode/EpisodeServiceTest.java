@@ -43,7 +43,8 @@ public class EpisodeServiceTest {
     @Test
     public void testGet() throws Exception {
         //given
-        loadTo(fongoRule, "episode", "episode-episode2.json");
+        String showId = loadTo(fongoRule, "show", "show-3utas.json");
+        loadTo(fongoRule, "episode", "episode-episode2.json", showId);
 
         //when
         EpisodeData episode = controller.get("2");
