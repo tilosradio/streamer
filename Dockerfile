@@ -7,3 +7,4 @@ ADD docker/backend /etc/service/backend/run
 ADD streamer/target/streamer.jar /host/
 ADD service/target/service-jar-with-dependencies.jar /host/
 ADD icecast-stat/target/icecast-stat.jar /host/
+ADD docker/icecast-stat /etc/cron.d/icecast-stat

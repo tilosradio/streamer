@@ -1,0 +1,1 @@
+*/5 * * * *   java -Dconfig.file=/host/tilos.properties -jar /host/icecast-stat.jar >> /host/icecast-stat.log
