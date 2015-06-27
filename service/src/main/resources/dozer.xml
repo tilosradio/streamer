@@ -289,7 +289,10 @@
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
         <class-b>hu.tilos.radio.backend.bookmark.BookmarkData</class-b>
-
+        <field>
+            <a key="creator">this</a>
+            <b>creator</b>
+        </field>
     </mapping>
 
     <mapping map-null="false">

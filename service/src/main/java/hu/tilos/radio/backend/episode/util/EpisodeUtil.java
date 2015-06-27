@@ -2,21 +2,16 @@ package hu.tilos.radio.backend.episode.util;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
-import com.mongodb.DBObject;
 import com.mongodb.DBRef;
-import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.bookmark.BookmarkData;
 import hu.tilos.radio.backend.episode.EpisodeData;
-import hu.tilos.radio.backend.show.ShowSimple;
 import hu.tilos.radio.backend.text.TextData;
 import hu.tilos.radio.backend.util.ShowCache;
-import org.bson.types.ObjectId;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Named
@@ -47,7 +42,6 @@ public class EpisodeUtil {
     DB db;
 
 
-
     public List<EpisodeData> getEpisodeData(String showIdOrAlias, Date from, Date to) {
         List<EpisodeData> merged = merger.merge(
                 persistentProvider.listEpisode(showIdOrAlias, from, to),
@@ -55,9 +49,10 @@ public class EpisodeUtil {
                 extraProvider.listEpisode(from, to)
         );
 
-        fillTheBookmarks(from, to, merged);
+
         merged = filterToShow(showIdOrAlias, merged);
         persistEpisodeFromThePast(merged);
+        fillTheBookmarks(from, to, merged);
         merged = episodeTextFromBookmark(merged);
         for (EpisodeData episode : merged) {
             linkGenerator(episode);
@@ -67,7 +62,7 @@ public class EpisodeUtil {
     }
 
     private void showDetails(EpisodeData episode) {
-       episode.setShow(showCache.getShowSimple(episode.getShow().getId()));
+        episode.setShow(showCache.getShowSimple(episode.getShow().getId()));
     }
 
     private void fillTheBookmarks(Date from, Date to, List<EpisodeData> merged) {
@@ -79,6 +74,8 @@ public class EpisodeUtil {
             d.setFrom((Date) dbOject.get("from"));
             d.setTo((Date) dbOject.get("to"));
             d.setTitle((String) dbOject.get("title"));
+            d.getCreator().setUsername((String) ((BasicDBObject) dbOject.get("creator")).get("username"));
+            d.setM3uUrl(linkGenerator(d.getFrom(), d.getTo()));
             return d;
         }).collect(Collectors.toList());
 
@@ -140,18 +137,43 @@ public class EpisodeUtil {
 
     private List<EpisodeData> episodeTextFromBookmark(List<EpisodeData> original) {
         return original.stream().map(episodeData -> {
-                    if (episodeData.getText() == null && episodeData.getBookmarks().size() > 0) {
-                        TextData text = new TextData();
-                        BookmarkData bookmark = episodeData.getBookmarks().iterator().next();
-                        text.setTitle(bookmark.getTitle());
-                        episodeData.setText(text);
-                        episodeData.setOriginal(false);
-                        episodeData.setRealFrom(bookmark.getFrom());
-                        episodeData.setRealTo(bookmark.getTo());
+                    if ((episodeData.getText() == null || episodeData.getText().getTitle() == null) && episodeData.getBookmarks().size() > 0) {
+                        BookmarkData bookmark = findBestBookmark(episodeData, episodeData.getBookmarks());
+                        if (bookmark != null) {
+                            bookmark.setSelected(true);
+                            TextData text = new TextData();
+                            text.setTitle(bookmark.getTitle());
+                            episodeData.setText(text);
+                            episodeData.setOriginal(false);
+                            episodeData.setRealFrom(bookmark.getFrom());
+                            episodeData.setRealTo(bookmark.getTo());
+                        }
                     }
                     return episodeData;
                 }
         ).collect(Collectors.toList());
+    }
+
+    private BookmarkData findBestBookmark(EpisodeData episodeData, Set<BookmarkData> bookmarks) {
+        List<BookmarkData> ordered = new ArrayList();
+        long episodeLength = episodeData.getRealTo().getTime() - episodeData.getRealFrom().getTime();
+        for (BookmarkData bookmark : bookmarks) {
+            long bookmarkLength = bookmark.getTo().getTime() - bookmark.getFrom().getTime();
+            if (bookmarkLength * 2 > episodeLength) {
+                ordered.add(bookmark);
+            }
+        }
+        Collections.sort(ordered, new Comparator<BookmarkData>() {
+            @Override
+            public int compare(BookmarkData b1, BookmarkData b2) {
+                return Long.valueOf(b2.getLengthInSec()).compareTo(Long.valueOf(b1.getLengthInSec()));
+            }
+        });
+        if (ordered.size() > 0) {
+            return ordered.get(0);
+        } else {
+            return null;
+        }
     }
 
     private List<EpisodeData> filterToShow(String showIdOrAlias, List<EpisodeData> original) {
@@ -170,13 +192,18 @@ public class EpisodeUtil {
 
     public static EpisodeData linkGenerator(EpisodeData episode) {
         if (episode.getRealTo().compareTo(new Date()) < 0) {
-            episode.setM3uUrl("http://tilos.hu/mp3/tilos-" +
-                    YYYYMMDD.format(episode.getRealFrom()) +
-                    "-" +
-                    HHMMSS.format(episode.getRealFrom()) +
-                    "-" +
-                    HHMMSS.format(episode.getRealTo()) + ".m3u");
+            episode.setM3uUrl(linkGenerator(episode.getRealFrom(), episode.getRealTo()));
         }
         return episode;
+    }
+
+    public static String linkGenerator(Date from, Date to) {
+        return "http://tilos.hu/mp3/tilos-" +
+                YYYYMMDD.format(from) +
+                "-" +
+                HHMMSS.format(from) +
+                "-" +
+                HHMMSS.format(to) + ".m3u";
+
     }
 }

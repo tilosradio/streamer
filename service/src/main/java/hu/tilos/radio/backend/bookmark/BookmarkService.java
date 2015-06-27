@@ -1,9 +1,6 @@
 package hu.tilos.radio.backend.bookmark;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBObject;
-import com.mongodb.DBRef;
+import com.mongodb.*;
 import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import org.bson.types.ObjectId;
@@ -48,8 +45,11 @@ public class BookmarkService {
         creator.put("ref", new DBRef(db, "user", new ObjectId(session.getCurrentUser().getId())));
         creator.put("username", session.getCurrentUser().getUsername());
         bookmark.put("creator", creator);
-
-        db.getCollection("bookmark").insert(bookmark);
+        if (episode.get("bookmarks") == null) {
+            episode.put("bookmarks", new BasicDBList());
+        }
+        ((BasicDBList) episode.get("bookmarks")).add(bookmark);
+        db.getCollection("episode").update(episodeSelector, episode, true, false);
         return new CreateResponse(true);
     }
 }

@@ -1,6 +1,7 @@
 package hu.tilos.radio.backend.bookmark;
 
 import com.github.fakemongo.junit.FongoRule;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -38,7 +39,7 @@ public class BookmarkServiceTest{
     }
 
     @Test
-    public void testGet() throws Exception {
+    public void testSave() throws Exception {
         //given
         String episodeId = loadTo(fongoRule, "episode", "episode-episode2.json");
         String userId = loadTo(fongoRule, "user", "user-1.json");
@@ -53,7 +54,25 @@ public class BookmarkServiceTest{
         service.create(new Session(new UserInfo(userId, "asd")), episodeId, bts);
 
         //then
-        DBCursor bookmark = fongoRule.getDB().getCollection("bookmark").find();
-        Assert.assertEquals(1, bookmark.size());
+        DBObject episode = fongoRule.getDB().getCollection("episode").findOne(new BasicDBObject("_id", new ObjectId((episodeId))));
+        BasicDBList bookmarks = (BasicDBList) episode.get("bookmarks");
+        Assert.assertEquals(1, bookmarks.size());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSaveWithWrongId() throws Exception {
+        //given
+        String episodeId = loadTo(fongoRule, "episode", "episode-episode2.json");
+        String userId = loadTo(fongoRule, "user", "user-1.json");
+
+        BookmarkToSave bts = new BookmarkToSave();
+        bts.setFrom(DateFormatUtil.YYYY_MM_DD_HHMM.parse("2014-10-12 10:00"));
+        bts.setTo(DateFormatUtil.YYYY_MM_DD_HHMM.parse("2014-10-12 11:00"));
+        bts.setEpisodeRef(episodeId);
+        bts.setTitle("asd");
+
+        //when
+        service.create(new Session(new UserInfo(userId, "asd")), "asd", bts);
+
     }
 }

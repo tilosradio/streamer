@@ -8,7 +8,20 @@ public class BookmarkData {
     private Date from;
     private Date to;
     private String title;
-    private UserLink author;
+    private UserLink creator = new UserLink();
+    private String m3uUrl;
+    private boolean selected;
+
+    public long getLengthInSec(){
+        return (to.getTime() - from.getTime()) /1000;
+    }
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 
     public Date getFrom() {
         return from;
@@ -34,11 +47,19 @@ public class BookmarkData {
         this.title = title;
     }
 
-    public UserLink getAuthor() {
-        return author;
+    public UserLink getCreator() {
+        return creator;
     }
 
-    public void setAuthor(UserLink author) {
-        this.author = author;
+    public void setCreator(UserLink creator) {
+        this.creator = creator;
+    }
+
+    public void setM3uUrl(String m3uUrl) {
+        this.m3uUrl = m3uUrl;
+    }
+
+    public String getM3uUrl() {
+        return m3uUrl;
     }
 }

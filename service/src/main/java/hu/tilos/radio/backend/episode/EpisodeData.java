@@ -80,6 +80,10 @@ public class EpisodeData {
         }
     }
 
+    public long getLengthInSec(){
+        return (plannedTo.getTime() - plannedFrom.getTime()) /1000;
+    }
+
     public Date getPlannedTo() {
         return plannedTo;
     }
