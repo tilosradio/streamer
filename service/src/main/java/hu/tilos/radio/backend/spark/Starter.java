@@ -314,7 +314,7 @@ public class Starter {
 
         get("/api/v1/search/query", (req, res) -> searchService.search(req.queryParams("q")));
 
-        get("/api/v1/status/radio", (req, res) -> statusService.getLiveSources());
+        get("/api/v1/status/radio", (req, res) -> statusService.getLiveSources(), jsonResponse);
 
         get("/api/v1/status/radio.txt", (req, res) -> statusService.getLiveSources(), new ResponseTransformer() {
             @Override
