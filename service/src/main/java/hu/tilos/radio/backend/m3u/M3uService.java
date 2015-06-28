@@ -5,11 +5,9 @@ import hu.tilos.radio.backend.episode.util.DateFormatUtil;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.feed.FeedRenderer;
 import hu.tilos.radio.backend.util.Days;
-import hu.tilos.radio.backend.util.LocaleUtil;
 
 import javax.inject.Inject;
 import javax.ws.rs.QueryParam;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -45,14 +43,22 @@ public class M3uService {
 
         StringBuilder result = new StringBuilder();
         result.append("#EXTM3U\n");
-        result.append("#EXTINF:-1, Tilos Rádió - élő adás\n");
+        String classification = "";
+        if (query == "/tilos") {
+            classification = " - 256k";
+        } else if (query == "/tilos_128.mp3") {
+            classification = " - 128k";
+        } else if (query == "/tilos_32.mp3") {
+            classification = " - mobil";
+        }
+        result.append("#EXTINF:-1, Tilos Rádió - live" + classification"\n");
         result.append("http://stream.tilos.hu" + query + "\n");
         for (EpisodeData episode : episodes) {
             String artist = episode.getShow().getName().replaceAll("-", ", ");
 
             Date start = episode.getPlannedFrom();
 
-            String title = "[" +  DateFormatUtil.HH_MM.format(start) + " - " + Days.values()[start.getDay()].getHungarian() + " " + DateFormatUtil.HH_MM.format(start) + "]";
+            String title = "[" + DateFormatUtil.HH_MM.format(start) + " - " + Days.values()[start.getDay()].getHungarian() + " " + DateFormatUtil.HH_MM.format(start) + "]";
             if (episode.getText() != null) {
                 title += " " + episode.getText().getTitle();
             } else {
