@@ -57,14 +57,19 @@ public class EpisodeService {
     }
 
     private EpisodeData enrichEpisode(EpisodeData r) {
-        episodeUtil.linkGenerator(r);
-        r.setShow(showCache.getShowSimple(r.getShow().getId()));
-        if (r.getText() != null) {
-            if (r.getText().getFormat() == null) {
-                r.getText().setFormat("legacy");
+        try {
+            episodeUtil.linkGenerator(r);
+            r.setShow(showCache.getShowSimple(r.getShow().getId()));
+            if (r.getText() != null) {
+                if (r.getText().getFormat() == null) {
+                    r.getText().setFormat("legacy");
+                }
+                r.getText().setFormatted(converter.format(r.getText().getFormat(), r.getText().getContent()));
+                return r;
             }
-            r.getText().setFormatted(converter.format(r.getText().getFormat(), r.getText().getContent()));
-            return r;
+        } catch (Exception ex) {
+            LOG.error("Can't enrich episode: " + r.getId(), ex);
+            throw ex;
         }
         return r;
     }
@@ -104,7 +109,8 @@ public class EpisodeService {
             if (episode.getPlannedFrom().compareTo(now) < 0) {
                 result = episode;
             }
-        };
+        }
+        ;
 
         return result;
 
