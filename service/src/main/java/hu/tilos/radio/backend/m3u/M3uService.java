@@ -51,7 +51,7 @@ public class M3uService {
         } else if (query == "/tilos_32.mp3") {
             classification = " - mobil";
         }
-        result.append("#EXTINF:-1, Tilos Rádió - live" + classification"\n");
+        result.append("#EXTINF:-1, Tilos Rádió - live" + classification + "\n");
         result.append("http://stream.tilos.hu" + query + "\n");
         for (EpisodeData episode : episodes) {
             String artist = episode.getShow().getName().replaceAll("-", ", ");
