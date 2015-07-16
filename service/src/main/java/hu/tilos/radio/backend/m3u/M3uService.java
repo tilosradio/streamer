@@ -7,11 +7,11 @@ import hu.tilos.radio.backend.feed.FeedRenderer;
 import hu.tilos.radio.backend.util.Days;
 
 import javax.inject.Inject;
-import javax.ws.rs.QueryParam;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Generate various m3u feeds.
@@ -22,11 +22,11 @@ public class M3uService {
     private EpisodeUtil episodeUtil;
 
 
-    public String lastWeek(@QueryParam("stream") String query) {
-        if (query == null) {
-            query = "/tilos";
+    public String lastWeek(String streamName, String filterType) {
+        if (streamName == null) {
+            streamName = "/tilos";
         }
-        query = query.replace(".m3u", "");
+        streamName = streamName.replace(".m3u", "");
         Date now = new Date();
         Date weekAgo = new Date();
         weekAgo.setTime(now.getTime() - (long) 604800000L);
@@ -41,24 +41,28 @@ public class M3uService {
 
         episodes.remove(0);
 
+        episodes = filter(episodes, filterType);
+
+
+
         StringBuilder result = new StringBuilder();
         result.append("#EXTM3U\n");
         String classification = "";
-        if (query == "/tilos") {
+        if (streamName == "/tilos") {
             classification = " - 256k";
-        } else if (query == "/tilos_128.mp3") {
+        } else if (streamName == "/tilos_128.mp3") {
             classification = " - 128k";
-        } else if (query == "/tilos_32.mp3") {
+        } else if (streamName == "/tilos_32.mp3") {
             classification = " - mobil";
         }
         result.append("#EXTINF:-1, Tilos Rádió - live" + classification + "\n");
-        result.append("http://stream.tilos.hu" + query + "\n");
+        result.append("http://stream.tilos.hu" + streamName + "\n");
         for (EpisodeData episode : episodes) {
             String artist = episode.getShow().getName().replaceAll("-", ", ");
 
             Date start = episode.getPlannedFrom();
 
-            String title = "[" + DateFormatUtil.HH_MM.format(start) + " - " + Days.values()[start.getDay()].getHungarian() + " " + DateFormatUtil.HH_MM.format(start) + "]";
+            String title = "[" + Days.values()[start.getDay()].getHungarian() + " " + DateFormatUtil.HH_MM.format(start) + "]";
             if (episode.getText() != null) {
                 title += " " + episode.getText().getTitle();
             } else {
@@ -68,6 +72,14 @@ public class M3uService {
             result.append(FeedRenderer.createDownloadURI(episode) + "\n");
         }
         return result.toString();
+    }
+
+    private List<EpisodeData> filter(List<EpisodeData> episodes, String filterType) {
+        if (filterType == null) {
+            return episodes;
+        } else {
+            return episodes.stream().filter(episodeData -> episodeData.getShow().getType().name().toLowerCase().equals(filterType)).collect(Collectors.toList());
+        }
     }
 
     public EpisodeUtil getEpisodeUtil() {

@@ -309,7 +309,7 @@ public class Starter {
                 contributionService.delete(req.queryParams("author"), req.queryParams("show"))), jsonResponse);
 
         get("/api/v1/m3u/lastweek", (req, res) -> {
-            return asM3u(res, m3uService.lastWeek(req.queryParams("stream")));
+            return asM3u(res, m3uService.lastWeek(req.queryParams("stream"),req.queryParams("type")));
         });
 
         get("/api/v1/search/query", (req, res) -> searchService.search(req.queryParams("q")));
