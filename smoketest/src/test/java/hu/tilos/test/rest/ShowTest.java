@@ -9,6 +9,7 @@ public class ShowTest extends RestBase {
     @Test
     public void get() {
         RestAssured.get("/v1/show/3-utas").then().body("name", Matchers.equalTo("3. utas"));
+        RestAssured.get("/v1/show/talan").then().statusCode(Matchers.equalTo(500));
     }
 
 

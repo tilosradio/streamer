@@ -8,8 +8,8 @@ public class RestBase {
     @BeforeClass
     public static void setup() {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        RestAssured.baseURI = "http://tilos.hu/api/";
-        RestAssured.port = 80;
+        RestAssured.baseURI = "https://tilos.hu/api/";
+        RestAssured.port = 443;
     }
 
 }
