@@ -3,15 +3,7 @@ package hu.tilos.radio.backend.text;
 /**
  * Data transfer object for text data.
  */
-public class TextData {
-
-    private String id;
-
-    private String title;
-
-    private String alias;
-
-    private String type;
+public class TextData extends TextDataSimple {
 
     private String format;
 
@@ -22,40 +14,8 @@ public class TextData {
     public TextData() {
     }
 
-    public TextData(String title) {
-        this.title = title;
-    }
-
-    public String getFormatted() {
-        return formatted;
-    }
-
-    public void setFormatted(String formatted) {
-        this.formatted = formatted;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public TextData(String content) {
+        this.content = content;
     }
 
     public String getFormat() {
@@ -74,12 +34,11 @@ public class TextData {
         this.content = content;
     }
 
-    public String getAlias() {
-        return alias;
+    public String getFormatted() {
+        return formatted;
     }
 
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public void setFormatted(String formatted) {
+        this.formatted = formatted;
     }
-
 }

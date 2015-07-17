@@ -224,9 +224,11 @@ public class Starter {
                         mixService.delete(req.params("alias"))), jsonResponse);
 
         get("/api/v1/text/:type", (req, res) ->
-                textService.list(req.params("type"), intParam(req, "limit")), jsonResponse);
+                textService.list(req.params("type"), intParam(req, "limit"), booleanParam(req, "full")), jsonResponse);
+
         get("/api/v1/text/:type/:id", (req, res) ->
                 textService.get(req.params("id"), req.params("type")), jsonResponse);
+
         post("/api/v1/text/:type",
                 authorized(Role.ADMIN, (req, res, session) ->
                         textService.create(req.params("type"), gson.fromJson(req.body(), TextToSave.class))), jsonResponse);
@@ -309,7 +311,7 @@ public class Starter {
                 contributionService.delete(req.queryParams("author"), req.queryParams("show"))), jsonResponse);
 
         get("/api/v1/m3u/lastweek", (req, res) -> {
-            return asM3u(res, m3uService.lastWeek(req.queryParams("stream"),req.queryParams("type")));
+            return asM3u(res, m3uService.lastWeek(req.queryParams("stream"), req.queryParams("type")));
         });
 
         get("/api/v1/search/query", (req, res) -> searchService.search(req.queryParams("q")));
@@ -351,6 +353,15 @@ public class Starter {
 
 
         post("/api/int/oauth/facebook", (req, res) -> oauthService.facebook(gson.fromJson(req.body(), OauthService.FacebookRequest.class)), jsonResponse);
+    }
+
+    private boolean booleanParam(Request req, String param) {
+        String full = req.queryParams(param);
+        if (full != null) {
+            return Boolean.parseBoolean(full);
+        } else {
+            return false;
+        }
     }
 
     private Object asM3u(Response res, String output) throws Exception {

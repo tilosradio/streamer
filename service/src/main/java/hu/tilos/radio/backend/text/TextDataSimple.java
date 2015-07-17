@@ -17,13 +17,10 @@ public class TextDataSimple {
 
     private Date created;
 
-    public Date getCreated() {
-        return created;
+    public TextDataSimple() {
     }
 
-    public void setCreated(Date created) {
-        this.created = created;
-    }
+
 
     public String getId() {
         return id;
@@ -55,5 +52,13 @@ public class TextDataSimple {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 }

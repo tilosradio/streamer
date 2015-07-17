@@ -68,7 +68,7 @@ public class TextServiceTest {
         loadTo(fongoRule, "page", "page-page1.json");
 
         //when
-        List<TextDataSimple> pages = controller.list("page", 1);
+        List<TextDataSimple> pages = controller.list("page", 1, false);
 
         //then
         assertThat(pages.size(), equalTo(1));

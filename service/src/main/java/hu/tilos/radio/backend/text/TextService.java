@@ -13,9 +13,9 @@ import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
 import javax.ws.rs.PathParam;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
@@ -31,18 +31,26 @@ public class TextService {
     @Inject
     private DozerBeanMapper mapper;
 
-    public List<TextDataSimple> list(String type, Integer limit) {
+    public List<TextDataSimple> list(String type, Integer limit, boolean full) {
         checkType(type);
         BasicDBObject query = new BasicDBObject("type", type);
         DBCursor pages = db.getCollection(type).find(query).sort(new BasicDBObject("created", -1));
         if (limit != null) {
             pages.limit(limit);
         }
-        List<TextDataSimple> result = new ArrayList<>();
-        for (DBObject page : pages) {
-            result.add(mapper.map(page, TextDataSimple.class));
+        if (full) {
+            return pages.toArray().stream().map(text -> mapper
+                    .map(text, TextData.class))
+                    .map(textData -> {
+                        textData.setFormatted(textConverter.format(textData.getFormat(), textData.getContent()));
+                        return textData;
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            return pages.toArray().stream()
+                    .map(text -> mapper.map(text, TextDataSimple.class))
+                    .collect(Collectors.toList());
         }
-        return result;
     }
 
 
