@@ -6,6 +6,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import hu.tilos.radio.backend.data.error.NotFoundException;
 import hu.tilos.radio.backend.data.response.CreateResponse;
+import hu.tilos.radio.backend.data.response.OkResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.util.TextConverter;
 import org.bson.types.ObjectId;
@@ -73,6 +74,16 @@ public class TextService {
         original.put("format", "markdown");
         db.getCollection(type).update(aliasOrId(alias), original);
         return new UpdateResponse(true);
+    }
+
+    public OkResponse delete(@PathParam("type") String type, @PathParam("id") String alias) {
+        checkType(type);
+        DBObject original = db.getCollection(type).findOne(aliasOrId(alias));
+        if (original == null) {
+            throw new NotFoundException("No such text object");
+        }
+        db.getCollection(type).remove(aliasOrId(alias));
+        return new OkResponse("document is deleted");
     }
 
 

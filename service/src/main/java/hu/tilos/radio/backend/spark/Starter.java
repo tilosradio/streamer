@@ -236,6 +236,10 @@ public class Starter {
                 authorized(Role.ADMIN, (req, res, session) ->
                         textService.update(req.params("type"), req.params("id"), gson.fromJson(req.body(), TextToSave.class))), jsonResponse);
 
+        delete("/api/v1/text/:type/:id",
+                authorized(Role.ADMIN, (req, res, session) ->
+                        textService.delete(req.params("type"), req.params("id"))), jsonResponse);
+
         get("/api/v1/tag/:tag", (req, res) ->
                 tagService.get(req.params("tag")), jsonResponse);
         get("/api/v1/tag", (req, res) ->
