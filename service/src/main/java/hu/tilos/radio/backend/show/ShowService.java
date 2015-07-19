@@ -8,6 +8,7 @@ import hu.tilos.radio.backend.converters.SchedulingTextUtil;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.SchedulingSimple;
+import hu.tilos.radio.backend.data.types.UrlData;
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.mix.MixSimple;
@@ -21,6 +22,7 @@ import javax.inject.Inject;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
@@ -104,8 +106,25 @@ public class ShowService {
         }
         long mixCount = db.getCollection("mix").count(new BasicDBObject("show.ref", new DBRef(db, "show", one.get("_id").toString())));
         detailed.getStats().mixCount = (int) mixCount;
+        detailed.setUrls(processUrls(detailed.getUrls()));
         return detailed;
 
+    }
+
+    private List<UrlData> processUrls(List<UrlData> urls) {
+        return urls.stream().map(url -> {
+            if (url.getAddress().contains("facebook")) {
+                url.setType("facebook");
+                url.setLabel(url.getAddress().replaceAll("http(s?)://(www.?)facebook.com/","facebook/"));
+            } else if (url.getAddress().contains("mixcloud")) {
+                url.setType("mixcloud");
+                url.setLabel(url.getAddress().replaceAll("http(s?)://(www.?)mixcloud.com/","mixcloud/"));
+            } else {
+                url.setType("url");
+                url.setLabel(url.getAddress().replaceAll("http(s?)://",""));
+            }
+            return url;
+        }).collect(Collectors.toList());
     }
 
 

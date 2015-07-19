@@ -28,5 +28,13 @@
         }
       }
     }
+  ],
+  "urls" : [
+    {
+      "address" : "https://www.facebook.com/3.Utas"
+    },
+    {
+      "address" : "http://www.mixcloud.com/szabitoth/"
+    }
   ]
 }
