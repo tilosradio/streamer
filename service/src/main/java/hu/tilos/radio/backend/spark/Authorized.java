@@ -14,9 +14,14 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static spark.Spark.halt;
 
 public class Authorized implements Route {
+
+    final Pattern tokenPattern = Pattern.compile("\\{([a-z]+)\\}");
 
     @Inject
     DB db;
@@ -96,7 +101,14 @@ public class Authorized implements Route {
         return route.handle(request, response, session);
     }
 
-    private String resolvePath(String permission, Request request) {
-        return permission;
+     String resolvePath(String permission, Request request) {
+
+        Matcher m = tokenPattern.matcher(permission);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            m.appendReplacement(sb, request.params(m.group(1)));
+        }
+        m.appendTail(sb);
+        return sb.toString();
     }
 }
