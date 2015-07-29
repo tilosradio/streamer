@@ -26,15 +26,13 @@ object Cli {
     uconn.setUseCaches(false);
     val xml = scala.xml.XML.load(new InputSource(uconn.getInputStream))
     var statRecord: Map[String, BSONValue] = xml \\ "source" map { source =>
-      (source \@ "mount" substring 1, new BSONInteger((source \ "listeners" text).toInt))
-
+      (source \@ "mount" substring 1 replace('.','_'), new BSONInteger((source \ "listeners" text).toInt))
     } toMap
 
     statRecord += "time" -> new BSONDateTime(new java.util.Date().getTime())
     val driver = new MongoDriver
     val connection = driver.connection(List(config.getString("mongo.server")))
 
-    // Gets a reference to the database "plugin"
     val db = connection(config.getString("mongo.db"))
 
 
