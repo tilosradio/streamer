@@ -1,8 +1,6 @@
-package hu.tilos.radio.backend.controller;
+package hu.tilos.radio.backend.stat;
 
 import com.mongodb.*;
-import hu.radio.tilos.model.Role;
-import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.data.output.ListenerStat;
 import hu.tilos.radio.backend.data.output.StatData;
 import hu.tilos.radio.backend.episode.EpisodeData;
@@ -12,9 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -22,7 +17,6 @@ import java.util.Date;
 import java.util.List;
 
 
-@Path("api/v1/stat")
 public class StatController {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatController.class);
@@ -36,10 +30,6 @@ public class StatController {
     @Inject
     DozerBeanMapper mapper;
 
-    @Produces("application/json")
-    @Security(role = Role.GUEST)
-    @GET
-    @Path("/summary")
     public StatData getSummary() {
         StatData statData = new StatData();
         statData.showCount = db.getCollection("show").count(new BasicDBObject("status", 1));
@@ -50,10 +40,6 @@ public class StatController {
         return statData;
     }
 
-    @Produces("application/json")
-    @Security(role = Role.GUEST)
-    @GET
-    @Path("/listener")
     public List<ListenerStat> getListenerSTat(@QueryParam("from") Long fromTimestamp, @QueryParam("to") Long toTimestamp) {
 
         List<ListenerStat> result = new ArrayList<>();
@@ -66,6 +52,8 @@ public class StatController {
         if (toTimestamp != null) {
             toDate.setTime(toTimestamp);
         }
+
+        fixUnderscore(fromDate, toDate);
 
         List<EpisodeData> episodeList = episodeUtil.getEpisodeData(null, fromDate, toDate);
         for (EpisodeData episode : episodeList) {
@@ -86,8 +74,6 @@ public class StatController {
                 fields.add("$tilos");
                 fields.add("$tilos_128_mp3");
                 fields.add("$tilos_32_mp3");
-                fields.add("$tilos_high_ogg");
-                fields.add("$tilos_low_ogg");
                 BasicDBObject group = new BasicDBObject().append("_id", null);
                 group.append("min", new BasicDBObject("$min", new BasicDBObject("$add", fields)));
                 group.append("max", new BasicDBObject("$max", new BasicDBObject("$add", fields)));
@@ -102,10 +88,33 @@ public class StatController {
 
                 result.add(stat);
             } catch (Exception ex) {
-                LOG.error("Can't calculate listening stat for " + episode.getPlannedFrom());
+                LOG.error("Can't calculate listening stat for " + episode.getPlannedFrom(), ex);
             }
         }
         return result;
+    }
+
+    private void fixUnderscore(Date fromDate, Date toDate) {
+        DBCollection icecast = db.getCollection("stat_icecast");
+        DBCursor stat_icecast = icecast.find(QueryBuilder.start().put("time").greaterThan(fromDate).lessThan(toDate).get());
+        while (stat_icecast.hasNext()) {
+            DBObject next = stat_icecast.next();
+            boolean update = false;
+            update = fixField("tilos_128.mp3", next) || update;
+            update = fixField("tilos_32.mp3", next) || update;
+            if (update) {
+                icecast.update(new BasicDBObject("_id", next.get("_id")), next);
+            }
+        }
+    }
+
+    private boolean fixField(String field, DBObject record) {
+        if (record.containsField(field)) {
+            record.put(field.replace('.', '_'), record.get(field));
+            record.removeField(field);
+            return true;
+        }
+        return false;
     }
 
     private int convertToInt(Object value) {

@@ -2,7 +2,6 @@ package hu.tilos.radio.backend.stat;
 
 import com.github.fakemongo.junit.FongoRule;
 import hu.tilos.radio.backend.GuiceRunner;
-import hu.tilos.radio.backend.controller.StatController;
 import hu.tilos.radio.backend.data.output.ListenerStat;
 import hu.tilos.radio.backend.data.output.StatData;
 import org.junit.Assert;

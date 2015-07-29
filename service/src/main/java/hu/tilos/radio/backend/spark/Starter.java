@@ -37,6 +37,7 @@ import hu.tilos.radio.backend.mix.MixService;
 import hu.tilos.radio.backend.search.SearchService;
 import hu.tilos.radio.backend.show.ShowService;
 import hu.tilos.radio.backend.show.ShowToSave;
+import hu.tilos.radio.backend.stat.StatController;
 import hu.tilos.radio.backend.status.StatusService;
 import hu.tilos.radio.backend.tag.TagService;
 import hu.tilos.radio.backend.text.TextService;
@@ -89,6 +90,9 @@ public class Starter {
 
     @Inject
     ContributionService contributionService;
+
+    @Inject
+    StatController statController;
 
     @Inject
     M3uService m3uService;
@@ -333,6 +337,10 @@ public class Starter {
                 return result.toString();
             }
         });
+
+        get("/api/v1/stat/summary", (req, res) -> statController.getSummary(), jsonResponse);
+
+        get("/api/v1/stat/listener", (req, res) -> statController.getListenerSTat(longParam(req, "from"), longParam(req, "to")), jsonResponse);
 
         get("/feed/weekly", (req, res) -> {
             res.type("application/atom+xml");
