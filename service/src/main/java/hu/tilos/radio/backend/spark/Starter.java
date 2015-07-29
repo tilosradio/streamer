@@ -322,7 +322,7 @@ public class Starter {
             return asM3u(res, m3uService.lastWeek(req.queryParams("stream"), req.queryParams("type")));
         });
 
-        get("/api/v1/search/query", (req, res) -> searchService.search(req.queryParams("q")));
+        get("/api/v1/search/query", (req, res) -> searchService.search(req.queryParams("q")), jsonResponse);
 
         get("/api/v1/status/radio", (req, res) -> statusService.getLiveSources(), jsonResponse);
 
