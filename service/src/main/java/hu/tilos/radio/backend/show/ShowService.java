@@ -182,13 +182,13 @@ public class ShowService {
 
     public OkResponse contact(String alias, MailToShow mailToSend) {
         validator.validate(mailToSend);
-        if (!captchaValidator.validate("http://tilos.hu", mailToSend.getCaptchaChallenge(), mailToSend.getCaptchaResponse())){
+        if (!captchaValidator.validate("http://tilos.hu", mailToSend.getCaptchaChallenge(), mailToSend.getCaptchaResponse())) {
             throw new IllegalArgumentException("Captcha is invalid");
         }
 
         Email email = new Email();
-        email.setSubject(mailToSend.getSubject());
-        email.setBody(mailToSend.getBody());
+        email.setSubject("[tilos.hu] " + mailToSend.getSubject());
+        email.setBody("Ez a levél a tilos.hu kapcsolat felvételi odaláról lett elküldve\n-----------\n\n" + mailToSend.getBody());
         email.setFrom(mailToSend.getFrom());
 
         DBObject one = db.getCollection("show").findOne(aliasOrId(alias));
