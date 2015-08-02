@@ -189,6 +189,7 @@ public class ShowService {
         Email email = new Email();
         email.setSubject(mailToSend.getSubject());
         email.setBody(mailToSend.getBody());
+        email.setFrom(mailToSend.getFrom());
 
         DBObject one = db.getCollection("show").findOne(aliasOrId(alias));
         ShowDetailed detailed = mapper.map(one, ShowDetailed.class);
