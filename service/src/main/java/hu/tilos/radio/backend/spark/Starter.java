@@ -11,6 +11,7 @@ import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.DozerFactory;
 import hu.tilos.radio.backend.MongoProducer;
+import hu.tilos.radio.backend.Smoketest;
 import hu.tilos.radio.backend.auth.AuthService;
 import hu.tilos.radio.backend.auth.LoginData;
 import hu.tilos.radio.backend.auth.PasswordReset;
@@ -27,6 +28,7 @@ import hu.tilos.radio.backend.contribution.ContributionToSave;
 import hu.tilos.radio.backend.controller.internal.OauthService;
 import hu.tilos.radio.backend.data.error.AccessDeniedException;
 import hu.tilos.radio.backend.data.error.NotFoundException;
+import hu.tilos.radio.backend.data.error.ValidationException;
 import hu.tilos.radio.backend.data.response.ErrorResponse;
 import hu.tilos.radio.backend.episode.EpisodeService;
 import hu.tilos.radio.backend.episode.EpisodeToSave;
@@ -35,6 +37,7 @@ import hu.tilos.radio.backend.m3u.M3uService;
 import hu.tilos.radio.backend.mix.MixData;
 import hu.tilos.radio.backend.mix.MixService;
 import hu.tilos.radio.backend.search.SearchService;
+import hu.tilos.radio.backend.show.MailToShow;
 import hu.tilos.radio.backend.show.ShowService;
 import hu.tilos.radio.backend.show.ShowToSave;
 import hu.tilos.radio.backend.stat.StatController;
@@ -115,6 +118,9 @@ public class Starter {
     @Inject
     BookmarkService bookmarkService;
 
+    @Inject
+    Smoketest smoketestService;
+
     private Gson gson;
 
     static Injector injector;
@@ -187,6 +193,11 @@ public class Starter {
             response.body(gson.toJson(new ErrorResponse(e.getMessage())));
         });
 
+        exception(ValidationException.class, (e, request, response) -> {
+            response.status(400);
+            response.body(gson.toJson(new ErrorResponse(e.getMessage())));
+        });
+
 
         JsonTransformer jsonResponse = new JsonTransformer(gson);
 
@@ -212,6 +223,13 @@ public class Starter {
         put("/api/v1/show/:alias",
                 authorized("/show/{alias}", (req, res, session) ->
                         showService.update(req.params("alias"), gson.fromJson(req.body(), ShowToSave.class))), jsonResponse);
+
+        post("/api/v1/show/:alias/contact", (req, res) ->
+                showService.contact(req.params("alias"), gson.fromJson(req.body(), MailToShow.class)), jsonResponse);
+
+
+        get("/api/v1/test/ping", (req, res) ->
+                smoketestService.ping(), jsonResponse);
 
         get("/api/v1/mix", (req, res) ->
                 mixService.list(req.queryParams("show"), req.queryParams("category")), jsonResponse);

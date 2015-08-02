@@ -23,6 +23,7 @@ public class GuiceConfigurationListener implements TypeListener, ProvisionListen
 
     @Override
     public <I> void hear(TypeLiteral<I> typeLiteral, TypeEncounter<I> typeEncounter) {
+
         Class<?> clazz = typeLiteral.getRawType();
         while (clazz != null) {
             for (Field field : clazz.getDeclaredFields()) {

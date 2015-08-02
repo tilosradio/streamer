@@ -199,11 +199,11 @@ public class AuthService {
 
 
     public String register(RegisterData registerData) {
+        validator.validate(registerData);
+
         if (!checkCaptcha(registerData.getCaptchaChallenge(), registerData.getCaptchaResponse())) {
             throw new AccessDeniedException("A captcha megadása hibás");
         }
-
-        validator.validate(registerData);
 
         DBObject existingUser = db.getCollection("user").findOne(new BasicDBObject("username", registerData.getUsername()));
         if (existingUser != null) {

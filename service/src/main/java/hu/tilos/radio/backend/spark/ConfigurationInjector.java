@@ -30,10 +30,18 @@ public class ConfigurationInjector<T> implements MembersInjector<T> {
                     throw new IllegalArgumentException("Undefined configuration paramteter " + name);
                 }
                 field.set(o, configValue);
+            } else if (field.getType().equals(boolean.class)) {
+                String name = field.getAnnotation(Configuration.class).name();
+                boolean configValue = config.getBoolean(name);
+                field.set(o, configValue);
             } else {
-                throw new IllegalArgumentException("COnfig type is not supported " + field.getType());
+                throw new IllegalArgumentException("Config type is not supported " + field.getType());
             }
-        } catch (IllegalAccessException e) {
+        } catch (
+                IllegalAccessException e
+                )
+
+        {
             throw new RuntimeException(e);
         }
     }

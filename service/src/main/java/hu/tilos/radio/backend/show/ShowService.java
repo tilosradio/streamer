@@ -1,11 +1,17 @@
 package hu.tilos.radio.backend.show;
 
 import com.mongodb.*;
+
+
 import hu.radio.tilos.model.type.ShowStatus;
+import hu.tilos.radio.backend.Email;
+import hu.tilos.radio.backend.EmailSender;
 import hu.tilos.radio.backend.ObjectValidator;
+import hu.tilos.radio.backend.author.AuthorDetailed;
 import hu.tilos.radio.backend.contribution.ShowContribution;
 import hu.tilos.radio.backend.converters.SchedulingTextUtil;
 import hu.tilos.radio.backend.data.response.CreateResponse;
+import hu.tilos.radio.backend.data.response.OkResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.data.types.SchedulingSimple;
 import hu.tilos.radio.backend.data.types.UrlData;
@@ -13,6 +19,7 @@ import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.mix.MixSimple;
 import hu.tilos.radio.backend.util.AvatarLocator;
+import hu.tilos.radio.backend.util.RecaptchaValidator;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
@@ -43,6 +50,12 @@ public class ShowService {
 
     @Inject
     private DozerBeanMapper mapper;
+
+    @Inject
+    private RecaptchaValidator captchaValidator;
+
+    @Inject
+    private EmailSender emailSender;
 
     @Inject
     private DB db;
@@ -80,7 +93,7 @@ public class ShowService {
         }
     }
 
-    public ShowDetailed get(@PathParam("alias") String alias) {
+    public ShowDetailed get(String alias) {
         DBObject one = db.getCollection("show").findOne(aliasOrId(alias));
         ShowDetailed detailed = mapper.map(one, ShowDetailed.class);
 
@@ -115,13 +128,13 @@ public class ShowService {
         return urls.stream().map(url -> {
             if (url.getAddress().contains("facebook")) {
                 url.setType("facebook");
-                url.setLabel(url.getAddress().replaceAll("http(s?)://(www.?)facebook.com/","facebook/"));
+                url.setLabel(url.getAddress().replaceAll("http(s?)://(www.?)facebook.com/", "facebook/"));
             } else if (url.getAddress().contains("mixcloud")) {
                 url.setType("mixcloud");
-                url.setLabel(url.getAddress().replaceAll("http(s?)://(www.?)mixcloud.com/","mixcloud/"));
+                url.setLabel(url.getAddress().replaceAll("http(s?)://(www.?)mixcloud.com/", "mixcloud/"));
             } else {
                 url.setType("url");
-                url.setLabel(url.getAddress().replaceAll("http(s?)://",""));
+                url.setLabel(url.getAddress().replaceAll("http(s?)://", ""));
             }
             return url;
         }).collect(Collectors.toList());
@@ -165,6 +178,27 @@ public class ShowService {
         newObject.put("alias", objectToSave.getAlias());
         db.getCollection("show").insert(newObject);
         return new CreateResponse(((ObjectId) newObject.get("_id")).toHexString());
+    }
+
+    public OkResponse contact(String alias, MailToShow mailToSend) {
+        validator.validate(mailToSend);
+        if (!captchaValidator.validate("http://tilos.hu", mailToSend.getCaptchaChallenge(), mailToSend.getCaptchaResponse())){
+            throw new IllegalArgumentException("Captcha is invalid");
+        }
+
+        Email email = new Email();
+        email.setSubject(mailToSend.getSubject());
+        email.setBody(mailToSend.getBody());
+
+        DBObject one = db.getCollection("show").findOne(aliasOrId(alias));
+        ShowDetailed detailed = mapper.map(one, ShowDetailed.class);
+
+        detailed.getContributors().forEach(contributor -> {
+            AuthorDetailed author = mapper.map(db.getCollection("author").findOne(aliasOrId(contributor.getAuthor().getId())), AuthorDetailed.class);
+            email.setTo(author.getEmail());
+            emailSender.send(email);
+        });
+        return new OkResponse("Message has been sent");
     }
 
     public void setDb(DB db) {

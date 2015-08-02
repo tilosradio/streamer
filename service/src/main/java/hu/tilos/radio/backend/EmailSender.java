@@ -19,6 +19,10 @@ public class EmailSender {
     @Configuration(name = "mandrill.key")
     private String key;
 
+    @Inject
+    @Configuration(name = "mail.mock")
+    private String mock;
+
     public EmailSender() {
     }
 
@@ -34,17 +38,30 @@ public class EmailSender {
             List<MandrillMessage.Recipient> recipients = new ArrayList<>();
             recipients.add(recipient);
             message.setTo(recipients);
-            message.setFromEmail("noreply@tilos.hu");
-            message.setFromName("Tilos szervergép");
+            if (email.getFrom() == null) {
+                message.setFromName("Tilos szervergép");
+                message.setFromEmail("noreply@tilos.hu");
+            } else {
+                message.setFromEmail(email.getFrom());
+            }
+
 
             message.setPreserveRecipients(false);
-            MandrillMessageStatus[] statuses = api.messages().send(message, false);
-            for (MandrillMessageStatus status : statuses) {
-                if (!"sent".equals(status.getStatus())) {
-                    throw new RuntimeException("Can't send the email: " + status.getRejectReason());
+            if (!mock.equals("true")) {
+                LOG.debug("Sending message over mandrill to " + message.getTo());
+                MandrillMessageStatus[] statuses = api.messages().send(message, false);
+                for (MandrillMessageStatus status : statuses) {
+                    if (!"sent".equals(status.getStatus())) {
+                        throw new RuntimeException("Can't send the email: " + status.getRejectReason());
+                    }
+                    LOG.debug(status.getStatus());
+                    LOG.debug(status.getRejectReason());
                 }
-                LOG.debug(status.getStatus());
-                LOG.debug(status.getRejectReason());
+            } else {
+                LOG.debug("Ignoring mail send due to mail.mock parameter");
+                LOG.debug("mail.to=" + message.getTo());
+                LOG.debug("mail.body=" + email.getBody());
+
             }
         } catch (Exception e) {
             throw new RuntimeException("Can't send email", e);
