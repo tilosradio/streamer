@@ -27,7 +27,6 @@ public class Mp3Joiner {
         File f1 = new File(root, "tilosradio-20140604-1100.mp3");
 
         RingBufferWithPosition firstFrame = new Mp3Joiner().findFirstFrame(new FileInputStream(f1));
-        System.out.println(firstFrame);
 
     }
 
@@ -156,7 +155,7 @@ public class Mp3Joiner {
 
     private boolean isFrameStart(RingBuffer b) {
         return b.get(0) == 255 &&
-                b.get(1) == 0xfa &&
+                (b.get(1) == 0xfa || b.get(1) == 0xfb )&&
                 (b.get(2) & 0xFD) == 0xD0 &&
                 (b.get(3) & 0xCF) == 0x44;
     }
