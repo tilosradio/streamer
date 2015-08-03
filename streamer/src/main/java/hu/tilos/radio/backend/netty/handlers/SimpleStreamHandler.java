@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.standalone.handlers;
+package hu.tilos.radio.backend.netty.handlers;
 
 import hu.tilos.radio.backend.Mp3File;
 import hu.tilos.radio.backend.ResourceCollection;

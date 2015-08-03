@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.standalone;
+package hu.tilos.radio.backend.netty;
 
 import io.netty.channel.FileRegion;
 import io.netty.util.AbstractReferenceCounted;

@@ -1,6 +1,6 @@
-package hu.tilos.radio.backend.standalone;
+package hu.tilos.radio.backend.netty;
 
-import hu.tilos.radio.backend.standalone.handlers.*;
+import hu.tilos.radio.backend.netty.handlers.*;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;

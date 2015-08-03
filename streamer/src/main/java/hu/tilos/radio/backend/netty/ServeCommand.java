@@ -1,6 +1,5 @@
-package hu.tilos.radio.backend.standalone;
+package hu.tilos.radio.backend.netty;
 
-import com.beust.jcommander.JCommander;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -11,18 +10,12 @@ import io.netty.handler.logging.LoggingHandler;
 
 import java.io.File;
 
-public class Starter {
+public class ServeCommand implements Runnable{
 
     @com.beust.jcommander.Parameter(required = true, names = {"-r", "--root"})
     private File root;
 
-    public static void main(String[] args) {
-        Starter starter = new Starter();
-        new JCommander(starter, args);
-        starter.run();
-    }
-
-    private void run() {
+    public void run() {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {

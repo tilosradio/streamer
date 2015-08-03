@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.standalone.handlers;
+package hu.tilos.radio.backend.netty.handlers;
 
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;

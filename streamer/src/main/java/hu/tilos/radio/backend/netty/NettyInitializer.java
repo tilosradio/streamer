@@ -1,11 +1,10 @@
-package hu.tilos.radio.backend.standalone;
+package hu.tilos.radio.backend.netty;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.stream.ChunkedWriteHandler;
 
 import java.io.File;
 
