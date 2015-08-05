@@ -183,12 +183,12 @@ public class ShowService {
     public OkResponse contact(String alias, MailToShow mailToSend) {
         validator.validate(mailToSend);
         if (!captchaValidator.validate("http://tilos.hu", mailToSend.getCaptchaChallenge(), mailToSend.getCaptchaResponse())) {
-            throw new IllegalArgumentException("Captcha is invalid");
+            throw new IllegalArgumentException("Rosszul megadott Captcha");
         }
 
         Email email = new Email();
         email.setSubject("[tilos.hu] " + mailToSend.getSubject());
-        email.setBody("Ez a levél a tilos.hu kapcsolat felvételi odaláról lett elküldve\n-----------\n\n" + mailToSend.getBody());
+        email.setBody("Ez a levél a tilos.hu műsoroldaláról lett küldve\n-----------\n\n" + mailToSend.getBody());
         email.setFrom(mailToSend.getFrom());
 
         DBObject one = db.getCollection("show").findOne(aliasOrId(alias));
@@ -199,7 +199,7 @@ public class ShowService {
             email.setTo(author.getEmail());
             emailSender.send(email);
         });
-        return new OkResponse("Message has been sent");
+        return new OkResponse("Üzenet elküldve.");
     }
 
     public void setDb(DB db) {
