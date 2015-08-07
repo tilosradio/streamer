@@ -5,6 +5,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import hu.tilos.radio.backend.data.response.CreateResponse;
+import hu.tilos.radio.backend.data.response.OkResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
 import hu.tilos.radio.backend.episode.util.DateFormatUtil;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
@@ -53,10 +54,7 @@ public class EpisodeService {
         return r;
     }
 
-
-
-
-    public List<EpisodeData> listEpisodes(@QueryParam("start") long from, @QueryParam("end") long to) {
+    public List<EpisodeData> listEpisodes(long from, long to) {
         Date fromDate = new Date();
         fromDate.setTime(from);
         Date toDate = new Date();
@@ -95,6 +93,92 @@ public class EpisodeService {
 
         return result;
 
+    }
+
+    public OkResponse cleanupEpisodes() {
+        DBCursor episodes = db.getCollection("episode").find().sort(new BasicDBObject("plannedFrom", 1));
+        EpisodeData prev = new EpisodeData();
+        int i = 0;
+        for (DBObject episode : episodes) {
+            EpisodeData current = modelMapper.map(episode, EpisodeData.class);
+            if (prev != null) {
+                if (prev.getPlannedFrom() != null && prev.getPlannedFrom().equals(current.getPlannedFrom())) {
+                    i++;
+                    printProblem("Duplicated episode", prev, current);
+                    EpisodeData toDelete = findDuplicated(prev, current);
+                    if (toDelete != null) {
+                        LOG.info(String.format(String.format("To delete: %s ", toDelete.getId())));
+                        db.getCollection("episode").remove(new BasicDBObject("_id", new ObjectId(toDelete.getId())));
+                    }
+                }
+            }
+            prev = current;
+        }
+        return new OkResponse(String.format("Found %d problem", i));
+    }
+
+    public OkResponse removeOverlap() {
+        Date start = new Date(110, 04, 01);
+        Date end = new Date(116, 01, 01);
+        List<EpisodeData> episodes = episodeUtil.getEpisodeData(null, start, end);
+        EpisodeData prev = null;
+        int i = 0;
+        for (EpisodeData current : episodes) {
+            if (prev != null) {
+                if (current.getPlannedFrom().getTime() == prev.getPlannedFrom().getTime() && current.getPlannedTo().getTime() != prev.getPlannedTo().getTime()) {
+                    i++;
+                    printProblem("Duplicated episode", prev, current);
+                    long diff = prev.getPlannedTo().getTime() - current.getPlannedTo().getTime();
+                    if (!current.isPersistent() && prev.isPersistent() && diff == 30 * 60 * 1000) {
+                        db.getCollection("episode").update(new BasicDBObject("_id", new ObjectId(prev.getId())), new BasicDBObject("$set", new BasicDBObject("plannedTo", current.getPlannedTo())), false, false);
+                    }
+
+                }
+//                if (current.getPlannedFrom().getTime() != prev.getPlannedTo().getTime()) {
+//                    i++;
+//                    printProblem("Overlapping episode", prev, current);
+//                }
+            }
+            prev = current;
+        }
+        return new OkResponse(String.format("Found %d problem", i));
+    }
+
+    private void printProblem(String problem, EpisodeData prev, EpisodeData current) {
+        LOG.error(String.format("%s: %s(%s)/%s(%s) %tF %tR-%tR %tR-%tR",
+                problem,
+                prev.getId(),
+                prev.getShow().getName(),
+                current.getId(),
+                current.getShow().getName(),
+                prev.getPlannedFrom(),
+                prev.getPlannedFrom(),
+                prev.getPlannedTo(),
+                current.getPlannedFrom(),
+                current.getPlannedTo()));
+    }
+
+    private EpisodeData findDuplicated(EpisodeData prev, EpisodeData current) {
+        if (prev.getText() == null && current.getText() != null && deletable(current)) {
+            return prev;
+        }
+        if (current.getText() == null && prev.getText() != null && deletable(current)) {
+            return current;
+        }
+        if (prev.getPlannedFrom().getTime() > current.getPlannedFrom().getTime() && deletable(prev)) {
+            return prev;
+        }
+        if (current.getPlannedFrom().getTime() > prev.getPlannedFrom().getTime() && deletable(current)) {
+            return current;
+        }
+        if (current.getText() == null && current.getBookmarks().size() == 0 && deletable(current)) {
+            return current;
+        }
+        return null;
+    }
+
+    private boolean deletable(EpisodeData episode) {
+        return episode.getBookmarks().size() == 0 && episode.getText() == null && !episode.isExtra();
     }
 
     public List<EpisodeData> next() {

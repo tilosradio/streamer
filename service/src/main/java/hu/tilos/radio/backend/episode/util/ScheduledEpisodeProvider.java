@@ -87,7 +87,6 @@ public class ScheduledEpisodeProvider {
                 exactToDate.setTime(d.getPlannedFrom().getTime() + (s.getDuration()) * 60 * 1000);
                 d.setPlannedTo(exactToDate);
 
-
                 Date estimatedToDate = new Date();
                 estimatedToDate.setTime(d.getPlannedFrom().getTime() + (s.getDuration() + 30) * 60 * 1000);
                 d.setRealTo(estimatedToDate);
