@@ -120,7 +120,7 @@ public class EpisodeService {
     public OkResponse removeOverlap() {
         Date start = new Date(110, 04, 01);
         Date end = new Date(116, 01, 01);
-        List<EpisodeData> episodes = episodeUtil.getEpisodeData(null, start, end);
+        List<EpisodeData> episodes = episodeUtil.getEpisodeData(null, start, end, false);
         EpisodeData prev = null;
         int i = 0;
         for (EpisodeData current : episodes) {

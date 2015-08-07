@@ -68,6 +68,10 @@ public class EpisodeUtil {
     }
 
     public List<EpisodeData> getEpisodeData(String showIdOrAlias, Date from, Date to) {
+        return getEpisodeData(showIdOrAlias, from, to, true);
+    }
+
+    public List<EpisodeData> getEpisodeData(String showIdOrAlias, Date from, Date to, boolean persist) {
         List<EpisodeData> merged = merger.merge(
                 persistentProvider.listEpisode(showIdOrAlias, from, to),
                 scheduledProvider.listEpisode(showIdOrAlias, from, to),
@@ -76,7 +80,9 @@ public class EpisodeUtil {
 
 
         merged = filterToShow(showIdOrAlias, merged);
-        persistEpisodeFromThePast(merged);
+        if (persist) {
+            persistEpisodeFromThePast(merged);
+        }
         fillTheBookmarks(from, to, merged);
         merged = episodeTextFromBookmark(merged);
         for (EpisodeData episode : merged) {
