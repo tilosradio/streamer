@@ -44,35 +44,16 @@ public class EpisodeService {
     DB db;
 
     @Inject
-    TextConverter converter;
-
-    @Inject
     ShowCache showCache;
 
     public EpisodeData get(String id) {
         DBObject episode = db.getCollection("episode").findOne(aliasOrId(id));
         EpisodeData r = modelMapper.map(episode, EpisodeData.class);
-        enrichEpisode(r);
+        episodeUtil.enrichEpisode(r);
         return r;
     }
 
-    private EpisodeData enrichEpisode(EpisodeData r) {
-        try {
-            episodeUtil.linkGenerator(r);
-            r.setShow(showCache.getShowSimple(r.getShow().getId()));
-            if (r.getText() != null) {
-                if (r.getText().getFormat() == null) {
-                    r.getText().setFormat("legacy");
-                }
-                r.getText().setFormatted(converter.format(r.getText().getFormat(), r.getText().getContent()));
-                return r;
-            }
-        } catch (Exception ex) {
-            LOG.error("Can't enrich episode: " + r.getId(), ex);
-            throw ex;
-        }
-        return r;
-    }
+
 
 
     public List<EpisodeData> listEpisodes(@QueryParam("start") long from, @QueryParam("end") long to) {
@@ -130,7 +111,7 @@ public class EpisodeService {
         List<EpisodeData> result = new ArrayList<>();
         for (DBObject episode : episodes) {
             EpisodeData episodeData = modelMapper.map(episode, EpisodeData.class);
-            enrichEpisode(episodeData);
+            episodeUtil.enrichEpisode(episodeData);
             result.add(episodeData);
         }
         return result;
@@ -169,7 +150,7 @@ public class EpisodeService {
         List<EpisodeData> result = new ArrayList<>();
         for (DBObject episode : episodes) {
             EpisodeData episodeData = modelMapper.map(episode, EpisodeData.class);
-            enrichEpisode(episodeData);
+            episodeUtil.enrichEpisode(episodeData);
             result.add(episodeData);
         }
         return result;
@@ -187,7 +168,7 @@ public class EpisodeService {
             if (episodeData.size() == 0) {
                 throw new IllegalArgumentException("Can't find the appropriate episode");
             } else {
-                return enrichEpisode(episodeData.get(0));
+                return episodeData.get(0);
             }
         } catch (ParseException ex) {
             throw new RuntimeException(ex);

@@ -1,5 +1,7 @@
 package hu.tilos.radio.backend.episode.util;
 
+import com.microtripit.mandrillapp.lutung.logging.Logger;
+import com.microtripit.mandrillapp.lutung.logging.LoggerFactory;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBRef;
@@ -7,6 +9,7 @@ import hu.tilos.radio.backend.bookmark.BookmarkData;
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.text.TextData;
 import hu.tilos.radio.backend.util.ShowCache;
+import hu.tilos.radio.backend.util.TextConverter;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,6 +44,28 @@ public class EpisodeUtil {
     @Inject
     DB db;
 
+    @Inject
+    TextConverter converter;
+
+    private static final Logger LOG = LoggerFactory.getLogger(EpisodeUtil.class);
+
+    public EpisodeData enrichEpisode(EpisodeData r) {
+        try {
+            linkGenerator(r);
+            r.setShow(showCache.getShowSimple(r.getShow().getId()));
+            if (r.getText() != null) {
+                if (r.getText().getFormat() == null) {
+                    r.getText().setFormat("legacy");
+                }
+                r.getText().setFormatted(converter.format(r.getText().getFormat(), r.getText().getContent()));
+                return r;
+            }
+        } catch (Exception ex) {
+            LOG.error("Can't enrich episode: " + r.getId(), ex);
+            throw ex;
+        }
+        return r;
+    }
 
     public List<EpisodeData> getEpisodeData(String showIdOrAlias, Date from, Date to) {
         List<EpisodeData> merged = merger.merge(
@@ -55,15 +80,11 @@ public class EpisodeUtil {
         fillTheBookmarks(from, to, merged);
         merged = episodeTextFromBookmark(merged);
         for (EpisodeData episode : merged) {
-            linkGenerator(episode);
-            showDetails(episode);
+            enrichEpisode(episode);
         }
         return merged;
     }
 
-    private void showDetails(EpisodeData episode) {
-        episode.setShow(showCache.getShowSimple(episode.getShow().getId()));
-    }
 
     private void fillTheBookmarks(Date from, Date to, List<EpisodeData> merged) {
         BasicDBObject query = new BasicDBObject();

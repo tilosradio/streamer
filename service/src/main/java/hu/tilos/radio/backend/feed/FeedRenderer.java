@@ -70,7 +70,7 @@ public class FeedRenderer {
                     String prefix = prefixedWithShowName ? episode.getShow().getName() + "/" : "";
                     if (episode.getText() != null) {
                         e.setTitle(prefix + YYYY_DOT_MM_DOT_DD.format(episode.getPlannedFrom()) + " " + episode.getText().getTitle());
-                        e.setSummary(new Summary("html", episode.getText().getContent()));
+                        e.setSummary(new Summary("html", episode.getText().getFormatted()));
                     } else {
                         e.setTitle(prefix + YYYY_DOT_MM_DOT_DD.format(episode.getPlannedFrom()) + " " + "adásnapló");
                         e.setSummary(new Summary("adás archívum"));
