@@ -159,7 +159,7 @@ public class EpisodeService {
     }
 
     private EpisodeData findDuplicated(EpisodeData prev, EpisodeData current) {
-        if (prev.getText() == null && current.getText() != null && deletable(current)) {
+        if (prev.getText() == null && current.getText() != null && deletable(prev)) {
             return prev;
         }
         if (current.getText() == null && prev.getText() != null && deletable(current)) {
