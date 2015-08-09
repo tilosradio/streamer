@@ -29,6 +29,6 @@ object Boot extends App with AkkaInjectable {
 
   implicit val timeout = Timeout(5.seconds)
 
-  IO(Http) ? Http.Bind(service, interface = "localhost", port = 6060)
+  IO(Http) ? Http.Bind(service, interface = "0.0.0.0", port = 6060)
 }
 
