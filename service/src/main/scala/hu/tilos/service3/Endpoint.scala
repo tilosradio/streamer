@@ -60,6 +60,13 @@ class MyServiceActor(implicit inj: Injector) extends Actor with HttpService with
           respondWithMediaType(`application/json`) { requestContext =>
             requestContext.complete(Ok("pong2").toJson.prettyPrint)
           }
+        } ~
+        authenticate(authenticator) { user =>
+          path("api" / "v2" / "whoami") {
+            respondWithMediaType(`application/json`) { requestContext =>
+              requestContext.complete(Ok(user.username).toJson.prettyPrint)
+            }
+          }
         }
       }
     }
