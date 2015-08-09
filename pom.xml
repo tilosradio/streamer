@@ -12,7 +12,6 @@
         <module>service</module>
         <module>streamer</module>
         <!--module>smoketest</module-->
-        <module>resteasy-atom</module>
         <!--module>restapi</module-->
     </modules>
     <properties>
