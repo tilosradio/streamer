@@ -1,4 +1,4 @@
 #!/bin/bash
 source /etc/container_environment.sh
 cd /host
-java -jar -Dconfig.file=/host/tilos.properties -Dmongo.host=$MONGODB_PORT_27017_TCP_ADDR service-jar-with-dependencies.jar >> /var/log/backend-service.log
+java -jar -Dconfig.file=/host/tilos.properties -Dmongo.host=$MONGODB_PORT_27017_TCP_ADDR service.jar >> /var/log/backend-service.log

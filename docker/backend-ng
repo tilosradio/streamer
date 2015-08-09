@@ -1,0 +1,4 @@
+#!/bin/bash
+source /etc/container_environment.sh
+cd /host
+java -cp service.jar -Dconfig.file=/host/tilos.properties -Dmongo.host=$MONGODB_PORT_27017_TCP_ADDR hu.tilos.service3.Boot>> /var/log/backend-ng-service.log
