@@ -17,13 +17,13 @@ import java.util.List;
 import static hu.tilos.radio.backend.MongoTestUtil.loadTo;
 
 
-public class StatControllerTest {
+public class StatServiceTest {
 
     @Rule
     public GuiceRunner guice = new GuiceRunner(this);
 
     @Inject
-    StatController controller;
+    StatService controller;
 
     @Inject
     FongoRule fongoRule;

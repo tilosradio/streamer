@@ -11,7 +11,6 @@ import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
-import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class MixService {
     DB db;
 
 
-    public List<MixSimple> list(@QueryParam("show") String show, @QueryParam("category") String category) {
+    public List<MixSimple> list(String show, String category) {
 
         BasicDBObject query = new BasicDBObject();
         if (show != null) {

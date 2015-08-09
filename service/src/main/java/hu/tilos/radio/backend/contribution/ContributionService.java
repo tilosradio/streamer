@@ -5,15 +5,13 @@ import hu.tilos.radio.backend.data.response.OkResponse;
 import org.bson.types.ObjectId;
 
 import javax.inject.Inject;
-import javax.ws.rs.QueryParam;
-
 
 public class ContributionService {
 
     @Inject
     DB db;
 
-    public OkResponse delete(@QueryParam("author") String authorId, @QueryParam("show") String showId) {
+    public OkResponse delete(String authorId, String showId) {
         BasicDBObject authorQuery = new BasicDBObject("_id", new ObjectId(authorId));
         DBObject author = db.getCollection("author").findOne(authorQuery);
 

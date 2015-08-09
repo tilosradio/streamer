@@ -16,11 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -29,7 +24,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 
-@Path("/api/int/oauth")
 public class OauthService {
 
     private static final Logger LOG = LoggerFactory.getLogger(OauthService.class);
@@ -55,14 +49,6 @@ public class OauthService {
     @Configuration(name = "server.url")
     private String serverUrl;
 
-    /**
-     * @exclude
-     */
-    @Produces("application/json")
-    @Security(role = Role.GUEST)
-    @Transactional
-    @POST
-    @Path("/facebook")
     public Map<String, String> facebook(FacebookRequest request) {
         try {
 

@@ -26,8 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,7 +58,7 @@ public class ShowService {
     @Inject
     private DB db;
 
-    public List<ShowSimple> list(@QueryParam("status") String status) {
+    public List<ShowSimple> list(String status) {
         BasicDBObject criteria = new BasicDBObject();
 
         //FIXME
@@ -141,7 +139,7 @@ public class ShowService {
     }
 
 
-    public List<EpisodeData> listEpisodes(@PathParam("show") String showAlias, @QueryParam("start") long from, @QueryParam("end") long to) {
+    public List<EpisodeData> listEpisodes(String showAlias, long from, long to) {
         Date fromDate = new Date();
         fromDate.setTime(from);
         Date toDate = new Date();
@@ -158,7 +156,7 @@ public class ShowService {
     }
 
 
-    public UpdateResponse update(@PathParam("alias") String alias, ShowToSave showToSave) {
+    public UpdateResponse update(String alias, ShowToSave showToSave) {
         validator.validate(showToSave);
         DBObject show = findShow(alias);
         mapper.map(showToSave, show);

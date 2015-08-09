@@ -10,16 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.QueryParam;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
-public class StatController {
+public class StatService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StatController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StatService.class);
 
     @Inject
     DB db;
@@ -40,7 +39,7 @@ public class StatController {
         return statData;
     }
 
-    public List<ListenerStat> getListenerSTat(@QueryParam("from") Long fromTimestamp, @QueryParam("to") Long toTimestamp) {
+    public List<ListenerStat> getListenerSTat(Long fromTimestamp,Long toTimestamp) {
 
         List<ListenerStat> result = new ArrayList<>();
         Date toDate = new Date();

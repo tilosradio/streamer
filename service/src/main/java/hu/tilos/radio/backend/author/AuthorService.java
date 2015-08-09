@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class AuthorService {
 
     }
 
-    public AuthorDetailed get(@PathParam("alias") String alias, Session session) {
+    public AuthorDetailed get(String alias, Session session) {
         DBObject one = findAuthor(alias);
         AuthorDetailed author = mapper.map(one, AuthorDetailed.class);
         avatarLocator.locateAvatar(author);
@@ -64,7 +63,7 @@ public class AuthorService {
     }
 
 
-    public UpdateResponse update(@PathParam("alias") String alias, AuthorToSave authorToSave) {
+    public UpdateResponse update(String alias, AuthorToSave authorToSave) {
         DBObject author = findAuthor(alias);
         mapper.map(authorToSave, author);
         db.getCollection("author").update(aliasOrId(alias), author);

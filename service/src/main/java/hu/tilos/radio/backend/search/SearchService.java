@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.QueryParam;
 import java.io.IOException;
 import java.io.Reader;
 import java.text.SimpleDateFormat;
@@ -104,7 +103,7 @@ public class SearchService {
     }
 
 
-    public SearchResponse search(@QueryParam("q") String search) throws IOException, ParseException {
+    public SearchResponse search(String search) throws IOException, ParseException {
 
         MultiFieldQueryParser queryParser = new MultiFieldQueryParser(
                 LUCENE_48,

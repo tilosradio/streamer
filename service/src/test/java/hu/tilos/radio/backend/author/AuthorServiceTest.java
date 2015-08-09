@@ -28,7 +28,7 @@ public class AuthorServiceTest {
     public GuiceRunner guice = new GuiceRunner(this);
 
     @Inject
-    AuthorController controller;
+    AuthorService service;
 
     @Inject
     FongoRule fongoRule;
@@ -53,7 +53,7 @@ public class AuthorServiceTest {
         loadTo(fongoRule, "author", "author-author3.json", showId);
 
         //when
-        List<AuthorListElement> authors = controller.list();
+        List<AuthorListElement> authors = service.list();
 
         //then
         assertThat(authors.size(), equalTo(3));
@@ -71,7 +71,7 @@ public class AuthorServiceTest {
         session.setCurrentUser(null);
 
         //when
-        AuthorDetailed author = controller.get("author1");
+        AuthorDetailed author = service.get("author1", session);
 
         //then
         assertThat(author.getName(), equalTo("AUTHOR1"));
@@ -95,7 +95,7 @@ public class AuthorServiceTest {
         save.setName("asd");
 
         //when
-        controller.update("author1", save);
+        service.update("author1", save);
 
         //then
         DBObject one = fongoRule.getDB().getCollection("author").findOne();
@@ -110,7 +110,7 @@ public class AuthorServiceTest {
         save.setAlias("aliasx");
 
         //when
-        controller.create(save);
+        service.create(save);
 
         //then
         DBObject one = fongoRule.getDB().getCollection("author").findOne();

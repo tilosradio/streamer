@@ -14,10 +14,6 @@ import net.anzix.jaxrs.atom.MediaType;
 import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -46,20 +42,13 @@ public class FeedService {
     @Inject
     private DozerBeanMapper mapper;
 
-    @GET
-    @Path("/weekly")
-    @Security(role = Role.GUEST)
-    @Produces("application/atom+xml")
+
     public Feed  weeklyFeed() {
         return weeklyFeed(null);
     }
 
 
-    @GET
-    @Path("/weekly/{type}")
-    @Security(role = Role.GUEST)
-    @Produces("application/atom+xml")
-    public Feed weeklyFeed(@PathParam("type") String type) {
+    public Feed weeklyFeed(String type) {
         Date now = new Date();
         Date weekAgo = new Date();
         weekAgo.setTime(now.getTime() - (long) 604800000L);
@@ -111,14 +100,12 @@ public class FeedService {
 
 
 
-    @Produces("application/atom+xml")
-    public Feed itunesFeed(@PathParam("alias") String alias) {
+    public Feed itunesFeed(String alias) {
         return feed(alias, null);
     }
 
 
-    @Produces("application/atom+xml")
-    public Feed feed(@PathParam("alias") String alias, @PathParam("year") String year) {
+    public Feed feed(String alias, String year) {
         //{year: (/.*)?
         //,
         if (year == null) {

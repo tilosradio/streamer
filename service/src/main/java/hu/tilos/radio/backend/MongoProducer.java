@@ -6,8 +6,6 @@ import com.mongodb.WriteConcern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -31,7 +29,6 @@ public class MongoProducer implements Provider<DB> {
 
     }
 
-    @PostConstruct
     public void init() {
         try {
             LOG.debug("Connecting to the mongodb " + host + " " + dbName);
@@ -43,8 +40,6 @@ public class MongoProducer implements Provider<DB> {
         }
     }
 
-    @Produces
-    @Named
     public DB getDb() {
         return db;
     }

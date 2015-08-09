@@ -9,14 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.transaction.*;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 
 /**
  * Various functions to check data consistency.
  */
-@Path("api/v1/fix")
 public class DataFixController {
 
 
@@ -32,11 +28,7 @@ public class DataFixController {
     /**
      * @exclude
      */
-    @GET
-    @Path("/tags")
-    @Security(role = Role.ADMIN)
-    @Transactional
-    public void fixTags() throws NotSupportedException, SystemException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    public void fixTags() {
         LOG.info("Starting to fix tags");
         DBCursor contents = db.getCollection("episode").find(new BasicDBObject("text", new BasicDBObject("$exists", true)));
         for (DBObject episode : contents) {

@@ -3,8 +3,6 @@ package hu.tilos.radio.backend;
 import hu.radio.tilos.model.Role;
 import org.slf4j.Logger;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 
 
 public class Smoketest {

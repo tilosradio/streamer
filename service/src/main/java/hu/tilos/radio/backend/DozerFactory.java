@@ -8,8 +8,6 @@ import org.dozer.CustomConverter;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.InputStream;
@@ -33,12 +31,10 @@ public class DozerFactory implements Provider<DozerBeanMapper> {
         return new BasicDBObject();
     }
 
-    @Produces
     public DozerBeanMapper mapperFactory() {
         return mapper;
     }
 
-    @PostConstruct
     public void init() {
 
         List<String> mappingFiles = detectMappings();

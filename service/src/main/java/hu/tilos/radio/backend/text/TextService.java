@@ -13,7 +13,6 @@ import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
-import javax.ws.rs.PathParam;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,7 +66,7 @@ public class TextService {
     }
 
 
-    public UpdateResponse update(@PathParam("type") String type, @PathParam("id") String alias, TextToSave objectToSave) {
+    public UpdateResponse update(String type, String alias, TextToSave objectToSave) {
         checkType(type);
         DBObject original = db.getCollection(type).findOne(aliasOrId(alias));
         mapper.map(objectToSave, original);
@@ -76,7 +75,7 @@ public class TextService {
         return new UpdateResponse(true);
     }
 
-    public OkResponse delete(@PathParam("type") String type, @PathParam("id") String alias) {
+    public OkResponse delete(String type, String alias) {
         checkType(type);
         DBObject original = db.getCollection(type).findOne(aliasOrId(alias));
         if (original == null) {
@@ -87,7 +86,7 @@ public class TextService {
     }
 
 
-    public CreateResponse create(@PathParam("type") String type, TextToSave objectToSave) {
+    public CreateResponse create(String type, TextToSave objectToSave) {
         checkType(type);
         DBObject newObject = mapper.map(objectToSave, BasicDBObject.class);
         newObject.put("format", "markdown");

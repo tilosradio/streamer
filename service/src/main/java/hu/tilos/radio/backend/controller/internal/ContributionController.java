@@ -7,18 +7,14 @@ import hu.tilos.radio.backend.contribution.ContributionToSave;
 import org.bson.types.ObjectId;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
 
-@Path("api/int/contribution")
+
 public class ContributionController {
 
     @Inject
     DB db;
 
-    @Produces("application/json")
-    @Security(role = Role.ADMIN)
-    @DELETE
-    public void delete(@QueryParam("author") String authorId, @QueryParam("show") String showId) {
+    public void delete(String authorId, String showId) {
         BasicDBObject authorQuery = new BasicDBObject("_id", new ObjectId(authorId));
         DBObject author = db.getCollection("author").findOne(authorQuery);
 
@@ -47,9 +43,7 @@ public class ContributionController {
 
     }
 
-    @Produces("application/json")
-    @Security(role = Role.ADMIN)
-    @POST
+
     public void save(ContributionToSave contributionToSave) {
         BasicDBObject authorQuery = new BasicDBObject("_id", new ObjectId(contributionToSave.getAuthor().getId()));
         DBObject author = db.getCollection("author").findOne(authorQuery);

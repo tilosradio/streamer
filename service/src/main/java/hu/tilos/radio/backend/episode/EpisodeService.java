@@ -19,8 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -241,7 +239,7 @@ public class EpisodeService {
     }
 
 
-    public EpisodeData getByDate(@PathParam("show") String showAlias, @PathParam("year") int year, @PathParam("month") int month, @PathParam("day") int day) {
+    public EpisodeData getByDate(String showAlias, int year, int month, int day) {
         try {
             BasicDBObject show = (BasicDBObject) db.getCollection("show").findOne(aliasOrId(showAlias));
             String showId = show.get("_id").toString();
@@ -288,7 +286,7 @@ public class EpisodeService {
     }
 
 
-    public UpdateResponse update(@PathParam("id") String alias, EpisodeToSave objectToSave) {
+    public UpdateResponse update(String alias, EpisodeToSave objectToSave) {
 
         if (objectToSave.getText() != null) {
             objectToSave.getText().setAlias("");
