@@ -1,0 +1,2 @@
+net.anzix.jaxrs.atom.AtomFeedProvider
+net.anzix.jaxrs.atom.AtomEntryProvider
