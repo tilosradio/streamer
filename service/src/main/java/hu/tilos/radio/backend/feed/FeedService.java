@@ -136,17 +136,6 @@ public class FeedService {
     }
 
 
-    <<<<<<<4fce28f257631162dc9890ebf1d019e0f16beaf2
-
-    =======
-            >>>>>>>new:
-    spearated stream
-    for
-    the episodes
-    with exact
-    time and
-    text
-
     public Feed itunesFeed(String alias) {
         return feed(alias, null);
     }
