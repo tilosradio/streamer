@@ -16,7 +16,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
@@ -53,25 +52,19 @@ public class FeedService {
         Date weekAgo = new Date();
         weekAgo.setTime(now.getTime() - 3L * 604800000L);
 
-        Stream<EpisodeData> episodeDataStream = filter(episodeUtil.getEpisodeData(null, weekAgo, now), type).stream();
-
-        episodeDataStream = episodeDataStream.sorted(new Comparator<EpisodeData>() {
-            @Override
-            public int compare(EpisodeData episodeData, EpisodeData episodeData2) {
-                return episodeData2.getPlannedFrom().compareTo(episodeData.getPlannedFrom());
-            }
-        });
-
-        episodeDataStream.filter(episodeData -> {
-            return episodeData.getText() != null && !episodeData.getPlannedFrom().equals(episodeData.getRealFrom());
-        });
+        List<EpisodeData> episodes = filter(episodeUtil.getEpisodeData(null, weekAgo, now), type).stream()
+                .sorted(new Comparator<EpisodeData>() {
+                    @Override
+                    public int compare(EpisodeData episodeData, EpisodeData episodeData2) {
+                        return episodeData2.getPlannedFrom().compareTo(episodeData.getPlannedFrom());
+                    }
+                }).filter(episodeData -> {
+                    return episodeData.getText() != null && !episodeData.getPlannedFrom().equals(episodeData.getRealFrom());
+                }).filter(episodeData -> type != null && episodeData.getShow().getType().toString().toLowerCase().equals(type))
+                .collect(Collectors.toList());
 
 
-        if (type != null) {
-            episodeDataStream = episodeDataStream.filter(episodeData -> episodeData.getShow().getType().toString().toLowerCase().equals(type));
-        }
-
-        Feed feed = feedRenderer.generateFeed(episodeDataStream.collect(Collectors.toList()), true);
+        Feed feed = feedRenderer.generateFeed(episodes, true);
 
 
         feed.setTitle("Tilos Rádió podcast");
