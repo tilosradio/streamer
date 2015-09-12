@@ -1,10 +1,8 @@
 package hu.tilos.radio.backend.feed;
 
 import com.mongodb.DB;
-import hu.radio.tilos.model.Role;
 import hu.radio.tilos.model.type.ShowType;
 import hu.tilos.radio.backend.Configuration;
-import hu.tilos.radio.backend.Security;
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.show.ShowSimple;
@@ -17,6 +15,8 @@ import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static hu.tilos.radio.backend.MongoUtil.aliasOrId;
 
@@ -43,10 +43,47 @@ public class FeedService {
     private DozerBeanMapper mapper;
 
 
-    public Feed  weeklyFeed() {
+    public Feed weeklyFeed() {
         return weeklyFeed(null);
     }
 
+
+    public Feed tilosFeed(String type) {
+        Date now = new Date();
+        Date weekAgo = new Date();
+        weekAgo.setTime(now.getTime() - 3L * 604800000L);
+
+        Stream<EpisodeData> episodeDataStream = filter(episodeUtil.getEpisodeData(null, weekAgo, now), type).stream();
+
+        episodeDataStream = episodeDataStream.sorted(new Comparator<EpisodeData>() {
+            @Override
+            public int compare(EpisodeData episodeData, EpisodeData episodeData2) {
+                return episodeData2.getPlannedFrom().compareTo(episodeData.getPlannedFrom());
+            }
+        });
+
+        episodeDataStream.filter(episodeData -> {
+            return episodeData.getText() != null && !episodeData.getPlannedFrom().equals(episodeData.getRealFrom());
+        });
+
+
+        if (type != null) {
+            episodeDataStream = episodeDataStream.filter(episodeData -> episodeData.getShow().getType().toString().toLowerCase().equals(type));
+        }
+
+        Feed feed = feedRenderer.generateFeed(episodeDataStream.collect(Collectors.toList()), true);
+
+
+        feed.setTitle("Tilos Rádió podcast");
+        feed.setUpdated(new Date());
+
+        Link feedLink = new Link();
+        feedLink.setRel("self");
+        feedLink.setType(new MediaType("application", "atom+xml"));
+        feedLink.setHref(uri(serverUrl + "/feed/tilos" + type == null ? "" : "/type"));
+
+        return feed;
+    }
 
     public Feed weeklyFeed(String type) {
         Date now = new Date();
@@ -99,6 +136,16 @@ public class FeedService {
     }
 
 
+    <<<<<<<4fce28f257631162dc9890ebf1d019e0f16beaf2
+
+    =======
+            >>>>>>>new:
+    spearated stream
+    for
+    the episodes
+    with exact
+    time and
+    text
 
     public Feed itunesFeed(String alias) {
         return feed(alias, null);

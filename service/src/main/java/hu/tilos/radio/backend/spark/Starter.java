@@ -364,6 +364,18 @@ public class Starter {
             res.type("application/atom+xml");
             return feedService.weeklyFeed();
         }, new FeedTransformer());
+
+        get("/feed/tilos", (req, res) -> {
+            res.type("application/atom+xml");
+            return feedService.tilosFeed(null);
+        }, new FeedTransformer());
+
+        get("/feed/tilos/:type", (req, res) -> {
+            res.type("application/atom+xml");
+            return feedService.tilosFeed(req.params("type"));
+        }, new FeedTransformer());
+
+
         get("/feed/weekly/:type", (req, res) -> {
             res.type("application/atom+xml");
             return feedService.weeklyFeed(req.params("type"));
