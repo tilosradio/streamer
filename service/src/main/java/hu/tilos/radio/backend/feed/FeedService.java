@@ -52,7 +52,8 @@ public class FeedService {
         Date weekAgo = new Date();
         weekAgo.setTime(now.getTime() - 3L * 604800000L);
 
-        List<EpisodeData> episodes = filter(episodeUtil.getEpisodeData(null, weekAgo, now), type).stream()
+        List<EpisodeData> result = filter(episodeUtil.getEpisodeData(null, weekAgo, now), type);
+        List<EpisodeData> episodes = result.stream()
                 .sorted(new Comparator<EpisodeData>() {
                     @Override
                     public int compare(EpisodeData episodeData, EpisodeData episodeData2) {
@@ -60,7 +61,7 @@ public class FeedService {
                     }
                 }).filter(episodeData -> {
                     return episodeData.getText() != null && !episodeData.getPlannedFrom().equals(episodeData.getRealFrom());
-                }).filter(episodeData -> type != null && episodeData.getShow().getType().toString().toLowerCase().equals(type))
+                }).filter(episodeData -> type == null || episodeData.getShow().getType().toString().toLowerCase().equals(type))
                 .collect(Collectors.toList());
 
 
