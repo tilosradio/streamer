@@ -40,7 +40,7 @@
 
    appOutOfLineCategories =
        element app:categories {
-           attribute href { atomURI },
+           attribute text { atomURI },
            (empty)
        }
 

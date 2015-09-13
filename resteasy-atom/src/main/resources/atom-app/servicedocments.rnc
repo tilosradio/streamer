@@ -60,7 +60,7 @@
         <xsd:group ref="app:extensionSansTitleElement"/>
       </xsd:choice>
       <xsd:attributeGroup ref="app:appCommonAttributes"/>
-      <xsd:attribute name="href" use="required"/>
+      <xsd:attribute name="text" use="required"/>
     </xsd:complexType>
   </xsd:element>
   <!-- app:categories -->
@@ -90,7 +90,7 @@
       <xsd:element name="categories">
         <xsd:complexType mixed="true">
           <xsd:group ref="app:undefinedContent"/>
-          <xsd:attribute name="href" use="required"/>
+          <xsd:attribute name="text" use="required"/>
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>

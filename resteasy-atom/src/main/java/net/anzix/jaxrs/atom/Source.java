@@ -1,5 +1,7 @@
 package net.anzix.jaxrs.atom;
 
+import net.anzix.jaxrs.atom.itunes.Image;
+
 import javax.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
@@ -52,8 +54,8 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(propOrder = {"title", "subtitle", "categories", "updated", "id", "links", "authors", "ITunesAuthor",
-        "ITunesLanguage", "ITunesExplicit", "ITunesCategory", "ITunesImage", "contributors", "rights",
-        "icon", "logo", "generator"})
+        "ITunesExplicit", "contributors", "rights",
+        "icon", "logo", "generator", "category", "image"})
 public class Source extends CommonAttributes {
     private List<Person> authors = new ArrayList<Person>();
     private List<Category> categories = new ArrayList<Category>();
@@ -69,39 +71,28 @@ public class Source extends CommonAttributes {
     private String subtitle;
     private String iTunesAuthor;
 
-    private String iTunesCategory = "Talk Radio";
-
-    private String iTunesLanguage = "hu";
-
     private String iTunesExplicit = "clean";
 
-    private String iTunesImage;
+    private Image image;
 
-    @XmlElement(name = "image", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
-    public String getITunesImage() {
-        return iTunesImage;
+    private net.anzix.jaxrs.atom.itunes.Category category;
+
+    @XmlElement(namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
+    public Image getImage() {
+        return image;
     }
 
-    public void setITunesImage(String iTunesImage) {
-        this.iTunesImage = iTunesImage;
+    public void setImage(Image image) {
+        this.image = image;
     }
 
-    @XmlElement(name = "category", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
-    public String getITunesCategory() {
-        return iTunesCategory;
+    @XmlElement(namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
+    public net.anzix.jaxrs.atom.itunes.Category getCategory() {
+        return category;
     }
 
-    public void setITunesCategory(String iTunesCategory) {
-        this.iTunesCategory = iTunesCategory;
-    }
-
-    @XmlElement(name = "language", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
-    public String getITunesLanguage() {
-        return iTunesLanguage;
-    }
-
-    public void setITunesLanguage(String iTunesLanguage) {
-        this.iTunesLanguage = iTunesLanguage;
+    public void setCategory(net.anzix.jaxrs.atom.itunes.Category category) {
+        this.category = category;
     }
 
     @XmlElement(name = "explicit", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")

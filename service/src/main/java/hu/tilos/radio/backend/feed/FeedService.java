@@ -9,6 +9,7 @@ import hu.tilos.radio.backend.show.ShowSimple;
 import net.anzix.jaxrs.atom.Feed;
 import net.anzix.jaxrs.atom.Link;
 import net.anzix.jaxrs.atom.MediaType;
+import net.anzix.jaxrs.atom.itunes.Image;
 import org.dozer.DozerBeanMapper;
 
 import javax.inject.Inject;
@@ -65,12 +66,13 @@ public class FeedService {
                 .collect(Collectors.toList());
 
 
-        Feed feed = feedRenderer.generateFeed(episodes, "urn:radio.tilos.hu:podcast" + type == null ? "" : "." + type, true);
+        Feed feed = feedRenderer.generateFeed(episodes, "urn:radio.tilos.hu:podcast" + (type == null ? "" : "." + type), true);
 
 
         feed.setTitle("Tilos Rádió podcast");
         feed.setUpdated(new Date());
-        feed.setITunesImage("https://tilos.hu/images/podcast/tilos.jpg");
+        feed.setImage(new Image("https://tilos.hu/images/podcast/tilos.jpg"));
+        feed.setCategory(new net.anzix.jaxrs.atom.itunes.Category("Public Radio"));
 
         Link feedLink = new Link();
         feedLink.setRel("self");
@@ -94,7 +96,7 @@ public class FeedService {
             }
         });
 
-        Feed feed = feedRenderer.generateFeed(episodes, "urn:radio.tilos.hu:weekly" + type == null ? "" : "." + type, true);
+        Feed feed = feedRenderer.generateFeed(episodes, "urn:radio.tilos.hu:weekly" + (type == null ? "" : "." + type), true);
 
 
         feed.setTitle("Tilos Rádió heti podcast");
