@@ -52,7 +52,7 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(propOrder = {"title", "subtitle", "categories", "updated", "id", "links", "authors", "ITunesAuthor",
-        "ITunesLanguage", "ITunesExplicit", "ITunesCategory", "iTunesImage", "contributors", "rights",
+        "ITunesLanguage", "ITunesExplicit", "ITunesCategory", "ITunesImage", "contributors", "rights",
         "icon", "logo", "generator"})
 public class Source extends CommonAttributes {
     private List<Person> authors = new ArrayList<Person>();
