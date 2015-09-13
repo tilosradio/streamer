@@ -365,7 +365,7 @@ public class Starter {
             return feedService.weeklyFeed();
         }, new FeedTransformer());
 
-        get("/feed/tilos", (req, res) -> {
+        get("/feed/podcast", (req, res) -> {
             res.type("application/atom+xml");
             return feedService.tilosFeed(null);
         }, new FeedTransformer());

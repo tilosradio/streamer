@@ -60,8 +60,7 @@ public class FeedService {
                     public int compare(EpisodeData episodeData, EpisodeData episodeData2) {
                         return episodeData2.getPlannedFrom().compareTo(episodeData.getPlannedFrom());
                     }
-                }).filter(episodeData -> {
-                    return episodeData.getText() != null && !episodeData.getPlannedFrom().equals(episodeData.getRealFrom());
+
                 }).filter(episodeData -> type == null || episodeData.getShow().getType().toString().toLowerCase().equals(type))
                 .collect(Collectors.toList());
 
@@ -116,7 +115,7 @@ public class FeedService {
         } else {
             List<EpisodeData> result = new ArrayList<>();
             for (EpisodeData data : episodeData) {
-                if ((type.equals("talk") && data.getShow().getType() == ShowType.SPEECH) || (type.equals("music") && data.getShow().getType() == ShowType.SPEECH)) {
+                if ((type.equals("talk") && data.getShow().getType() == ShowType.SPEECH) || (type.equals("music") && data.getShow().getType() == ShowType.MUSIC)) {
                     result.add(data);
                 }
             }
