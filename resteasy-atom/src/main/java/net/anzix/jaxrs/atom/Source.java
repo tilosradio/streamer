@@ -51,7 +51,8 @@ import java.util.List;
  * @version $Revision: 1 $
  */
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(propOrder = {"title", "subtitle", "categories", "updated", "id", "links", "authors", "ITunesAuthor", "contributors", "rights",
+@XmlType(propOrder = {"title", "subtitle", "categories", "updated", "id", "links", "authors", "ITunesAuthor",
+        "ITunesLanguage", "ITunesExplicit", "ITunesCategory", "iTunesImage", "contributors", "rights",
         "icon", "logo", "generator"})
 public class Source extends CommonAttributes {
     private List<Person> authors = new ArrayList<Person>();
@@ -67,7 +68,50 @@ public class Source extends CommonAttributes {
     private String rights;
     private String subtitle;
     private String iTunesAuthor;
-    
+
+    private String iTunesCategory = "Talk Radio";
+
+    private String iTunesLanguage = "hu";
+
+    private String iTunesExplicit = "clean";
+
+    private String iTunesImage;
+
+    @XmlElement(name = "image", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
+    public String getITunesImage() {
+        return iTunesImage;
+    }
+
+    public void setITunesImage(String iTunesImage) {
+        this.iTunesImage = iTunesImage;
+    }
+
+    @XmlElement(name = "category", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
+    public String getITunesCategory() {
+        return iTunesCategory;
+    }
+
+    public void setITunesCategory(String iTunesCategory) {
+        this.iTunesCategory = iTunesCategory;
+    }
+
+    @XmlElement(name = "language", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
+    public String getITunesLanguage() {
+        return iTunesLanguage;
+    }
+
+    public void setITunesLanguage(String iTunesLanguage) {
+        this.iTunesLanguage = iTunesLanguage;
+    }
+
+    @XmlElement(name = "explicit", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
+    public String getITunesExplicit() {
+        return iTunesExplicit;
+    }
+
+    public void setITunesExplicit(String iTunesExplicit) {
+        this.iTunesExplicit = iTunesExplicit;
+    }
 
     @XmlElement(name = "author", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
     public String getITunesAuthor() {

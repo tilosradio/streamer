@@ -46,13 +46,18 @@ public class FeedRenderer {
         return d;
     }
 
-    public Feed generateFeed(List<EpisodeData> episodeData) {
-        return generateFeed(episodeData, false);
+    public Feed generateFeed(List<EpisodeData> episodeData, String id) {
+        return generateFeed(episodeData, id, false);
     }
 
-    public Feed generateFeed(List<EpisodeData> episodeData, boolean prefixedWithShowName) {
+    public Feed generateFeed(List<EpisodeData> episodeData, String id, boolean prefixedWithShowName) {
         Feed feed = new Feed();
         feed.setITunesAuthor("Tilos Radio");
+        try {
+            feed.setId(new URI(id));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
         try {
 
 
@@ -66,9 +71,9 @@ public class FeedRenderer {
             for (EpisodeData episode : episodeData) {
                 try {
                     Entry e = new Entry();
-                    String prefix = prefixedWithShowName ? episode.getShow().getName() + "/" : "";
+                    String prefix = prefixedWithShowName ? episode.getShow().getName() + ": " : "";
                     if (episode.getText() != null) {
-                        e.setTitle(prefix + YYYY_DOT_MM_DOT_DD.format(episode.getPlannedFrom()) + " " + episode.getText().getTitle());
+                        e.setTitle(prefix + episode.getText().getTitle());
                         e.setSummary(new Summary("html", episode.getText().getFormatted()));
                     } else {
                         e.setTitle(prefix + YYYY_DOT_MM_DOT_DD.format(episode.getPlannedFrom()) + " " + "adásnapló");

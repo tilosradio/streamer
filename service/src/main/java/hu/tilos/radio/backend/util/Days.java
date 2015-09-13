@@ -7,7 +7,7 @@ package hu.tilos.radio.backend.util;
  */
 public enum Days {
 
-    SUNDAY("Vasárnap"), MONDAY("Hétfő"), TUESDAY("Kedd"), WEDNESDAY("Szerda"), THURSDAY("Csütörtök"), FRIDAY("Péntek"), SATURDAY("SZOMBAT");
+    SUNDAY("Vasárnap"), MONDAY("Hétfő"), TUESDAY("Kedd"), WEDNESDAY("Szerda"), THURSDAY("Csütörtök"), FRIDAY("Péntek"), SATURDAY("Szombat");
 
 
     private String hungarian;
