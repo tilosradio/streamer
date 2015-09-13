@@ -3,7 +3,6 @@ package hu.tilos.radio.backend.feed;
 import hu.tilos.radio.backend.Configuration;
 import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.episode.util.DateFormatUtil;
-import hu.tilos.radio.backend.util.LocaleUtil;
 import net.anzix.jaxrs.atom.*;
 
 import javax.inject.Inject;
@@ -15,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Utility to create Feed object from Episode list.
@@ -54,6 +52,7 @@ public class FeedRenderer {
 
     public Feed generateFeed(List<EpisodeData> episodeData, boolean prefixedWithShowName) {
         Feed feed = new Feed();
+        feed.setITunesAuthor("Tilos Radio");
         try {
 
 
@@ -76,6 +75,9 @@ public class FeedRenderer {
                         e.setSummary(new Summary("adás archívum"));
                     }
 
+                    e.setITunesSummary(e.getSummary().getContent());
+
+                    e.setITunesDuration((episode.getRealTo().getTime() - episode.getRealFrom().getTime()) / 100);
 
                     e.setPublished(episode.getRealTo());
                     e.setUpdated(episode.getRealTo());

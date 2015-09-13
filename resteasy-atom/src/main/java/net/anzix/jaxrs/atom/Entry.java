@@ -88,8 +88,8 @@ import java.util.List;
  */
 @XmlRootElement(name = "entry")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(propOrder = {"title", "links", "categories", "updated", "id", "published", "authors", "contributors", "source",
-        "rights", "content", "summary", "anyOther"})
+@XmlType(propOrder = {"title", "links", "categories", "updated", "id", "published", "authors", "ITunesDuration", "contributors", "source",
+        "rights", "content", "summary", "ITunesSummary", "anyOther"})
 public class Entry extends CommonAttributes {
     private List<Person> authors = new ArrayList<Person>();
 
@@ -120,6 +120,26 @@ public class Entry extends CommonAttributes {
 
     private Object anyOtherJaxbObject;
 
+    private String iTunesSummary;
+
+    private long iTunesDuration;
+
+    @XmlElement(name = "summary", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
+    public String getITunesSummary() {
+        return iTunesSummary;
+    }
+    @XmlElement(name = "duration", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
+    public long getITunesDuration() {
+        return iTunesDuration;
+    }
+
+    public void setITunesSummary(String iTunesSummary) {
+        this.iTunesSummary = iTunesSummary;
+    }
+
+    public void setITunesDuration(long iTunesDuration) {
+        this.iTunesDuration = iTunesDuration;
+    }
 
     @XmlElement
     public URI getId() {

@@ -1,10 +1,6 @@
 package net.anzix.jaxrs.atom;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,7 +20,7 @@ import java.util.List;
  *  the child elements atom:author, atom:contributor, atom:rights, or
  *  atom:category and those child elements are not present in the source
  *  atom:entry.
- * <p/>
+ *
  *  atomSource =
  *     element atom:source {
  *        atomCommonAttributes,
@@ -42,7 +38,7 @@ import java.util.List;
  *         &amp; atomUpdated?
  *         &amp; extensionElement*)
  *     }
- * <p/>
+ *
  *  The atom:source element is designed to allow the aggregation of
  *  entries from different feeds while retaining information about an
  *  entry's source feed.  For this reason, Atom Processors that are
@@ -55,138 +51,127 @@ import java.util.List;
  * @version $Revision: 1 $
  */
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(propOrder = {"title", "subtitle", "categories", "updated", "id", "links", "authors", "contributors", "rights",
+@XmlType(propOrder = {"title", "subtitle", "categories", "updated", "id", "links", "authors", "ITunesAuthor", "contributors", "rights",
         "icon", "logo", "generator"})
-public class Source extends CommonAttributes
-{
-   private List<Person> authors = new ArrayList<Person>();
-   private List<Category> categories = new ArrayList<Category>();
-   private List<Person> contributors = new ArrayList<Person>();
-   private Generator generator;
-   private URI id;
-   private String title;
-   private Date updated;
-   private List<Link> links = new ArrayList<Link>();
-   private URI icon;
-   private URI logo;
-   private String rights;
-   private String subtitle;
+public class Source extends CommonAttributes {
+    private List<Person> authors = new ArrayList<Person>();
+    private List<Category> categories = new ArrayList<Category>();
+    private List<Person> contributors = new ArrayList<Person>();
+    private Generator generator;
+    private URI id;
+    private String title;
+    private Date updated;
+    private List<Link> links = new ArrayList<Link>();
+    private URI icon;
+    private URI logo;
+    private String rights;
+    private String subtitle;
+    private String iTunesAuthor;
+    
 
-   @XmlElement(name = "author")
-   public List<Person> getAuthors()
-   {
-      return authors;
-   }
+    @XmlElement(name = "author", namespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
+    public String getITunesAuthor() {
+        return iTunesAuthor;
+    }
 
-   @XmlElement(name = "contributor")
-   public List<Person> getContributors()
-   {
-      return contributors;
-   }
+    public void setITunesAuthor(String author) {
+        this.iTunesAuthor = author;
+    }
 
-   @XmlElement
-   public URI getId()
-   {
-      return id;
-   }
+    @XmlElement(name = "author")
+    public List<Person> getAuthors() {
+        return authors;
+    }
 
-   public void setId(URI id)
-   {
-      this.id = id;
-   }
+    @XmlElement(name = "contributor")
+    public List<Person> getContributors() {
+        return contributors;
+    }
 
-   @XmlElement
-   public String getTitle()
-   {
-      return title;
-   }
+    @XmlElement
+    public URI getId() {
+        return id;
+    }
 
-   public void setTitle(String title)
-   {
-      this.title = title;
-   }
+    public void setId(URI id) {
+        this.id = id;
+    }
 
-   @XmlElement
-   public Date getUpdated()
-   {
-      return updated;
-   }
+    @XmlElement
+    public String getTitle() {
+        return title;
+    }
 
-   public void setUpdated(Date updated)
-   {
-      this.updated = updated;
-   }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-   public Link getLinkByRel(String name)
-   {
-      for (Link link : links) if (link.getRel().equals(name)) return link;
-      return null;
-   }
+    @XmlElement
+    public Date getUpdated() {
+        return updated;
+    }
 
-   @XmlElementRef
-   public List<Link> getLinks()
-   {
-      return links;
-   }
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
 
-   @XmlElementRef
-   public List<Category> getCategories()
-   {
-      return categories;
-   }
+    public Link getLinkByRel(String name) {
+        for (Link link : links) if (link.getRel().equals(name)) return link;
+        return null;
+    }
 
-   @XmlElementRef
-   public Generator getGenerator()
-   {
-      return generator;
-   }
+    @XmlElementRef
+    public List<Link> getLinks() {
+        return links;
+    }
 
-   public void setGenerator(Generator generator)
-   {
-      this.generator = generator;
-   }
+    @XmlElementRef
+    public List<Category> getCategories() {
+        return categories;
+    }
 
-   @XmlElement
-   public URI getIcon()
-   {
-      return icon;
-   }
+    @XmlElementRef
+    public Generator getGenerator() {
+        return generator;
+    }
 
-   public void setIcon(URI icon)
-   {
-      this.icon = icon;
-   }
+    public void setGenerator(Generator generator) {
+        this.generator = generator;
+    }
 
-   @XmlElement
-   public URI getLogo()
-   {
-      return logo;
-   }
+    @XmlElement
+    public URI getIcon() {
+        return icon;
+    }
 
-   public void setLogo(URI logo)
-   {
-      this.logo = logo;
-   }
+    public void setIcon(URI icon) {
+        this.icon = icon;
+    }
 
-   @XmlElement
-   public String getRights()
-   {
-      return rights;
-   }
+    @XmlElement
+    public URI getLogo() {
+        return logo;
+    }
 
-   public void setRights(String rights)
-   {
-      this.rights = rights;
-   }
+    public void setLogo(URI logo) {
+        this.logo = logo;
+    }
 
-   @XmlElement
-   public String getSubtitle()
-   {
-      return subtitle;
-   }
+    @XmlElement
+    public String getRights() {
+        return rights;
+    }
 
-   public void setSubtitle(String subtitle)
-   {
-      this.subtitle = subtitle;
-   }
+    public void setRights(String rights) {
+        this.rights = rights;
+    }
+
+    @XmlElement
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
 }
