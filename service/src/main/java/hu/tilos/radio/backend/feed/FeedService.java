@@ -66,7 +66,7 @@ public class FeedService {
                 .collect(Collectors.toList());
 
 
-        Feed feed = feedRenderer.generateFeed(episodes, "urn:radio.tilos.hu:podcast" + (type == null ? "" : "." + type), true);
+        Feed feed = feedRenderer.generateFeed(episodes, "urn:radio-tilos-hu:podcast" + (type == null ? "" : "." + type), true);
 
 
         feed.setTitle("Tilos Rádió podcast");
@@ -96,7 +96,7 @@ public class FeedService {
             }
         });
 
-        Feed feed = feedRenderer.generateFeed(episodes, "urn:radio.tilos.hu:weekly" + (type == null ? "" : "." + type), true);
+        Feed feed = feedRenderer.generateFeed(episodes, "urn:radio-tilos-hu:weekly" + (type == null ? "" : "." + type), true);
 
 
         feed.setTitle("Tilos Rádió heti podcast");
@@ -171,7 +171,7 @@ public class FeedService {
         });
 
 
-        Feed feed = feedRenderer.generateFeed(episodeData, "urn:radio.tilos.hu:show." + alias);
+        Feed feed = feedRenderer.generateFeed(episodeData, "urn:radio-tilos-hu:show." + alias);
 
         //generate header
 

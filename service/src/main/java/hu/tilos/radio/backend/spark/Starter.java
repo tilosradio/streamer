@@ -370,7 +370,7 @@ public class Starter {
             return feedService.tilosFeed(null);
         }, new FeedTransformer());
 
-        get("/feed/tilos/:type", (req, res) -> {
+        get("/feed/podcast/:type", (req, res) -> {
             res.type("application/atom+xml");
             return feedService.tilosFeed(req.params("type"));
         }, new FeedTransformer());
