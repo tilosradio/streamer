@@ -61,7 +61,9 @@ public class FeedService {
                         return episodeData2.getPlannedFrom().compareTo(episodeData.getPlannedFrom());
                     }
 
-                }).filter(episodeData -> type == null || episodeData.getShow().getType().toString().toLowerCase().equals(type))
+                }).filter(episodeData -> {
+                    return episodeData.getText() != null && !episodeData.getPlannedFrom().equals(episodeData.getRealFrom());
+                })
                 .collect(Collectors.toList());
 
 
