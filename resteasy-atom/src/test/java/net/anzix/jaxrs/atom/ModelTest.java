@@ -32,7 +32,7 @@ public class ModelTest
       JAXBContext ctx = JAXBContext.newInstance(Content.class);
       Content content = (Content) ctx.createUnmarshaller().unmarshal(new StringReader(XML));
       System.out.println(content.getText());
-      System.out.println(content.getLanguage());
+      
 
    }
 
