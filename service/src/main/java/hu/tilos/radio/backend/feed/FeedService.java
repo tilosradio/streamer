@@ -71,10 +71,10 @@ public class FeedService {
 
         if (type == null) {
             feed.setTitle("Tilos Rádió podcast");
-        } else if (type == "talk") {
+        } else if (type.equals("talk")) {
             feed.setTitle("Tilos Rádió szöveges podcast");
             feed.setSubtitle("Válogatás a Tilos Rádió legutóbbi szöveges adásaiból");
-        } else if (type == "music") {
+        } else if (type.equals("music")) {
             feed.setTitle("Tilos Rádió zenés podcast");
             feed.setSubtitle("Válogatás a Tilos Rádió legutóbbi zenés adásaiból");
         }
