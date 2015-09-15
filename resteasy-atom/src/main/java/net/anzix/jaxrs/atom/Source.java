@@ -53,7 +53,7 @@ import java.util.List;
  * @version $Revision: 1 $
  */
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(propOrder = {"title", "subtitle", "categories", "updated", "id", "links", "authors", "ITunesAuthor",
+@XmlType(propOrder = {"title", "subtitle", "language", "categories", "updated", "id", "links", "authors", "ITunesAuthor",
         "ITunesExplicit", "contributors", "rights",
         "icon", "logo", "generator", "category", "image"})
 public class Source extends CommonAttributes {
@@ -72,6 +72,17 @@ public class Source extends CommonAttributes {
     private String iTunesAuthor;
 
     private String iTunesExplicit = "clean";
+
+    private String language;
+
+    @XmlElement
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
 
     private Image image;
 

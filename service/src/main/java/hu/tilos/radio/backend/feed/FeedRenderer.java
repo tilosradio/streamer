@@ -53,6 +53,7 @@ public class FeedRenderer {
     public Feed generateFeed(List<EpisodeData> episodeData, String id, boolean prefixedWithShowName) {
         Feed feed = new Feed();
         feed.setITunesAuthor("Tilos Radio");
+        feed.setLanguage("hu");
         try {
             feed.setId(new URI(id));
         } catch (URISyntaxException e) {
@@ -64,6 +65,7 @@ public class FeedRenderer {
             Person p = new Person();
             p.setEmail("info@tilos.hu");
             p.setName("Tilos Rádió");
+
             List<Person> authors = new ArrayList();
             authors.add(p);
 

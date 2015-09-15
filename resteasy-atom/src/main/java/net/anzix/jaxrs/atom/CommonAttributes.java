@@ -15,39 +15,22 @@ import java.util.Map;
  * @version $Revision: 1 $
  */
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class CommonAttributes
-{
-   private String language;
-   private URI base;
+public class CommonAttributes {
+    private URI base;
+    
+    private Map extensionAttributes = new HashMap();
 
+    @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
+    public URI getBase() {
+        return base;
+    }
 
-   private Map extensionAttributes = new HashMap();
+    public void setBase(URI base) {
+        this.base = base;
+    }
 
-   @XmlAttribute(name = "lang", namespace = "http://www.w3.org/XML/1998/namespace")
-   public String getLanguage()
-   {
-      return language;
-   }
-
-   public void setLanguage(String language)
-   {
-      this.language = language;
-   }
-
-   @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
-   public URI getBase()
-   {
-      return base;
-   }
-
-   public void setBase(URI base)
-   {
-      this.base = base;
-   }
-
-   @XmlAnyAttribute
-   public Map getExtensionAttributes()
-   {
-      return extensionAttributes;
-   }
+    @XmlAnyAttribute
+    public Map getExtensionAttributes() {
+        return extensionAttributes;
+    }
 }

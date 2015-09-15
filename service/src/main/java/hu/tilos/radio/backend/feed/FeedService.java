@@ -69,8 +69,15 @@ public class FeedService {
 
         Feed feed = feedRenderer.generateFeed(episodes, "urn:radio-tilos-hu:podcast" + (type == null ? "" : "." + type), true);
 
-
-        feed.setTitle("Tilos Rádió podcast");
+        if (type == null) {
+            feed.setTitle("Tilos Rádió podcast");
+        } else if (type == "talk") {
+            feed.setTitle("Tilos Rádió szöveges podcast");
+            feed.setSubtitle("Válogatás a Tilos Rádió legutóbbi szöveges adásaiból");
+        } else if (type == "music") {
+            feed.setTitle("Tilos Rádió zenés podcast");
+            feed.setSubtitle("Válogatás a Tilos Rádió legutóbbi zenés adásaiból");
+        }
         feed.setUpdated(new Date());
         feed.setImage(new Image("https://tilos.hu/images/podcast/tilos.jpg"));
         feed.setCategory(new net.anzix.jaxrs.atom.itunes.Category("Public Radio"));
