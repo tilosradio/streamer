@@ -1,0 +1,259 @@
+swagger: '2.0'
+info:
+  version: "0.0.0"
+  title: "Tilos Radio API"
+tags:
+  - name: base
+    description: API for the base data of the radio (show/author/contribution)
+  - name: mix
+    description: API related to the mixes
+  - name: episode
+    description: API related to show episodes
+  - name: text
+    description: API related to pages/news
+  - name: auth
+    description: login/auth API
+paths:
+  /api/v1/show/:alias:
+    get:
+      description: Show detailed data of a radioshow
+      tags: 
+        - base
+    put:
+      description: create a new show
+      tags:
+        - base
+  /api/v1/show:
+    get:
+      description: xxx
+      tags:
+        - base
+    post:
+      description: xxx
+      tags:
+        - base
+  /api/v1/show/:alias/contact:
+    post:
+      description: Send an email to the authors of the show
+      tags:
+        - base
+  /api/int/contribution:
+    post:
+      description: xxx
+      tags:
+        - base
+    delete:
+      description: xxx
+      tags:
+        - base
+  /api/v1/author:
+    get:
+      description: List all of the authors
+      tags:
+        - base
+    post:
+      description: xxx
+      tags:
+        - base
+  /api/v1/author/:alias:
+    get:
+      description: Retrieve details of a specific author
+      tags: 
+        - base
+    put:
+      description: Create new author
+      tags:
+        - base
+  /api/v1/episode/now:
+    get:
+      description: xxx
+      tags:
+        - episode
+  /api/v1/episode/next:
+    get:
+      description: xxx
+      tags:
+        - episode 
+  /api/v1/episode:
+    get:
+      description: get the episodes for a specific period
+      parameters:
+        - name: start
+          in: query
+          description: Start time of the given period (epoch).
+          required: true
+          type: integer
+          format: int64
+        - name: end
+          in: query
+          description: End time of the given period (epoch).
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Successful response
+      tags: 
+        - episode
+    post:
+      description: xxx
+      tags:
+        - episode
+  /api/v1/episode/:id:
+    get:
+      description: Retrieve a specific episode
+      tags:
+        - episode
+    put:
+      description: Edit a specific episode
+      tags:
+        - episode
+  /api/v1/episode/last:
+    get:
+      description: List the most recently created episode logs
+      tags:
+        - episode
+  /api/v1/show/:alias/episodes:
+    get:
+      description: xxx
+      tags:
+        - episode
+  /api/v1/episode/lastWeek:
+    get:
+      description: List episode logs where the show is finised on the last week.
+      tags:
+        - episode
+  /api/v1/episode/:show/:year/:month/:day:
+    get:
+      description: Show all of the episodes for a give day
+      tags:
+        - episode
+
+  /api/v1/text/:type/:id:
+    get:
+      description: xxx
+      tags:
+        - text
+    put:
+      description: xxx
+      tags:
+        - text
+    delete:
+      description: xxx
+      tags:
+        - text
+  /api/v1/text/:type:
+    get:
+      description: xxx
+      tags:
+        - text
+    post:
+      description: xxx
+      tags:
+        - text
+  /api/v1/comment:
+    get:
+      description: Show a specific comment
+      tags: 
+        - comment
+  /api/v1/:type/:id/comment:
+    get:
+      description: Show comments of a specific content type
+      tags:
+        - comment
+    post:
+      description: Create new comment for a specific content type
+      tags:
+        - comment
+  /api/v1/comment/:id/approve:
+    post:
+      description: Approve comment
+      tags:
+        - comment
+    delete:
+      description: Moderate comment
+      tags:
+        - comment
+  /api/v1/auth/login:
+    post:
+      description: Login to the system and get an authentication token.
+      tags:
+        - auth
+  /api/v1/user/me:
+    get:
+      description: get the current user
+      tags:
+        - auth
+  /api/int/user:
+    get:
+      description: get information about  a user
+      tags:
+        - auth
+  /api/v1/auth/register:
+    post:
+      description: register new user
+      tags:
+        - auth
+  /api/v1/auth/password_reset:
+    post:
+      description: Request a password reset email
+      tags:
+        - auth
+  /api/int/oauth/facebook:
+    post:
+      description: Facebook oauth callback url
+
+  /api/v1/mix/:alias:
+    put:
+      description: xxx
+      tags:
+        - mix
+    delete:
+      description: xxx
+      tags:
+        - mix
+  /api/v1/mix:
+    get:
+      description: xxx
+      tags:
+        - mix
+    post:
+      description: xxx
+      tags:
+        - mix
+  /api/v1/mix/:id:
+    get:
+      description: xxx
+      tags:
+        - mix
+ 
+  /api/v1/tag:
+    get:
+      description: xxx
+  /api/v1/tag/:tag:
+    get:
+      description: xxx
+  /api/v1/m3u/lastweek:
+    get:
+      description: xxx
+  /api/v1/status/radio:
+    get:
+      description: xxx
+  /api/v1/test/ping:
+    get:
+      description: Response with pong
+  /api/v1/episode/:id/bookmark:
+    post:
+      description: xxx
+  /api/v1/stat/summary:
+    get:
+      description: xxx
+  /api/v1/search/query:
+    get:
+      description: xxx
+  /api/v1/status/radio.txt:
+    get:
+      description: Show the current extra stream urls
+  /api/v1/stat/listener:
+    get:
+      description: xxx
