@@ -2,7 +2,10 @@
   "swagger": "2.0",
   "info": {
     "version": "0.0.0",
-    "title": "Tilos Radio API"
+    "title": "Tilos Radio API",
+    "scheme": "https",
+    "host": "tilos.hu",
+    "basepath": "/api"
   },
   "tags": [
     {
@@ -27,7 +30,7 @@
     }
   ],
   "paths": {
-    "/api/v1/show/:alias": {
+    "/v1/show/:alias": {
       "get": {
         "description": "Show detailed data of a radioshow",
         "tags": [
@@ -41,7 +44,7 @@
         ]
       }
     },
-    "/api/v1/show": {
+    "/v1/show": {
       "get": {
         "description": "xxx",
         "tags": [
@@ -55,7 +58,7 @@
         ]
       }
     },
-    "/api/v1/show/:alias/contact": {
+    "/v1/show/:alias/contact": {
       "post": {
         "description": "Send an email to the authors of the show",
         "tags": [
@@ -63,7 +66,7 @@
         ]
       }
     },
-    "/api/int/contribution": {
+    "/int/contribution": {
       "post": {
         "description": "xxx",
         "tags": [
@@ -77,7 +80,7 @@
         ]
       }
     },
-    "/api/v1/author": {
+    "/v1/author": {
       "get": {
         "description": "List all of the authors",
         "tags": [
@@ -91,7 +94,7 @@
         ]
       }
     },
-    "/api/v1/author/:alias": {
+    "/v1/author/:alias": {
       "get": {
         "description": "Retrieve details of a specific author",
         "tags": [
@@ -105,7 +108,7 @@
         ]
       }
     },
-    "/api/v1/episode/now": {
+    "/v1/episode/now": {
       "get": {
         "description": "xxx",
         "tags": [
@@ -113,7 +116,7 @@
         ]
       }
     },
-    "/api/v1/episode/next": {
+    "/v1/episode/next": {
       "get": {
         "description": "xxx",
         "tags": [
@@ -121,7 +124,7 @@
         ]
       }
     },
-    "/api/v1/episode": {
+    "/v1/episode": {
       "get": {
         "description": "get the episodes for a specific period",
         "parameters": [
@@ -158,7 +161,7 @@
         ]
       }
     },
-    "/api/v1/episode/:id": {
+    "/v1/episode/:id": {
       "get": {
         "description": "Retrieve a specific episode",
         "tags": [
@@ -172,7 +175,7 @@
         ]
       }
     },
-    "/api/v1/episode/last": {
+    "/v1/episode/last": {
       "get": {
         "description": "List the most recently created episode logs",
         "tags": [
@@ -180,17 +183,23 @@
         ]
       }
     },
-    "/api/v1/show/:alias/episodes": {
+    "/v1/show/:alias/episodes": {
       "get": {
-        "description": "xxx"
+        "description": "xxx",
+        "tags": [
+          "episode"
+        ]
       }
     },
-    "/api/v1/episode/lastWeek": {
+    "/v1/episode/lastWeek": {
       "get": {
-        "description": "List episode logs where the show is finised on the last week."
+        "description": "List episode logs where the show is finised on the last week.",
+        "tags": [
+          "episode"
+        ]
       }
     },
-    "/api/v1/episode/:show/:year/:month/:day": {
+    "/v1/episode/:show/:year/:month/:day": {
       "get": {
         "description": "Show all of the episodes for a give day",
         "tags": [
@@ -198,7 +207,7 @@
         ]
       }
     },
-    "/api/v1/text/:type/:id": {
+    "/v1/text/:type/:id": {
       "get": {
         "description": "xxx",
         "tags": [
@@ -218,7 +227,7 @@
         ]
       }
     },
-    "/api/v1/text/:type": {
+    "/v1/text/:type": {
       "get": {
         "description": "xxx",
         "tags": [
@@ -232,7 +241,7 @@
         ]
       }
     },
-    "/api/v1/comment": {
+    "/v1/comment": {
       "get": {
         "description": "Show a specific comment",
         "tags": [
@@ -240,7 +249,7 @@
         ]
       }
     },
-    "/api/v1/:type/:id/comment": {
+    "/v1/:type/:id/comment": {
       "get": {
         "description": "Show comments of a specific content type",
         "tags": [
@@ -254,7 +263,7 @@
         ]
       }
     },
-    "/api/v1/comment/:id/approve": {
+    "/v1/comment/:id/approve": {
       "post": {
         "description": "Approve comment",
         "tags": [
@@ -268,7 +277,7 @@
         ]
       }
     },
-    "/api/v1/auth/login": {
+    "/v1/auth/login": {
       "post": {
         "description": "Login to the system and get an authentication token.",
         "tags": [
@@ -276,7 +285,7 @@
         ]
       }
     },
-    "/api/v1/user/me": {
+    "/v1/user/me": {
       "get": {
         "description": "get the current user",
         "tags": [
@@ -284,7 +293,7 @@
         ]
       }
     },
-    "/api/int/user": {
+    "/int/user": {
       "get": {
         "description": "get information about  a user",
         "tags": [
@@ -292,7 +301,7 @@
         ]
       }
     },
-    "/api/v1/auth/register": {
+    "/v1/auth/register": {
       "post": {
         "description": "register new user",
         "tags": [
@@ -300,7 +309,7 @@
         ]
       }
     },
-    "/api/v1/auth/password_reset": {
+    "/v1/auth/password_reset": {
       "post": {
         "description": "Request a password reset email",
         "tags": [
@@ -308,12 +317,12 @@
         ]
       }
     },
-    "/api/int/oauth/facebook": {
+    "/int/oauth/facebook": {
       "post": {
         "description": "Facebook oauth callback url"
       }
     },
-    "/api/v1/mix/:alias": {
+    "/v1/mix/:alias": {
       "put": {
         "description": "xxx",
         "tags": [
@@ -327,7 +336,7 @@
         ]
       }
     },
-    "/api/v1/mix": {
+    "/v1/mix": {
       "get": {
         "description": "xxx",
         "tags": [
@@ -341,7 +350,7 @@
         ]
       }
     },
-    "/api/v1/mix/:id": {
+    "/v1/mix/:id": {
       "get": {
         "description": "xxx",
         "tags": [
@@ -349,52 +358,52 @@
         ]
       }
     },
-    "/api/v1/tag": {
+    "/v1/tag": {
       "get": {
         "description": "xxx"
       }
     },
-    "/api/v1/tag/:tag": {
+    "/v1/tag/:tag": {
       "get": {
         "description": "xxx"
       }
     },
-    "/api/v1/m3u/lastweek": {
+    "/v1/m3u/lastweek": {
       "get": {
         "description": "xxx"
       }
     },
-    "/api/v1/status/radio": {
+    "/v1/status/radio": {
       "get": {
         "description": "xxx"
       }
     },
-    "/api/v1/test/ping": {
+    "/v1/test/ping": {
       "get": {
         "description": "Response with pong"
       }
     },
-    "/api/v1/episode/:id/bookmark": {
+    "/v1/episode/:id/bookmark": {
       "post": {
         "description": "xxx"
       }
     },
-    "/api/v1/stat/summary": {
+    "/v1/stat/summary": {
       "get": {
         "description": "xxx"
       }
     },
-    "/api/v1/search/query": {
+    "/v1/search/query": {
       "get": {
         "description": "xxx"
       }
     },
-    "/api/v1/status/radio.txt": {
+    "/v1/status/radio.txt": {
       "get": {
         "description": "Show the current extra stream urls"
       }
     },
-    "/api/v1/stat/listener": {
+    "/v1/stat/listener": {
       "get": {
         "description": "xxx"
       }
