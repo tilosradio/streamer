@@ -1,0 +1,1 @@
+cat src/main/resources/tilos.yaml   | ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML::load(ARGF.read))' > src/main/resources/tilos.json

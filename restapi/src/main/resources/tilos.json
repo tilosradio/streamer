@@ -4,9 +4,11 @@
     "version": "0.0.0",
     "title": "Tilos Radio API"
   },
-  "scheme": "https",
+  "schemes": [
+    "https"
+  ],
   "host": "tilos.hu",
-  "basepath": "/api",
+  "basePath": "/api",
   "tags": [
     {
       "name": "base",
@@ -30,15 +32,30 @@
     }
   ],
   "paths": {
-    "/v1/show/:alias": {
+    "/v1/show/{showAlias}": {
       "get": {
-        "description": "Show detailed data of a radioshow",
+        "summary": "Show detailed data of a radioshow",
+        "parameters": [
+          {
+            "$ref": "#/parameters/showAlias"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ShowDetailed"
+              }
+            }
+          }
+        },
         "tags": [
           "base"
         ]
       },
       "put": {
-        "description": "create a new show",
+        "summary": "create a new show",
         "tags": [
           "base"
         ]
@@ -46,21 +63,33 @@
     },
     "/v1/show": {
       "get": {
-        "description": "xxx",
+        "summary": "Get all of the radioshows",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ShowSimple"
+            }
+          }
+        },
         "tags": [
           "base"
         ]
       },
       "post": {
-        "description": "xxx",
+        "summary": "Create new radioshow",
         "tags": [
           "base"
         ]
       }
     },
-    "/v1/show/:alias/contact": {
+    "/v1/show/{alias}/contact": {
       "post": {
-        "description": "Send an email to the authors of the show",
+        "summary": "Send an email to the authors of the show",
+        "parameters": [
+          {
+            "$ref": "#/parameters/showAlias"
+          }
+        ],
         "tags": [
           "base"
         ]
@@ -68,13 +97,13 @@
     },
     "/int/contribution": {
       "post": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "base"
         ]
       },
       "delete": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "base"
         ]
@@ -82,27 +111,39 @@
     },
     "/v1/author": {
       "get": {
-        "description": "List all of the authors",
+        "summary": "List all of the authors",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/AuthorSimple"
+            }
+          }
+        },
         "tags": [
           "base"
         ]
       },
       "post": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "base"
         ]
       }
     },
-    "/v1/author/:alias": {
+    "/v1/author/{authorAlias}": {
       "get": {
-        "description": "Retrieve details of a specific author",
+        "summary": "Retrieve details of a specific author",
+        "parameters": [
+          {
+            "$ref": "#/parameters/authorAlias"
+          }
+        ],
         "tags": [
           "base"
         ]
       },
       "put": {
-        "description": "Create new author",
+        "summary": "Create new author",
         "tags": [
           "base"
         ]
@@ -110,7 +151,7 @@
     },
     "/v1/episode/now": {
       "get": {
-        "description": "xxx",
+        "summary": "Returns the current show/episode information",
         "tags": [
           "episode"
         ]
@@ -118,7 +159,7 @@
     },
     "/v1/episode/next": {
       "get": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "episode"
         ]
@@ -126,12 +167,12 @@
     },
     "/v1/episode": {
       "get": {
-        "description": "get the episodes for a specific period",
+        "summary": "get the episodes for a specific period",
         "parameters": [
           {
             "name": "start",
             "in": "query",
-            "description": "Start time of the given period (epoch).",
+            "summary": "Start time of the given period (epoch).",
             "required": true,
             "type": "integer",
             "format": "int64"
@@ -139,7 +180,7 @@
           {
             "name": "end",
             "in": "query",
-            "description": "End time of the given period (epoch).",
+            "summary": "End time of the given period (epoch).",
             "required": true,
             "type": "integer",
             "format": "int64"
@@ -147,7 +188,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response"
+            "summary": "Successful response"
           }
         },
         "tags": [
@@ -155,7 +196,7 @@
         ]
       },
       "post": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "episode"
         ]
@@ -163,13 +204,13 @@
     },
     "/v1/episode/:id": {
       "get": {
-        "description": "Retrieve a specific episode",
+        "summary": "Retrieve a specific episode",
         "tags": [
           "episode"
         ]
       },
       "put": {
-        "description": "Edit a specific episode",
+        "summary": "Edit a specific episode",
         "tags": [
           "episode"
         ]
@@ -177,15 +218,20 @@
     },
     "/v1/episode/last": {
       "get": {
-        "description": "List the most recently created episode logs",
+        "summary": "List the most recently created episode logs",
         "tags": [
           "episode"
         ]
       }
     },
-    "/v1/show/:alias/episodes": {
+    "/v1/show/{showAlias}/episodes": {
       "get": {
-        "description": "xxx",
+        "summary": "Show episodes of a given show",
+        "parameters": [
+          {
+            "$ref": "#/parameters/showAlias"
+          }
+        ],
         "tags": [
           "episode"
         ]
@@ -193,7 +239,7 @@
     },
     "/v1/episode/lastWeek": {
       "get": {
-        "description": "List episode logs where the show is finised on the last week.",
+        "summary": "List episode logs where the show is finised on the last week.",
         "tags": [
           "episode"
         ]
@@ -201,7 +247,7 @@
     },
     "/v1/episode/:show/:year/:month/:day": {
       "get": {
-        "description": "Show all of the episodes for a give day",
+        "summary": "Show all of the episodes for a give day",
         "tags": [
           "episode"
         ]
@@ -209,19 +255,19 @@
     },
     "/v1/text/:type/:id": {
       "get": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "text"
         ]
       },
       "put": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "text"
         ]
       },
       "delete": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "text"
         ]
@@ -229,13 +275,13 @@
     },
     "/v1/text/:type": {
       "get": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "text"
         ]
       },
       "post": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "text"
         ]
@@ -243,7 +289,7 @@
     },
     "/v1/comment": {
       "get": {
-        "description": "Show a specific comment",
+        "summary": "Show a specific comment",
         "tags": [
           "comment"
         ]
@@ -251,13 +297,13 @@
     },
     "/v1/:type/:id/comment": {
       "get": {
-        "description": "Show comments of a specific content type",
+        "summary": "Show comments of a specific content type",
         "tags": [
           "comment"
         ]
       },
       "post": {
-        "description": "Create new comment for a specific content type",
+        "summary": "Create new comment for a specific content type",
         "tags": [
           "comment"
         ]
@@ -265,13 +311,13 @@
     },
     "/v1/comment/:id/approve": {
       "post": {
-        "description": "Approve comment",
+        "summary": "Approve comment",
         "tags": [
           "comment"
         ]
       },
       "delete": {
-        "description": "Moderate comment",
+        "summary": "Moderate comment",
         "tags": [
           "comment"
         ]
@@ -279,7 +325,7 @@
     },
     "/v1/auth/login": {
       "post": {
-        "description": "Login to the system and get an authentication token.",
+        "summary": "Login to the system and get an authentication token.",
         "tags": [
           "auth"
         ]
@@ -287,7 +333,7 @@
     },
     "/v1/user/me": {
       "get": {
-        "description": "get the current user",
+        "summary": "get the current user",
         "tags": [
           "auth"
         ]
@@ -295,7 +341,7 @@
     },
     "/int/user": {
       "get": {
-        "description": "get information about  a user",
+        "summary": "get information about  a user",
         "tags": [
           "auth"
         ]
@@ -303,7 +349,7 @@
     },
     "/v1/auth/register": {
       "post": {
-        "description": "register new user",
+        "summary": "register new user",
         "tags": [
           "auth"
         ]
@@ -311,7 +357,7 @@
     },
     "/v1/auth/password_reset": {
       "post": {
-        "description": "Request a password reset email",
+        "summary": "Request a password reset email",
         "tags": [
           "auth"
         ]
@@ -319,18 +365,18 @@
     },
     "/int/oauth/facebook": {
       "post": {
-        "description": "Facebook oauth callback url"
+        "summary": "Facebook oauth callback url"
       }
     },
     "/v1/mix/:alias": {
       "put": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "mix"
         ]
       },
       "delete": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "mix"
         ]
@@ -338,13 +384,13 @@
     },
     "/v1/mix": {
       "get": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "mix"
         ]
       },
       "post": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "mix"
         ]
@@ -352,60 +398,347 @@
     },
     "/v1/mix/:id": {
       "get": {
-        "description": "xxx",
+        "summary": "xxx",
         "tags": [
           "mix"
         ]
       }
     },
+    "/v1/search/query": {
+      "get": {
+        "summary": "xxx"
+      }
+    },
     "/v1/tag": {
       "get": {
-        "description": "xxx"
+        "summary": "xxx"
       }
     },
     "/v1/tag/:tag": {
       "get": {
-        "description": "xxx"
+        "summary": "xxx"
       }
     },
     "/v1/m3u/lastweek": {
       "get": {
-        "description": "xxx"
+        "summary": "xxx"
       }
     },
     "/v1/status/radio": {
       "get": {
-        "description": "xxx"
+        "summary": "Show the current extra stream urls"
       }
     },
     "/v1/test/ping": {
       "get": {
-        "description": "Response with pong"
+        "summary": "Response with pong"
       }
     },
     "/v1/episode/:id/bookmark": {
       "post": {
-        "description": "xxx"
+        "summary": "xxx"
       }
     },
     "/v1/stat/summary": {
       "get": {
-        "description": "xxx"
-      }
-    },
-    "/v1/search/query": {
-      "get": {
-        "description": "xxx"
-      }
-    },
-    "/v1/status/radio.txt": {
-      "get": {
-        "description": "Show the current extra stream urls"
+        "summary": "Summarized numbers of episodes/shows/..."
       }
     },
     "/v1/stat/listener": {
       "get": {
-        "description": "xxx"
+        "summary": "Listener statistic per month"
+      }
+    }
+  },
+  "parameters": {
+    "showAlias": {
+      "name": "showAlias",
+      "in": "path",
+      "description": "Alias (or UUID) of the specific radioshow",
+      "required": true,
+      "type": "string"
+    },
+    "authorAlias": {
+      "name": "authorAlias",
+      "in": "path",
+      "description": "Alias (or UUID) of the specific author/artist",
+      "required": true,
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "ShowSimple": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "alias": {
+          "type": "string"
+        },
+        "definition": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "MUSIC",
+            "SPEECH"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PLANNED",
+            "ACTIVE",
+            "OLD",
+            "LEGEND"
+          ]
+        }
+      }
+    },
+    "ShowReference": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "alias": {
+          "type": "string"
+        }
+      }
+    },
+    "ShowDetailed": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "alias": {
+          "type": "string"
+        },
+        "definition": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "MUSIC",
+            "SPEECH"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PLANNED",
+            "ACTIVE",
+            "OLD",
+            "LEGEND"
+          ]
+        },
+        "statusTxt": {
+          "type": "string"
+        },
+        "stats": {
+          "type": "object",
+          "$ref": "#/definitions/ShowStats"
+        },
+        "mixes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/MixSimple"
+          }
+        },
+        "contributors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ShowContribution"
+          }
+        },
+        "schedulings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/SchedulingSimple"
+          }
+        },
+        "urls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/UrlData"
+          }
+        }
+      }
+    },
+    "UrlData": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "address": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "ContributionData": {
+      "properties": {
+        "show": {
+          "type": "object",
+          "$ref": "#/definitions/WithId"
+        },
+        "author": {
+          "type": "object",
+          "$ref": "#/definitions/WithId"
+        },
+        "nick": {
+          "type": "string"
+        }
+      }
+    },
+    "AuthorSimple": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "alias": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        }
+      }
+    },
+    "MixSimple": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "DJ",
+            "GUESTDJ",
+            "SHOW",
+            "TALE"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "MUSIC",
+            "SPEECH"
+          ]
+        },
+        "date": {
+          "type": "string"
+        },
+        "withContent": {
+          "type": "boolean"
+        },
+        "show": {
+          "type": "object",
+          "$ref": "#/definitions/ShowSimple"
+        }
+      }
+    },
+    "ShowStats": {
+      "properties": {
+        "mixCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "bookmarkCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ShowContribution": {
+      "properties": {
+        "nick": {
+          "type": "string"
+        },
+        "author": {
+          "type": "object",
+          "$ref": "#/definitions/AuthorReference"
+        }
+      }
+    },
+    "SchedulingSimple": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "weekDay": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "hourFrom": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minFrom": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "duration": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "validFrom": {
+          "type": "integer",
+          "format": "epoch"
+        },
+        "validTo": {
+          "type": "integer",
+          "format": "epoch"
+        },
+        "base": {
+          "type": "integer",
+          "format": "epoch"
+        },
+        "weekType": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "text": {
+          "type": "string"
+        }
       }
     }
   }
