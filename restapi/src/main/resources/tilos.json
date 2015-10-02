@@ -2,11 +2,11 @@
   "swagger": "2.0",
   "info": {
     "version": "0.0.0",
-    "title": "Tilos Radio API",
-    "scheme": "https",
-    "host": "tilos.hu",
-    "basepath": "/api"
+    "title": "Tilos Radio API"
   },
+  "scheme": "https",
+  "host": "tilos.hu",
+  "basepath": "/api",
   "tags": [
     {
       "name": "base",
