@@ -1,6 +1,6 @@
 package hu.tilos.radio.backend.contribution;
 
-import hu.tilos.radio.backend.data.types.AuthorBasic;
+import hu.tilos.radio.backend.author.AuthorBasic;
 
 public class AuthorReference implements AuthorBasic {
 

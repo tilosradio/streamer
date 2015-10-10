@@ -1,7 +1,7 @@
 package hu.tilos.radio.backend.util;
 
 import hu.tilos.radio.backend.Configuration;
-import hu.tilos.radio.backend.data.types.AuthorBasic;
+import hu.tilos.radio.backend.author.AuthorBasic;
 
 import javax.inject.Inject;
 import java.io.File;
