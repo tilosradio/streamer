@@ -84,6 +84,12 @@ public class BaseStreamHandler {
 
 
         ResourceCollection collection = fileLinkCalculator.getMp3Links(segment.start, segment.duration);
+        for (Mp3File file : collection.getCollection()) {
+            File realFile = new File(root, file.getName());
+            if (!realFile.exists() || realFile.length() < 57700000) {
+                error(ctx, 404, "One or more archive segment is missing or corrupt" + file.getName());
+            }
+        }
         adjustSizes(collection);
         collection.setDescriptor(segment);
         joiner.detectJoins(root, collection);
@@ -92,7 +98,7 @@ public class BaseStreamHandler {
     }
 
     private void adjustSizes(ResourceCollection collection) {
-        for (Mp3File file : collection.getCollection()){
+        for (Mp3File file : collection.getCollection()) {
             file.setEndOffset(size(file));
         }
     }
