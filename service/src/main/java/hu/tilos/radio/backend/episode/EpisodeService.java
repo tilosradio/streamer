@@ -97,8 +97,10 @@ public class EpisodeService {
         DBCursor episodes = db.getCollection("episode").find().sort(new BasicDBObject("plannedFrom", 1));
         EpisodeData prev = new EpisodeData();
         int i = 0;
+        int c = 0;
         for (DBObject episode : episodes) {
             EpisodeData current = modelMapper.map(episode, EpisodeData.class);
+            c++;
             if (prev != null) {
                 if (prev.getPlannedFrom() != null && prev.getPlannedFrom().equals(current.getPlannedFrom())) {
                     i++;
@@ -112,7 +114,7 @@ public class EpisodeService {
             }
             prev = current;
         }
-        return new OkResponse(String.format("Found %d problem", i));
+        return new OkResponse(String.format("Found %d problem from %d record", i, c));
     }
 
     public OkResponse removeOverlap() {
@@ -123,7 +125,7 @@ public class EpisodeService {
         int i = 0;
         for (EpisodeData current : episodes) {
             if (prev != null) {
-                if (current.getPlannedFrom().getTime() == prev.getPlannedFrom().getTime() && current.getPlannedTo().getTime() != prev.getPlannedTo().getTime()) {
+                if (current.getPlannedFrom().getTime() == prev.getPlannedFrom().getTime() && current.isExtra() == prev.isExtra() && current.isExtra() == false) {
                     i++;
                     printProblem("Duplicated episode", prev, current);
                     long diff = prev.getPlannedTo().getTime() - current.getPlannedTo().getTime();
@@ -157,26 +159,14 @@ public class EpisodeService {
     }
 
     private EpisodeData findDuplicated(EpisodeData prev, EpisodeData current) {
-        if (prev.getText() == null && current.getText() != null && deletable(prev)) {
+        if (deletable(prev)) {
             return prev;
         }
-        if (current.getText() == null && prev.getText() != null && deletable(current)) {
-            return current;
-        }
-        if (prev.getPlannedFrom().getTime() > current.getPlannedFrom().getTime() && deletable(prev)) {
-            return prev;
-        }
-        if (current.getPlannedFrom().getTime() > prev.getPlannedFrom().getTime() && deletable(current)) {
-            return current;
-        }
-        if (current.getText() == null && current.getBookmarks().size() == 0 && deletable(current)) {
-            return current;
-        }
-        return null;
+        return current;
     }
 
     private boolean deletable(EpisodeData episode) {
-        return episode.getBookmarks().size() == 0 && episode.getText() == null && !episode.isExtra();
+        return episode.getBookmarks().size() == 0 && episode.getText() == null && !episode.isExtra() && episode.getPlannedFrom().equals(episode.getRealFrom());
     }
 
     public List<EpisodeData> next() {
