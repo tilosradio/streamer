@@ -396,7 +396,7 @@ public class Starter {
 
         post("/api/int/oauth/facebook", (req, res) -> oauthService.facebook(gson.fromJson(req.body(), OauthService.FacebookRequest.class)), jsonResponse);
 
-        post("/api/int/episode/cleanup", authorized(Role.ADMIN, (req, res, session) -> episodeService.cleanupEpisodes()), jsonResponse);
+        post("/api/int/episode/cleanup", authorized(Role.ADMIN, (req, res, session) -> episodeService.cleanupEpisodes(booleanParam(req, "force"))), jsonResponse);
 
         post("/api/int/episode/overlap", authorized(Role.ADMIN, (req, res, session) -> episodeService.removeOverlap()), jsonResponse);
     }

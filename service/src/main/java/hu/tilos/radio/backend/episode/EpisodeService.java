@@ -12,7 +12,6 @@ import hu.tilos.radio.backend.episode.util.EpisodeUtil;
 import hu.tilos.radio.backend.tag.TagData;
 import hu.tilos.radio.backend.tag.TagUtil;
 import hu.tilos.radio.backend.util.ShowCache;
-import hu.tilos.radio.backend.util.TextConverter;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
@@ -93,7 +92,7 @@ public class EpisodeService {
 
     }
 
-    public OkResponse cleanupEpisodes() {
+    public OkResponse cleanupEpisodes(boolean force) {
         DBCursor episodes = db.getCollection("episode").find().sort(new BasicDBObject("plannedFrom", 1));
         EpisodeData prev = new EpisodeData();
         int i = 0;
@@ -105,7 +104,7 @@ public class EpisodeService {
                 if (prev.getPlannedFrom() != null && prev.getPlannedFrom().equals(current.getPlannedFrom())) {
                     i++;
                     printProblem("Duplicated episode", prev, current);
-                    EpisodeData toDelete = findDuplicated(prev, current);
+                    EpisodeData toDelete = findDuplicated(prev, current, force);
                     if (toDelete != null) {
                         LOG.info(String.format(String.format("To delete: %s ", toDelete.getId())));
                         db.getCollection("episode").remove(new BasicDBObject("_id", new ObjectId(toDelete.getId())));
@@ -158,11 +157,14 @@ public class EpisodeService {
                 current.getPlannedTo()));
     }
 
-    private EpisodeData findDuplicated(EpisodeData prev, EpisodeData current) {
+    private EpisodeData findDuplicated(EpisodeData prev, EpisodeData current, boolean force) {
         if (deletable(prev)) {
             return prev;
         }
-        return current;
+        if (deletable(current)) {
+            return current;
+        }
+        return force ? current : null;
     }
 
     private boolean deletable(EpisodeData episode) {
