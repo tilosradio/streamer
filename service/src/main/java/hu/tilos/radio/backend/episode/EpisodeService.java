@@ -164,7 +164,21 @@ public class EpisodeService {
         if (deletable(current)) {
             return current;
         }
-        return force ? current : null;
+        if (force) {
+            if (current.getText() != null && prev.getText() == null) {
+                return prev;
+            } else if (current.getText() == null && prev.getText() != null) {
+                return current;
+            } else if (current.getText() != null && prev.getText() != null) {
+                if (prev.getText().getContent().length() > current.getText().getContent().length()) {
+                    return current;
+                } else {
+                    return prev;
+                }
+            }
+            return prev;
+        }
+        return null;
     }
 
     private boolean deletable(EpisodeData episode) {
