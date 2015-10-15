@@ -1,4 +1,4 @@
-FROM tilos/java
+FROM tilosradio/java
 RUN mkdir -p /host/
 RUN mkdir -p /etc/service/streamer
 RUN mkdir -p /etc/service/backend
