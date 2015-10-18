@@ -1,0 +1,17 @@
+language: java
+
+sudo: required
+
+services:
+   - docker
+   - mongodb
+
+jdk:
+  - oraclejdk8
+
+script:
+   - ./build.sh
+   
+after_success:
+   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" tilos.hu:5555
+   - ./docker.sh
