@@ -8,7 +8,6 @@ import hu.radio.tilos.model.Role;
 import hu.tilos.radio.backend.Session;
 import hu.tilos.radio.backend.data.response.CreateResponse;
 import hu.tilos.radio.backend.data.response.UpdateResponse;
-import hu.tilos.radio.backend.data.types.AuthorListElement;
 import hu.tilos.radio.backend.util.AvatarLocator;
 import org.bson.types.ObjectId;
 import org.dozer.DozerBeanMapper;
