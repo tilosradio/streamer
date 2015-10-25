@@ -44,7 +44,7 @@
 
     <mapping map-null="false">
         <class-a map-get-method="get" map-set-method="put">org.bson.BSONObject</class-a>
-        <class-b>hu.tilos.radio.backend.data.types.AuthorListElement</class-b>
+        <class-b>hu.tilos.radio.backend.author.AuthorListElement</class-b>
         <field>
             <a key="_id">this</a>
             <b>id</b>

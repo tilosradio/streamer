@@ -21,6 +21,7 @@ import hu.tilos.radio.backend.auth.RegisterData;
 import hu.tilos.radio.backend.author.AuthorService;
 import hu.tilos.radio.backend.author.AuthorToSave;
 import hu.tilos.radio.backend.author.GetAuthorCommand;
+import hu.tilos.radio.backend.author.ListAuthorCommand;
 import hu.tilos.radio.backend.bookmark.BookmarkService;
 import hu.tilos.radio.backend.bookmark.BookmarkToSave;
 import hu.tilos.radio.backend.bus.MessageBus;
@@ -55,6 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
+import scala.concurrent.duration.FiniteDuration;
 import scala.util.Try;
 import spark.Request;
 import spark.Response;
@@ -128,11 +130,14 @@ public class Starter {
     @Inject
     Smoketest smoketestService;
 
+
+
     private Gson gson;
 
     static Injector injector;
 
     private static MessageBus bus;
+    private FiniteDuration timeout;
 
     public static void main(String[] args) {
         injector = Guice.createInjector(new AbstractModule() {
@@ -155,6 +160,8 @@ public class Starter {
     }
 
     private void run() {
+        timeout = Duration.create(5, "seconds");
+
         LOG.info("Starting new deployment");
 
         gson = new GsonBuilder()
@@ -218,16 +225,26 @@ public class Starter {
 
         get("/api/v1/author", (req, res) -> authorService.list(), jsonResponse);
 
+
+
+        get("/api/v1/authorx", (req, res) -> {
+            Object result = Await.result(bus.tell(new ListAuthorCommand()), timeout);
+            if (result instanceof Try) {
+                return ((Try) result).get();
+            }
+            return result;
+        }, jsonResponse);
+
         get("/api/v1/author/:alias", (req, res) -> authorService.get(req.params("alias"), null), jsonResponse);
 
 
         get("/api/v1/authorx/:alias", (req, res) -> {
-            Object result = Await.result(bus.tell(new GetAuthorCommand(req.params("alias"))), Duration.create(5, "seconds"));
+            Object result = Await.result(bus.tell(new GetAuthorCommand(req.params("alias"))), timeout);
             if (result instanceof Try) {
-                return ((Try)result).get();
+                return ((Try) result).get();
             }
             return result;
-        } , jsonResponse);
+        }, jsonResponse);
 
         post("/api/v1/author", authorized(Role.ADMIN, (req, res, session) -> authorService.create(gson.fromJson(req.body(), AuthorToSave.class))), jsonResponse);
 
