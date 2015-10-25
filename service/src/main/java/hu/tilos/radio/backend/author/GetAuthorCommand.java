@@ -1,6 +1,6 @@
 package hu.tilos.radio.backend.author;
 
-import bus.Command;
+import hu.tilos.radio.backend.bus.Command;
 
 public class GetAuthorCommand extends Command{
 

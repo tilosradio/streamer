@@ -1,4 +1,4 @@
-package bus;
+package hu.tilos.radio.backend.bus;
 
 import akka.actor.Actor;
 import akka.actor.IndirectActorProducer;

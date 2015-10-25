@@ -2,8 +2,7 @@ package hu.tilos.radio.backend.spark;
 
 
 import akka.actor.ActorSystem;
-import akka.util.Timeout;
-import bus.MessageBus;
+import hu.tilos.radio.backend.bus.MessageBus;
 import com.google.gson.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
