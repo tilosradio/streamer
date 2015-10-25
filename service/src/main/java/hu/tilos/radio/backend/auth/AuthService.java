@@ -207,7 +207,7 @@ public class AuthService {
 
         DBObject existingUser = db.getCollection("user").findOne(new BasicDBObject("username", registerData.getUsername()));
         if (existingUser != null) {
-            throw new IllegalArgumentException("A felhasznalonev mar foglalat");
+            throw new IllegalArgumentException("A felhasznalonev mar foglalt");
 
         }
         //everything is ok

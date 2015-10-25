@@ -1,5 +1,9 @@
 package hu.tilos.radio.backend.spark;
 
+
+import akka.actor.ActorSystem;
+import akka.util.Timeout;
+import bus.MessageBus;
 import com.google.gson.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -18,6 +22,7 @@ import hu.tilos.radio.backend.auth.PasswordReset;
 import hu.tilos.radio.backend.auth.RegisterData;
 import hu.tilos.radio.backend.author.AuthorService;
 import hu.tilos.radio.backend.author.AuthorToSave;
+import hu.tilos.radio.backend.author.GetAuthorCommand;
 import hu.tilos.radio.backend.bookmark.BookmarkService;
 import hu.tilos.radio.backend.bookmark.BookmarkToSave;
 import hu.tilos.radio.backend.comment.CommentService;
@@ -49,6 +54,8 @@ import hu.tilos.radio.backend.user.UserService;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.concurrent.Await;
+import scala.concurrent.duration.Duration;
 import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
@@ -125,6 +132,8 @@ public class Starter {
 
     static Injector injector;
 
+    private static MessageBus bus;
+
     public static void main(String[] args) {
         injector = Guice.createInjector(new AbstractModule() {
             @Override
@@ -136,6 +145,12 @@ public class Starter {
 
             }
         });
+
+
+        ActorSystem system = ActorSystem.create("TilosBus");
+
+
+        bus = new MessageBus(system, injector);
         injector.getInstance(Starter.class).run();
     }
 
@@ -202,8 +217,14 @@ public class Starter {
         JsonTransformer jsonResponse = new JsonTransformer(gson);
 
         get("/api/v1/author", (req, res) -> authorService.list(), jsonResponse);
+
         get("/api/v1/author/:alias", (req, res) -> authorService.get(req.params("alias"), null), jsonResponse);
+
+
+        get("/api/v1/authorx/:alias", (req, res) -> Await.result(bus.tell(new GetAuthorCommand(req.params("alias"))), Duration.create(5, "seconds")), jsonResponse);
+
         post("/api/v1/author", authorized(Role.ADMIN, (req, res, session) -> authorService.create(gson.fromJson(req.body(), AuthorToSave.class))), jsonResponse);
+
         put("/api/v1/author/:alias",
                 authorized("/author/{alias}", (req, res, session) ->
                         authorService.update(req.params("alias"), gson.fromJson(req.body(), AuthorToSave.class))), jsonResponse);
