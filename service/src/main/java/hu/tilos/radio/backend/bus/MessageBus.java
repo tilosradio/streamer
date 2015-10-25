@@ -6,6 +6,7 @@ import akka.actor.Props;
 import akka.pattern.Patterns;
 import com.google.inject.Injector;
 import hu.tilos.radio.backend.author.GetAuthorCommand;
+import hu.tilos.radio.backend.author.GetAuthorHandler;
 import scala.concurrent.Future;
 
 import java.util.HashMap;
@@ -21,7 +22,11 @@ public class MessageBus {
 
     public MessageBus(ActorSystem system, Injector injector) {
         this.system = system;
-        subscribers.put(GetAuthorCommand.class, system.actorOf(Props.create(GuiceIndircetActorProducer.class, injector, GetAuthorAdapter.class)));
+        addHandler(GetAuthorHandler.class, GetAuthorCommand.class);
+    }
+
+    private void addHandler(Class<? extends Handler> handlerType, Class<? extends Command> commandType) {
+        subscribers.put(commandType, system.actorOf(Props.create(GuiceIndirectAdapterActorProducer.class, injector, handlerType, commandType)));
     }
 
     public void ask(Command event) {

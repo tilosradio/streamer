@@ -2,7 +2,6 @@ package hu.tilos.radio.backend.spark;
 
 
 import akka.actor.ActorSystem;
-import hu.tilos.radio.backend.bus.MessageBus;
 import com.google.gson.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -24,6 +23,7 @@ import hu.tilos.radio.backend.author.AuthorToSave;
 import hu.tilos.radio.backend.author.GetAuthorCommand;
 import hu.tilos.radio.backend.bookmark.BookmarkService;
 import hu.tilos.radio.backend.bookmark.BookmarkToSave;
+import hu.tilos.radio.backend.bus.MessageBus;
 import hu.tilos.radio.backend.comment.CommentService;
 import hu.tilos.radio.backend.comment.CommentToSave;
 import hu.tilos.radio.backend.comment.CommentType;
@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
+import scala.util.Try;
 import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
@@ -220,7 +221,13 @@ public class Starter {
         get("/api/v1/author/:alias", (req, res) -> authorService.get(req.params("alias"), null), jsonResponse);
 
 
-        get("/api/v1/authorx/:alias", (req, res) -> Await.result(bus.tell(new GetAuthorCommand(req.params("alias"))), Duration.create(5, "seconds")), jsonResponse);
+        get("/api/v1/authorx/:alias", (req, res) -> {
+            Object result = Await.result(bus.tell(new GetAuthorCommand(req.params("alias"))), Duration.create(5, "seconds"));
+            if (result instanceof Try) {
+                return ((Try)result).get();
+            }
+            return result;
+        } , jsonResponse);
 
         post("/api/v1/author", authorized(Role.ADMIN, (req, res, session) -> authorService.create(gson.fromJson(req.body(), AuthorToSave.class))), jsonResponse);
 
