@@ -4,7 +4,6 @@ sudo: required
 
 services:
    - mongodb
-   - docker
 jdk:
   - oraclejdk8
 
