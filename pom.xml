@@ -14,6 +14,7 @@
         <!--module>smoketest</module-->
         <module>resteasy-atom</module>
         <!--module>restapi</module-->
+
     </modules>
     <properties>
 
