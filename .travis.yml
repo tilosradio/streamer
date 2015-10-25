@@ -3,9 +3,8 @@ language: java
 sudo: required
 
 services:
-   - docker
    - mongodb
-
+   - docker
 jdk:
   - oraclejdk8
 
