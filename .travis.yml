@@ -19,4 +19,5 @@ after_success:
 notifications:
   webhooks: 
      urls: 
-       - $HUBOT_TRAVIS_URL
+       - https://test.tilos.hu/$HUBOT_TRAVIS_URL
+       
