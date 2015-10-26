@@ -17,5 +17,6 @@ after_success:
    - ./docker.sh
 
 notifications:
-  webhooks: $HUBOT_TRAVIS_URL
-  on_start: true
+  webhooks: 
+     urls: 
+       - $HUBOT_TRAVIS_URL
