@@ -1,7 +1,6 @@
 package hu.tilos.radio.backend.episode.util;
 
-import com.microtripit.mandrillapp.lutung.logging.Logger;
-import com.microtripit.mandrillapp.lutung.logging.LoggerFactory;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBRef;
@@ -10,6 +9,7 @@ import hu.tilos.radio.backend.episode.EpisodeData;
 import hu.tilos.radio.backend.text.TextData;
 import hu.tilos.radio.backend.util.ShowCache;
 import hu.tilos.radio.backend.util.TextConverter;
+import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,6 +25,8 @@ public class EpisodeUtil {
     public static SimpleDateFormat HHMMSS = DateFormatUtil.create("HHmmss");
 
     public static SimpleDateFormat YYYY_MM_DD = DateFormatUtil.create("yyyy'/'MM'/'dd");
+
+    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(EpisodeUtil.class);
 
     @Inject
     protected PersistentEpisodeProvider persistentProvider;
@@ -46,8 +48,6 @@ public class EpisodeUtil {
 
     @Inject
     TextConverter converter;
-
-    private static final Logger LOG = LoggerFactory.getLogger(EpisodeUtil.class);
 
     public EpisodeData enrichEpisode(EpisodeData r) {
         try {
@@ -158,8 +158,11 @@ public class EpisodeUtil {
         episode.setPersistent(true);
 
         newMongoOBject.put("show", show);
-
-        db.getCollection("episode").insert(newMongoOBject);
+        try {
+            db.getCollection("episode").insert(newMongoOBject);
+        } catch (Exception ex) {
+            LOG.error("Can't persist generated episode: " + episode.getShow().getAlias() + "/" + episode.getRealFrom());
+        }
     }
 
     private List<EpisodeData> episodeTextFromBookmark(List<EpisodeData> original) {
