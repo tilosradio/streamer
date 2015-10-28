@@ -11,3 +11,4 @@ ADD service/target/service-capsule-fat.jar /host/service.jar
 ADD icecast-stat/target/icecast-stat.jar /host/
 ADD docker/icecast-stat /etc/cron.d/icecast-stat
 ADD prerender/target/prerender.jar /host/
+ADD target/version.txt /host/
