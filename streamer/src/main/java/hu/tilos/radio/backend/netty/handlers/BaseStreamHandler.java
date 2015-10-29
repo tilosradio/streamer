@@ -86,7 +86,7 @@ public class BaseStreamHandler {
         ResourceCollection collection = fileLinkCalculator.getMp3Links(segment.start, segment.duration);
         for (Mp3File file : collection.getCollection()) {
             File realFile = new File(root, file.getName());
-            if (!realFile.exists() || realFile.length() < 57700000) {
+            if (!realFile.exists() || realFile.length() < 57000000) {
                 error(ctx, 404, "One or more archive segment is missing or corrupt" + file.getName());
             }
         }
