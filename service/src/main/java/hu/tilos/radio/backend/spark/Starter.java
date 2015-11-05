@@ -50,6 +50,7 @@ import hu.tilos.radio.backend.status.StatusService;
 import hu.tilos.radio.backend.tag.TagService;
 import hu.tilos.radio.backend.text.TextService;
 import hu.tilos.radio.backend.text.TextToSave;
+import hu.tilos.radio.backend.ttt.TTTService;
 import hu.tilos.radio.backend.user.UserService;
 import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
@@ -130,6 +131,8 @@ public class Starter {
     @Inject
     Smoketest smoketestService;
 
+    @Inject
+    TTTService tttService;
 
 
     private Gson gson;
@@ -224,7 +227,6 @@ public class Starter {
         JsonTransformer jsonResponse = new JsonTransformer(gson);
 
         get("/api/v1/author", (req, res) -> authorService.list(), jsonResponse);
-
 
 
         get("/api/v1/authorx", (req, res) -> {
@@ -437,6 +439,9 @@ public class Starter {
             return feedService.feed(req.params("alias"), req.params("year"));
         }, new FeedTransformer());
 
+        get("/api/v1/ttt/business", (req, res) -> {
+            return tttService.getAllBusiness();
+        }, jsonResponse);
 
         post("/api/int/oauth/facebook", (req, res) -> oauthService.facebook(gson.fromJson(req.body(), OauthService.FacebookRequest.class)), jsonResponse);
 
