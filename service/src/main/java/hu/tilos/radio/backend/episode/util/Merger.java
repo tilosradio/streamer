@@ -3,6 +3,7 @@ package hu.tilos.radio.backend.episode.util;
 import hu.tilos.radio.backend.episode.EpisodeData;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Merger {
 
@@ -39,6 +40,7 @@ public class Merger {
         });
         removeDuplicates(result);
         adjustTimes(result);
+        result = result.stream().filter(episode -> !episode.getPlannedFrom().equals(episode.getPlannedTo())).collect(Collectors.toList());
 
         return result;
     }
