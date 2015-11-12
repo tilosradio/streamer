@@ -40,6 +40,7 @@ public class Merger {
         });
         removeDuplicates(result);
         adjustTimes(result);
+        removeDuplicates(result);
         result = result.stream().filter(episode -> !episode.getPlannedFrom().equals(episode.getPlannedTo())).collect(Collectors.toList());
 
         return result;
