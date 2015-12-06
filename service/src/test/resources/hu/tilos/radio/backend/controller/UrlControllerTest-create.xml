@@ -1,0 +1,12 @@
+<!DOCTYPE dataset SYSTEM "src/test/resources/schema.dtd">
+<dataset>
+
+    <url id="2" url="http://show1.com"></url>
+    <url id="10" url="http://szabi.hu"></url>
+
+    <url id="3" url="http://tilos.hu"></url>
+
+    <radioshow id="1" name="3. utas" alias="3utas" description="a potyoutasok műsora" type="0" status="1"></radioshow>
+
+
+</dataset>

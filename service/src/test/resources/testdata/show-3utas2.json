@@ -1,0 +1,40 @@
+{
+  "id": 1,
+  "name": "3. utas",
+  "alias": "3utas",
+  "description": "a potyoutasok műsora",
+  "type": 0,
+  "status": 1,
+  "schedulings": [
+    {
+      "validFrom": {"$date": "2014-04-15T10:00:00.000Z"},
+      "validTo": {"$date": "2014-06-10T10:00:00.000Z"},
+      "hourFrom": 8,
+      "minFrom": 0,
+      "duration": 120,
+      "weekType": 1,
+      "base": {"$date": "2014-04-15T10:00:00.000Z"},
+      "weekDay": 5
+    }
+  ],
+  "contributors": [
+    {
+      "nick": "AUTHOR2",
+      "author": {
+        "alias": "author2",
+        "ref": {
+          "$ref": "author",
+          "$id": {"$oid": "<REF1>"}
+        }
+      }
+    }
+  ],
+  "urls" : [
+    {
+      "address" : "https://www.facebook.com/3.Utas"
+    },
+    {
+      "address" : "http://www.mixcloud.com/szabitoth/"
+    }
+  ]
+}

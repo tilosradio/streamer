@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="LOGFILE" class="ch.qos.logback.core.FileAppender">
+        <file>/tmp/tilos.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNCX" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="LOGFILE"/>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="LOGFILE"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <property file="${config.file}" />
+
+    <if condition='p("tilos.env").contains("test")'>
+        <then>
+            <appender name="LE" class="com.logentries.logback.LogentriesAppender">
+                <Debug>False</Debug>
+                <Token>${logentries.token}</Token>
+                <Ssl>False</Ssl>
+                <facility>USER</facility>
+                <layout>
+                    <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                </layout>
+            </appender>
+            <root>
+                <appender-ref ref="LE"/>
+            </root>
+        </then>
+    </if>
+    <if condition='p("tilos.env").contains("prod")'>
+        <then>
+            <appender name="LE" class="com.logentries.logback.LogentriesAppender">
+                <Debug>False</Debug>
+                <Token>${logentries.token}</Token>
+                <Ssl>False</Ssl>
+                <facility>USER</facility>
+                <layout>
+                    <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                </layout>
+            </appender>
+            <root>
+                <appender-ref ref="LE"/>
+            </root>
+        </then>
+    </if>
+
+</configuration>

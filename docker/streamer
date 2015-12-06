@@ -1,0 +1,3 @@
+#!/bin/bash
+cd /host
+java -jar streamer.jar serve -r /host/online >> /var/log/streamer-service.log

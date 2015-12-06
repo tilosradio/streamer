@@ -1,0 +1,23 @@
+language: java
+
+sudo: required
+
+services:
+   - docker
+   
+jdk:
+  - oraclejdk8
+
+before_script:
+   - docker pull mongo:2.6
+   - docker run -d  -p 27017:27017 mongo:2.6
+
+after_success:
+   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" tilos.hu:5555
+   - ./docker.sh
+
+notifications:
+  webhooks: 
+     urls: 
+       - https://test.tilos.hu/$HUBOT_TRAVIS_URL
+       

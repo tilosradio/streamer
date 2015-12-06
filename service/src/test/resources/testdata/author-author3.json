@@ -1,0 +1,21 @@
+{
+  "id": 3,
+  "name": "AUTHOR3",
+  "photo": "asd",
+  "avatar": "asd",
+  "introduction": "nothing",
+  "alias": "alias",
+  "contributions": [
+    {
+      "nick": "joci",
+      "show": {
+        "alias": "vendeglo",
+        "name": "Vendéglő a világ végén",
+        "ref": {
+          "$ref": "show",
+          "$id": {"$oid": "<REF1>"}
+        }
+      }
+    }
+  ]
+}

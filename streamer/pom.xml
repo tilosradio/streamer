@@ -3,19 +3,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>hu.tilos.radio</groupId>
-
     <artifactId>streamer</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <properties>
+    <parent>
+        <artifactId>tilos-backend</artifactId>
+        <groupId>hu.tilos.radio</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
-
-    </properties>
-    
     <dependencies>
 
 

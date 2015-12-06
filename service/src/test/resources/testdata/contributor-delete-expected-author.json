@@ -1,0 +1,10 @@
+{
+  "_id": {"$oid": "<REF1>"},
+  "id": 2,
+  "name": "AUTHOR2",
+  "photo": "asd",
+  "avatar": "asd",
+  "introduction": "nothing",
+  "alias": "alias2",
+  "contributions": []
+}

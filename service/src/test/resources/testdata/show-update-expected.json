@@ -1,0 +1,11 @@
+{
+  "_id": {"$oid": "<REF1>"},
+  "id": 1,
+  "name": "test",
+  "alias": "3utas",
+  "description": "a potyoutasok műsora",
+  "type": 0,
+  "status": 1,
+  "schedulings": [],
+  "urls": [{"address": "http://pipacs.com"}]
+}
