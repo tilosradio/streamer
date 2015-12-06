@@ -67,27 +67,21 @@
         <plugins>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
+                <groupId>com.github.chrischristo</groupId>
+                <artifactId>capsule-maven-plugin</artifactId>
+                <version>0.10.8</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>build</goal>
                         </goals>
                         <configuration>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>hu.tilos.radio.backend.netty.StreamerCli</mainClass>
-                                </transformer>
-                            </transformers>
+                            <appClass>hu.tilos.radio.backend.netty.StreamerCli</appClass>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
 
+            </plugin>
 
         </plugins>
     </build>
