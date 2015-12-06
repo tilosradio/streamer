@@ -1,4 +1,0 @@
-#!/bin/bash
-source /etc/container_environment.sh
-cd /host
-java -jar -Dconfig.file=/host/tilos.properties service.jar >> /var/log/backend-service.log
