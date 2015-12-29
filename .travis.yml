@@ -1,11 +1,8 @@
 language: java
 
-services:
-   - mongodb
-
 jdk:
   - oraclejdk8
-  
+
 after_success:
 - mkdir -p target/upload
 - cp target/*capsule-fat*.jar target/upload
@@ -15,7 +12,7 @@ deploy:
   secret_access_key: $S3_SECRET
   bucket: tilosdeploy
   acl: public_read
-  local_dir: target
+  local_dir: target/upload
   skip_cleanup: true
 
 
