@@ -1,7 +1,8 @@
 package hu.tilos.radio.backend.streamer.util;
 
-import hu.tilos.radio.backend.Mp3File;
-import hu.tilos.radio.backend.ResourceCollection;
+import hu.tilos.streamer.FileLinkCalculator;
+import hu.tilos.streamer.Mp3File;
+import hu.tilos.streamer.ResourceCollection;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;

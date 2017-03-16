@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend.streamer;
+package hu.tilos.streamer;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one

@@ -1,4 +1,4 @@
-package hu.tilos.radio.backend;
+package hu.tilos.streamer;
 
 import java.util.Date;
 

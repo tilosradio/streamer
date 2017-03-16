@@ -1,96 +1,25 @@
-# Ignore compiled docs
-_gh_pages
-_site
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
 
-# Numerous always-ignore extensions
-*.diff
-*.err
-*.orig
-*.log
-*.rej
-*.swo
-*.swp
-*.zip
-*.vi
-*~
-
-# OS or Editor folders
-.DS_Store
-._*
-Thumbs.db
-.cache
+### STS ###
+.apt_generated
+.classpath
+.factorypath
 .project
 .settings
-.tmproj
-*.esproj
-nbproject
-*.sublime-project
-*.sublime-workspace
+.springBeans
+
+### IntelliJ IDEA ###
 .idea
-
-# Komodo
-*.komodoproject
-.komodotools
-
-# grunt-html-validation
-validation-status.json
-validation-report.json
-
-# Folders to ignore
-node_modules
-dist
-app/components
-vendor
-phinx.yml
-data/DoctrineORMModule/
-.vagrant
-vagrant_ansible_inventory_default
-.buildpath
+*.iws
 *.iml
+*.ipr
 
-# Ignore our own composer.lock files
-composer.lock
-
-archive
-
-target
-
-
-streamer/dependency-reduced-pom.xml
-
-# Created by https://www.gitignore.io
-
-### SBT ###
-# Simple Build Tool
-# http://www.scala-sbt.org/release/docs/Getting-Started/Directories.html#configuring-version-control
-
-target/
-lib_managed/
-src_managed/
-project/boot/
-.history
-.cache
-
-
-### Scala ###
-*.class
-*.log
-
-# sbt specific
-.cache
-.history
-.lib/
-dist/*
-target/
-lib_managed/
-src_managed/
-project/boot/
-project/plugins/project/
-
-# Scala-IDE specific
-.scala_dependencies
-.worksheet
-
-
-
-dependency-reduced-pom.xml
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/

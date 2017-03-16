@@ -1,8 +1,4 @@
-package hu.tilos.radio.backend.streamer;
-
-
-import hu.tilos.radio.backend.Mp3File;
-import hu.tilos.radio.backend.ResourceCollection;
+package hu.tilos.streamer;
 
 
 import java.io.File;

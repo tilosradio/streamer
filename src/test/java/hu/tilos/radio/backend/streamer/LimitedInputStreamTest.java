@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend.streamer;
 
+import hu.tilos.streamer.LimitedInputStream;
 import org.junit.Assert;
 import org.junit.Test;
 
