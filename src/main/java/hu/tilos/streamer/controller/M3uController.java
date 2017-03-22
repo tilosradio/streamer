@@ -48,7 +48,7 @@ public class M3uController {
     b.append(("#EXTINF:" + cws.size + ", Tilos Rádió - " + FILE_NAME_FORMAT.format(cws.collection.getDescriptor().start) + "\n"));
     //workaround for the WP7Application: use the unsplitted version
 
-    b.append("https://archive.tilos.hu/" + request.getRequestURI().toString().replaceAll("\\.m3u", ".mp3"));
+    b.append("https://archive.tilos.hu" + request.getRequestURI().toString().replaceAll("\\.m3u", ".mp3"));
 
     String filename = "tilos-" + FILE_NAME_FORMAT.format(cws.collection.getDescriptor().start) + "-" + cws.collection.getDescriptor().duration;
     response.addHeader("Content-Type", "audio/x-mpegurl; charset=utf-8");
