@@ -3,6 +3,7 @@ package hu.tilos.streamer.controller;
 import hu.tilos.streamer.CombinedInputStream;
 import hu.tilos.streamer.LimitedInputStream;
 import hu.tilos.streamer.Mp3File;
+import hu.tilos.streamer.ThrottledInputStream;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +38,9 @@ public class StreamerController {
   @Value("${archive.dir}")
   private File root;
 
+  @Value("${throttle}")
+  private long throttle;
+
   @Autowired
   private RequestParser parser;
 
@@ -66,7 +70,7 @@ public class StreamerController {
         throw new RuntimeException("Can't stream the files", e);
       }
     }).collect(Collectors.toList()).toArray(new InputStream[0]);
-    CombinedInputStream combinedInputStream = new CombinedInputStream(inputStreams);
+    InputStream combinedInputStream = new ThrottledInputStream(new CombinedInputStream(inputStreams), throttle);
 
     Mp3File mp3File = cws.collection.getCollection().get(0);
 
