@@ -33,10 +33,13 @@ public class StreamerController {
 
   private static SimpleDateFormat FILE_NAME_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmm");
 
-  private static SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMddHHmmss");
-
   @Value("${archive.dir}")
   private File root;
+
+  @Value("${cache.dir}")
+  private File cacheDir;
+
+  private static SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMddHHmmss");
 
   @Value("${throttle}")
   private long throttle;
@@ -48,6 +51,21 @@ public class StreamerController {
   @RequestMapping(value = "/{type:mp3|download}/tilos-{date:.*}.mp3", produces = "audio/mpeg")
   @ResponseBody
   public Collection<ResourceRegion> streamFile(HttpServletRequest request, HttpServletResponse response) {
+
+    String uri = request.getRequestURI();
+    uri = uri.substring(uri.lastIndexOf("/") + 1);
+
+    File cachefile = new File(cacheDir, uri);
+    if (cachefile.exists() && cachefile.length() > 0) {
+      try {
+        response.sendRedirect("https://archive.tilos.hu/cache/" + uri);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      return null;
+    }
+
+
     MDC.put("requestId", "" + Math.round(Math.random() * 10000));
 
     RequestParser.CollectionWithSize cws = parser.processRequest(request.getRequestURI());
@@ -56,6 +74,7 @@ public class StreamerController {
     response.addHeader(HttpHeaders.ACCEPT_RANGES, "bytes")
     ;
     String filename = "tilos-" + FILE_NAME_FORMAT.format(cws.collection.getDescriptor().start) + "-" + cws.collection.getDescriptor().duration;
+
     if (request.getRequestURI().contains("download")) {
       response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + ".mp3\"");
     } else {
