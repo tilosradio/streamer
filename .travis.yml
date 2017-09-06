@@ -5,7 +5,7 @@ jdk:
 
 after_success:
 - mkdir -p build/upload
-- cp buid/libs/*.jar build/upload
+- cp build/libs/*.jar build/upload
 deploy:
   provider: s3
   access_key_id: $S3_KEY
