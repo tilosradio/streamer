@@ -36,10 +36,11 @@ public class ThrottledInputStream extends InputStream {
 
     private final InputStream rawStream;
     private final long maxBytesPerSec;
-    private final long startTime = System.currentTimeMillis();
+    private long startTime = System.currentTimeMillis();
 
     private long bytesRead = 0;
     private long totalSleepTime = 0;
+    private long skippingBytes = 0;
 
     private static final long SLEEP_DURATION_MS = 50;
 
@@ -63,9 +64,11 @@ public class ThrottledInputStream extends InputStream {
      */
     @Override
     public int read() throws IOException {
-        throttle();
+        Boolean skipping = skippingBytes > 0;
+        throttleOrSkip(1);
+
         int data = rawStream.read();
-        if (data != -1) {
+        if (data != -1 && !skipping) {
             bytesRead++;
         }
         return data;
@@ -76,9 +79,11 @@ public class ThrottledInputStream extends InputStream {
      */
     @Override
     public int read(byte[] b) throws IOException {
-        throttle();
+        Boolean skipping = skippingBytes > 0;
+        throttleOrSkip(b.length);
+
         int readLen = rawStream.read(b);
-        if (readLen != -1) {
+        if (readLen != -1 && !skipping) {
             bytesRead += readLen;
         }
         return readLen;
@@ -89,14 +94,32 @@ public class ThrottledInputStream extends InputStream {
      */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        throttle();
+        Boolean skipping = skippingBytes > 0;
+        throttleOrSkip(len);
+        
         int readLen = rawStream.read(b, off, len);
-        if (readLen != -1) {
+        if (readLen != -1 && !skipping) {
             bytesRead += readLen;
         }
         return readLen;
     }
 
+    @Override
+    public long skip(long n) throws IOException {
+        bytesRead = 0;
+        startTime = System.currentTimeMillis();
+        skippingBytes = n;
+        return super.skip(n);
+    }
+
+    private void throttleOrSkip(int len) throws IOException {
+        Boolean skipping = false;
+        if (skippingBytes > 0) {
+            skippingBytes -= len;
+        } else {
+            throttle();
+        }
+    }
 
     private void throttle() throws IOException {
         if (getBytesPerSec() > maxBytesPerSec) {
