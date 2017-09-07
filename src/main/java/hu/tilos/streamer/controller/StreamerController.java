@@ -1,16 +1,15 @@
 package hu.tilos.streamer.controller;
 
-import hu.tilos.streamer.*;
-import jdk.internal.util.xml.impl.Input;
+import hu.tilos.streamer.CombinedInputStream;
+import hu.tilos.streamer.LimitedInputStream;
+import hu.tilos.streamer.ThrottledInputStream;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRange;
@@ -74,8 +73,7 @@ public class StreamerController {
     RequestParser.CollectionWithSize cws = parser.processRequest(request.getRequestURI());
 
     response.addHeader("Content-Type", "audio/mpeg");
-    response.addHeader(HttpHeaders.ACCEPT_RANGES, "bytes")
-    ;
+    response.addHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
     String filename = "tilos-" + FILE_NAME_FORMAT.format(cws.collection.getDescriptor().start) + "-" + cws.collection.getDescriptor().duration;
 
     if (request.getRequestURI().contains("download")) {
