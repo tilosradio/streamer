@@ -73,7 +73,7 @@ public class RequestParser {
     try {
       Segment s = new Segment();
       requestURI = requestURI.replaceAll("download\\?=\\w+", "");
-      Matcher m = Pattern.compile("^/(?:mp3|download)/tilos-(\\d+)-(\\d+)-(\\d+).*$").matcher(requestURI);
+      Matcher m = Pattern.compile("^/(?:mmp3|download)/tilos-(\\d+)-(\\d+)-(\\d+).*$").matcher(requestURI);
       if (m.matches()) {
 
         s.start = SDF.parse(m.group(1) + m.group(2));
@@ -85,14 +85,14 @@ public class RequestParser {
         return s;
 
       } else {
-        m = Pattern.compile("^/(?:mp3|download)/(\\d+)/(\\d+)/(\\d+).*$").matcher(requestURI);
+        m = Pattern.compile("^/(?:mmp3|download)/(\\d+)/(\\d+)/(\\d+).*$").matcher(requestURI);
         if (m.matches()) {
           s.start = SDF.parse(m.group(1) + m.group(2));
           Date end = SDF.parse(m.group(1) + m.group(3));
           s.duration = Math.round((end.getTime() - s.start.getTime()) / 1000);
           return s;
         } else {
-          m = Pattern.compile("^/(?:mp3|download)/(\\d+)-(\\d+).*$").matcher(requestURI);
+          m = Pattern.compile("^/(?:mmp3|download)/(\\d+)-(\\d+).*$").matcher(requestURI);
           if (m.matches()) {
             s.start = new Date();
             s.start.setTime(Long.valueOf(m.group(1)) * 1000);
