@@ -15,16 +15,17 @@ import org.springframework.http.HttpRange;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,9 +45,27 @@ public class StreamerController {
   @Value("${throttle}")
   private long throttle;
 
+  @Value("${cache.url}")
+  private String cacheUrl;
+
   @Autowired
   private RequestParser parser;
 
+  private static final Logger LOG = LoggerFactory.getLogger(StreamerController.class);
+
+  @RequestMapping(value = "/{type:test}/tilos-{date:.*}.mp3")
+  @ResponseBody
+  public String testFile(HttpServletRequest request, HttpServletResponse response) {
+    MDC.put("requestId", "" + Math.round(Math.random() * 10000));
+    try {
+      String newURI = request.getRequestURI().replaceAll("test", "mp3");
+      RequestParser.CollectionWithSize cws = parser.processRequest(newURI);
+      return "ok";
+    } catch (Exception e) {
+      return "error: " + e.toString();
+    }
+
+  }
 
   @RequestMapping(value = "/{type:mp3|download}/tilos-{date:.*}.mp3", produces = "audio/mpeg")
   @ResponseBody
@@ -58,7 +77,7 @@ public class StreamerController {
     File cachefile = new File(cacheDir, uri);
     if (cachefile.exists() && cachefile.length() > 0) {
       try {
-        response.sendRedirect("https://archive.tilos.hu/cache/" + uri);
+        response.sendRedirect(cacheUrl + "/" + uri);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -71,8 +90,7 @@ public class StreamerController {
     RequestParser.CollectionWithSize cws = parser.processRequest(request.getRequestURI());
 
     response.addHeader("Content-Type", "audio/mpeg");
-    response.addHeader(HttpHeaders.ACCEPT_RANGES, "bytes")
-    ;
+    response.addHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
     String filename = "tilos-" + FILE_NAME_FORMAT.format(cws.collection.getDescriptor().start) + "-" + cws.collection.getDescriptor().duration;
 
     if (request.getRequestURI().contains("download")) {
@@ -89,26 +107,33 @@ public class StreamerController {
         throw new RuntimeException("Can't stream the files", e);
       }
     }).collect(Collectors.toList()).toArray(new InputStream[0]);
-    InputStream combinedInputStream = new ThrottledInputStream(new CombinedInputStream(inputStreams), throttle);
 
-    Mp3File mp3File = cws.collection.getCollection().get(0);
+    InputStream combinedInputStream = new CombinedInputStream(inputStreams);
+    InputStream throttledCombinedInputStream = new ThrottledInputStream(new CombinedInputStream(inputStreams), throttle);
 
-    Resource result = new InputStreamResource(combinedInputStream);
-    String range = request.getHeader(HttpHeaders.RANGE);
-    List<HttpRange> httpRanges;
-    if (range != null) {
-      httpRanges = HttpRange.parseRanges(range);
-
-    } else {
-      httpRanges = new ArrayList<>();
-      httpRanges.add(HttpRange.createByteRange(0));
-    }
-    return HttpRange.toResourceRegions(httpRanges, new InputStreamResource(combinedInputStream) {
-      @Override
-      public long contentLength() throws IOException {
-        return cws.size;
+    try {
+      OutputStream os = new FileOutputStream(cachefile);
+      IOUtils.copy(combinedInputStream, os);
+      response.sendRedirect(cacheUrl + "/" + uri);
+      return null;
+    } catch (IOException e) {
+      LOG.error("error saving the file to cache" + e);
+      String range = request.getHeader(HttpHeaders.RANGE);
+      List<HttpRange> httpRanges;
+      if (range != null) {
+        httpRanges = HttpRange.parseRanges(range);
+      } else {
+        httpRanges = new ArrayList<>();
+        httpRanges.add(HttpRange.createByteRange(0));
       }
-    });
+      InputStream inputStream = (request.getRequestURI().contains("download")) ? throttledCombinedInputStream : combinedInputStream;
+      return HttpRange.toResourceRegions(httpRanges, new InputStreamResource(inputStream) {
+        @Override
+        public long contentLength() throws IOException {
+          return cws.size;
+        }
+      });
+    }
 
   }
 
