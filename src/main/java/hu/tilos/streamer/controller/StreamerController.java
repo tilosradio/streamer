@@ -56,13 +56,9 @@ public class StreamerController {
   @RequestMapping(value = "/{type:test}/tilos-{date:.*}.mp3")
   @ResponseBody
   public String testFile(HttpServletRequest request, HttpServletResponse response) {
-    String uri = request.getRequestURI();
-    uri = uri.substring(uri.lastIndexOf("/") + 1);
     MDC.put("requestId", "" + Math.round(Math.random() * 10000));
-
     try {
-      String newURI = request.getRequestURI().replaceAll("test", "mmp3");
-      System.out.println("boo: " + newURI);
+      String newURI = request.getRequestURI().replaceAll("test", "mp3");
       RequestParser.CollectionWithSize cws = parser.processRequest(newURI);
       return "ok";
     } catch (Exception e) {
@@ -71,7 +67,7 @@ public class StreamerController {
 
   }
 
-  @RequestMapping(value = "/{type:mmp3|ddownload}/tilos-{date:.*}.mp3", produces = "audio/mpeg")
+  @RequestMapping(value = "/{type:mp3|download}/tilos-{date:.*}.mp3", produces = "audio/mpeg")
   @ResponseBody
   public Collection<ResourceRegion> streamFile(HttpServletRequest request, HttpServletResponse response) {
 
@@ -115,16 +111,6 @@ public class StreamerController {
     InputStream combinedInputStream = new CombinedInputStream(inputStreams);
     InputStream throttledCombinedInputStream = new ThrottledInputStream(new CombinedInputStream(inputStreams), throttle);
 
-    String range = request.getHeader(HttpHeaders.RANGE);
-    List<HttpRange> httpRanges;
-    if (range != null) {
-      httpRanges = HttpRange.parseRanges(range);
-
-    } else {
-      httpRanges = new ArrayList<>();
-      httpRanges.add(HttpRange.createByteRange(0));
-    }
-
     try {
       OutputStream os = new FileOutputStream(cachefile);
       IOUtils.copy(combinedInputStream, os);
@@ -132,6 +118,14 @@ public class StreamerController {
       return null;
     } catch (IOException e) {
       LOG.error("error saving the file to cache" + e);
+      String range = request.getHeader(HttpHeaders.RANGE);
+      List<HttpRange> httpRanges;
+      if (range != null) {
+        httpRanges = HttpRange.parseRanges(range);
+      } else {
+        httpRanges = new ArrayList<>();
+        httpRanges.add(HttpRange.createByteRange(0));
+      }
       InputStream inputStream = (request.getRequestURI().contains("download")) ? throttledCombinedInputStream : combinedInputStream;
       return HttpRange.toResourceRegions(httpRanges, new InputStreamResource(inputStream) {
         @Override
