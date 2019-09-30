@@ -1,9 +1,8 @@
 package hu.tilos.streamer;
 
-import hu.tilos.streamer.Mp3File;
-import hu.tilos.streamer.ResourceCollection;
 import org.springframework.stereotype.Service;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -12,7 +11,7 @@ public class FileLinkCalculator {
 
   private static final SimpleDateFormat FILE_NAME_FORMAT = new SimpleDateFormat("'/'yyyy'/'MM'/'dd'/tilosradio-'yyyMMdd'-'HHmm'.mp3'");
 
-  public ResourceCollection getMp3Links(Date start, int duration) {
+  public ResourceCollection getMp3Links(File root, Date start, int duration) {
     ResourceCollection collection = new ResourceCollection();
     Date from = getPrevHalfHour(start);
 
@@ -30,14 +29,29 @@ public class FileLinkCalculator {
       i.setTime(i.getTime() + 60 * 30 * 1000);
     }
 
+    int frameRate = 256;
+    File firstFile = new File(root, collection.getCollection().get(0).getName());
+    int firstFramePos = Mp3Joiner.findNextFrame(firstFile, 0);
+    try (FileInputStream stream = new FileInputStream(firstFile)) {
+      stream.skip(firstFramePos + 2);
+      int flag = stream.read();
+      if ((flag & 0xFD) == 0xB0) {
+        frameRate = 196;
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+
+    int ratio = Math.round(frameRate * (float) 1000 * 144 / 44100);
+
     int startOffset = (int) ((start.getTime() - from.getTime()) / 1000);
-    collection.getCollection().get(0).setStartOffset((int) Math.round(startOffset * 38.28125 * 836));
+    collection.getCollection().get(0).setStartOffset((int) Math.round(startOffset * 38.28125 * ratio));
     int endOffset = (int) ((end.getTime() - lastStart.getTime())) / 1000;
-    collection.getCollection().get(collection.getCollection().size() - 1).setEndOffset((int) Math.round(endOffset * 38.28125 * 836));
+    collection.getCollection().get(collection.getCollection().size() - 1).setEndOffset((int) Math.round(endOffset * 38.28125 * ratio));
     return collection;
   }
 
-  public Date getPrevHalfHour(Date date) {
+  public static Date getPrevHalfHour(Date date) {
     Date result = new Date();
     result.setTime(date.getTime() / 1000 * 1000);
     result.setSeconds(0);

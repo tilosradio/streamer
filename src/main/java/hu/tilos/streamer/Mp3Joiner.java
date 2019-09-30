@@ -62,7 +62,7 @@ public class Mp3Joiner {
   /**
    * Find the next frame for a random position
    */
-  public int findNextFrame(File file, int startOffset) {
+  public static int findNextFrame(File file, int startOffset) {
     try {
       try (FileInputStream fis = new FileInputStream(file)) {
         fis.skip(startOffset);
@@ -110,7 +110,7 @@ public class Mp3Joiner {
     return null;
   }
 
-  private boolean isFrameStart(RingBuffer b) {
+  private static boolean isFrameStart(RingBuffer b) {
     //11111111   frame sync (8)
     //111 11 01 ?  frame sync (3) + (mpeg version 1) + (Layer III) + protection bit
     //1101 00 ? ?  (256) + (44100) + padding bit + private bit
@@ -119,8 +119,8 @@ public class Mp3Joiner {
     // FrameSize = (144 * BitRate / SampleRate) + 1 when the padding bit is set.
     return b.get(0) == 255 &&
         (b.get(1) == 0xfa || b.get(1) == 0xfb) &&
-        (b.get(2) & 0xFD) == 0xD0 &&
-        (b.get(3) & 0xCF) == 0x44;
+        (((b.get(2) & 0xFD) == 0xD0) || ((b.get(2) & 0xFD) == 0xB0)) &&
+        (b.get(3) & 0xCB) == 0x40;
   }
 
   public void detectJoins(File root, ResourceCollection collection) {

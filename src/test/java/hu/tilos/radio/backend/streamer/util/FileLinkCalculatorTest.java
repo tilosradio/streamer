@@ -22,7 +22,7 @@ public class FileLinkCalculatorTest {
         System.out.println(startDate);
 
         //when
-        ResourceCollection collections = flc.getMp3Links(startDate, 60 * 60);
+        ResourceCollection collections = flc.getMp3Links(root, startDate, 60 * 60);
 
         //then
         assertEquals(3, collections.getCollection().size());
@@ -50,7 +50,7 @@ public class FileLinkCalculatorTest {
         System.out.println(startDate);
 
         //when
-        ResourceCollection collections = flc.getMp3Links(startDate, 77);
+        ResourceCollection collections = flc.getMp3Links(root, startDate, 77);
 
         //then
         assertEquals(1, collections.getCollection().size());

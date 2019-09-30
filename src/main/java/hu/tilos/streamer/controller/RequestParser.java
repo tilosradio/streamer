@@ -11,6 +11,9 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static hu.tilos.streamer.FileLinkCalculator.getPrevHalfHour;
+import static hu.tilos.streamer.Mp3Joiner.findNextFrame;
+
 @Service
 public class RequestParser {
 
@@ -32,7 +35,7 @@ public class RequestParser {
       throw new IllegalArgumentException("Duration is too long");
     }
 
-    ResourceCollection collection = fileLinkCalculator.getMp3Links(segment.start, segment.duration);
+    ResourceCollection collection = fileLinkCalculator.getMp3Links(root, segment.start, segment.duration);
     for (Mp3File file : collection.getCollection()) {
       File realFile = new File(root, file.getName());
       if (!realFile.exists() || realFile.length() < 35000000) {
