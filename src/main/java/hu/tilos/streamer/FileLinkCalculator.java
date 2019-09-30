@@ -30,16 +30,18 @@ public class FileLinkCalculator {
     }
 
     int frameRate = 256;
-    File firstFile = new File(root, collection.getCollection().get(0).getName());
-    int firstFramePos = Mp3Joiner.findNextFrame(firstFile, 0);
-    try (FileInputStream stream = new FileInputStream(firstFile)) {
-      stream.skip(firstFramePos + 2);
-      int flag = stream.read();
-      if ((flag & 0xFD) == 0xB0) {
-        frameRate = 196;
+    if (root != null) {
+      File firstFile = new File(root, collection.getCollection().get(0).getName());
+      int firstFramePos = Mp3Joiner.findNextFrame(firstFile, 0);
+      try (FileInputStream stream = new FileInputStream(firstFile)) {
+        stream.skip(firstFramePos + 2);
+        int flag = stream.read();
+        if ((flag & 0xFD) == 0xB0) {
+          frameRate = 196;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
     }
 
     int ratio = Math.round(frameRate * (float) 1000 * 144 / 44100);
