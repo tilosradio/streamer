@@ -37,7 +37,7 @@ public class FileLinkCalculator {
         stream.skip(firstFramePos + 2);
         int flag = stream.read();
         if ((flag & 0xFD) == 0xB0) {
-          frameRate = 196;
+          frameRate = 192;
         }
       } catch (Exception e) {
         throw new RuntimeException(e);
